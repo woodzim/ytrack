@@ -189,7 +189,7 @@
     <!-- End::page-header -->
 
     <!-- Start::app-content -->
-    <div class="row">
+    <div class="row pb-3">
         <div class="col-12">
             <div class="form-container">
                 <!-- Main Form -->
@@ -299,18 +299,10 @@
                             <i class="ri-alert-line"></i>
                             <p><strong>Perubahan Kendaraan:</strong> Memindahkan sesi ke kendaraan lain akan mengalihkan alat ke kendaraan tersebut.</p>
                         </div>
-                        <div class="info-item">
-                            <i class="ri-shield-check-line"></i>
-                            <p><strong>Validasi Otomatis:</strong> Sistem akan memastikan tidak ada konflik penggunaan alat atau kendaraan setelah perubahan.</p>
-                        </div>
                         <hr class="my-3">
                         <div class="info-item">
                             <i class="ri-time-line"></i>
                             <p><strong>Status Sesi:</strong> Ubah status (Aktif/Nonaktif) dari halaman detail atau daftar sesi.</p>
-                        </div>
-                        <div class="info-item">
-                            <i class="ri-lightbulb-flash-line"></i>
-                            <p><strong>Tips:</strong> Jika perubahan mengakibatkan konflik, sistem akan menampilkan pesan error dengan penjelasan.</p>
                         </div>
                     </div>
                 </div>
