@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .form-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             border-radius: 8px;
             padding: 24px;
             color: white;

@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .page-header-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             border-radius: 8px;
             padding: 24px;
             color: white;
@@ -43,7 +43,7 @@
             color: #764ba2;
         }
         .pagination .page-item.active .page-link {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             border-color: #667eea;
             color: white;
         }
@@ -52,8 +52,8 @@
             cursor: not-allowed;
         }
         .search-card {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            border: 1px solid rgba(102, 126, 234, 0.1);
+            background: #f0f3ff;
+            border: 1px solid #e0e0e0;
         }
         
         /* Tablet (768px - 991px) */

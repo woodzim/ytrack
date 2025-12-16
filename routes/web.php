@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardsController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\AlatController;
+use App\Http\Controllers\SesiAlatController;
 use App\Http\Controllers\Controller;
 
 Route::get('/', function () {
@@ -30,3 +31,8 @@ Route::delete('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanControl
 
 /******** Alat ********/
 Route::resource('alat', AlatController::class);
+
+/******** Sesi Alat ********/
+Route::resource('sesi-alat', SesiAlatController::class);
+Route::put('sesi-alat/{sesiAlat}/toggle', [SesiAlatController::class, 'toggle'])->name('sesi-alat.toggle');
+Route::get('sesi-alat-kendaraan/{idPerusahaan}', [SesiAlatController::class, 'getKendaraanByPerusahaan'])->name('sesi-alat.kendaraan');

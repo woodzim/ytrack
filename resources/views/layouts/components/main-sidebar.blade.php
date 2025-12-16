@@ -69,6 +69,11 @@
                                 Alat
                             </a>
                         </li>
+                        <li class="slide {{ request()->routeIs('sesi-alat.*') ? 'active' : '' }}">
+                            <a href="{{ route('sesi-alat.index') }}" class="side-menu__item">
+                                Sesi Alat
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 <!-- End::slide -->

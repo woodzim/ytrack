@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .page-header-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             border-radius: 8px;
             padding: 24px;
             color: white;
@@ -43,7 +43,7 @@
             color: #764ba2;
         }
         .pagination .page-item.active .page-link {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #667eea;
             border-color: #667eea;
             color: white;
         }
