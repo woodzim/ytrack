@@ -42,6 +42,13 @@ class PerusahaanController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'alamat' => 'required|string|max:255',
+        ], [
+            'nama.required' => 'Nama perusahaan harus diisi',
+            'nama.string' => 'Nama perusahaan harus berupa teks',
+            'nama.max' => 'Nama perusahaan maksimal 255 karakter',
+            'alamat.required' => 'Alamat harus diisi',
+            'alamat.string' => 'Alamat harus berupa teks',
+            'alamat.max' => 'Alamat maksimal 255 karakter',
         ]);
 
         Perusahaan::create($validated);
@@ -73,6 +80,13 @@ class PerusahaanController extends Controller
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
             'alamat' => 'required|string|max:255',
+        ], [
+            'nama.required' => 'Nama perusahaan harus diisi',
+            'nama.string' => 'Nama perusahaan harus berupa teks',
+            'nama.max' => 'Nama perusahaan maksimal 255 karakter',
+            'alamat.required' => 'Alamat harus diisi',
+            'alamat.string' => 'Alamat harus berupa teks',
+            'alamat.max' => 'Alamat maksimal 255 karakter',
         ]);
 
         $perusahaan->update($validated);

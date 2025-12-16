@@ -15,6 +15,10 @@ class KendaraanController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
+        ], [
+            'nama.required' => 'Nama kendaraan harus diisi',
+            'nama.string' => 'Nama kendaraan harus berupa teks',
+            'nama.max' => 'Nama kendaraan maksimal 255 karakter',
         ]);
 
         Kendaraan::create([
@@ -38,6 +42,10 @@ class KendaraanController extends Controller
 
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
+        ], [
+            'nama.required' => 'Nama kendaraan harus diisi',
+            'nama.string' => 'Nama kendaraan harus berupa teks',
+            'nama.max' => 'Nama kendaraan maksimal 255 karakter',
         ]);
 
         $kendaraan->update($validated);
