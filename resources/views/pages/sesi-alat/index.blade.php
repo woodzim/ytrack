@@ -223,7 +223,7 @@
                                                 <span class="badge bg-light text-dark">#{{ $item->alat->id }}</span>
                                             </td>
                                             <td data-label="Kendaraan">
-                                                <small class="text-muted">{{ $item->kendaraan->nama }}</small>
+                                                <small class="text-muted">{{ $item->kendaraan ? $item->kendaraan->nama : '-' }}</small>
                                             </td>
                                             <td data-label="Perusahaan">
                                                 <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan->nama : '-' }}</small>
