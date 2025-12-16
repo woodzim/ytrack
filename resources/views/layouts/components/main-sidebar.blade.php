@@ -57,11 +57,16 @@
 
                     <ul class="slide-menu child1">
                         <li class="slide side-menu__label1">
-                            <a href="javascript:void(0)">Dashboards</a>
+                            <a href="javascript:void(0)">Management</a>
                         </li>
                         <li class="slide {{ request()->routeIs('perusahaan.*') ? 'active' : '' }}">
                             <a href="{{ route('perusahaan.index') }}" class="side-menu__item">
                                 Perusahaan
+                            </a>
+                        </li>
+                        <li class="slide {{ request()->routeIs('alat.*') ? 'active' : '' }}">
+                            <a href="{{ route('alat.index') }}" class="side-menu__item">
+                                Alat
                             </a>
                         </li>
                     </ul>
