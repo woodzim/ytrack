@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .form-header {
-            background: #667eea;
+            background: rgb(152, 95, 253);
             border-radius: 8px;
             padding: 24px;
             color: white;
@@ -29,7 +29,7 @@
         }
         .form-group-wrapper label {
             font-weight: 600;
-            color: #667eea;
+            color: rgb(152, 95, 253);
             margin-bottom: 8px;
             display: block;
         }
@@ -42,17 +42,17 @@
         }
         .form-group-wrapper .form-control:focus,
         .form-group-wrapper .form-select:focus {
-            border-color: #667eea;
+            border-color: rgb(152, 95, 253);
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
         }
         .form-info-box {
             background: #f8f9fa;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid rgb(152, 95, 253);
             padding: 16px;
             border-radius: 6px;
         }
         .form-info-box h6 {
-            color: #667eea;
+            color: rgb(152, 95, 253);
             font-weight: 600;
             margin-bottom: 8px;
         }
@@ -71,7 +71,7 @@
         }
         .info-label {
             font-weight: 600;
-            color: #667eea;
+            color: rgb(152, 95, 253);
             font-size: 12px;
             text-transform: uppercase;
         }

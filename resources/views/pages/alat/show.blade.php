@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .detail-header {
-            background: #667eea;
+            background: rgb(152, 95, 253);
             border-radius: 8px;
             padding: 24px;
             color: white;
@@ -30,7 +30,7 @@
         }
         .detail-label {
             font-weight: 600;
-            color: #667eea;
+            color: rgb(152, 95, 253);
             width: 150px;
             flex-shrink: 0;
         }
@@ -91,7 +91,7 @@
             .detail-label {
                 width: 100%;
                 margin-bottom: 6px;
-                color: #667eea;
+                color: rgb(152, 95, 253);
                 font-size: 14px;
             }
             .detail-value {

@@ -48,6 +48,10 @@
 
         <div class="page">
 
+            <!-- Start::alerts -->
+            @include('components.alert')
+            <!-- End::alerts -->
+
             <!-- Start::main-header -->
             @include('layouts.components.main-header')
             <!-- End::main-header -->

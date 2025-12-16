@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .detail-header {
-            background: #667eea;
+            background: rgb(152, 95, 253);
             border-radius: 8px;
             padding: 24px;
             color: white;
@@ -35,7 +35,7 @@
 
         .detail-label {
             font-weight: 600;
-            color: #667eea;
+            color: rgb(152, 95, 253);
             width: 150px;
             flex-shrink: 0;
         }
@@ -77,7 +77,7 @@
             margin-bottom: 8px;
             background: #f9f9f9;
             border-radius: 6px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid rgb(152, 95, 253);
         }
 
         .kendaraan-item-name {
@@ -142,7 +142,7 @@
             .detail-label {
                 width: 100%;
                 margin-bottom: 6px;
-                color: #667eea;
+                color: rgb(152, 95, 253);
                 font-size: 14px;
             }
 
@@ -343,7 +343,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="text-center">
-                                <h3 class="mb-1" style="color: #667eea;">{{ $perusahaan->kendaraan->count() }}</h3>
+                                <h3 class="mb-1" style="color: rgb(152, 95, 253);">{{ $perusahaan->kendaraan->count() }}</h3>
                                 <p class="text-muted small mb-0">Total Kendaraan</p>
                             </div>
                         </div>

@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .page-header-section {
-            background: #667eea;
+            background: rgb(152, 95, 253);
             border-radius: 8px;
             padding: 24px;
             color: white;
@@ -33,7 +33,7 @@
         }
         .pagination .page-link {
             border: 1px solid #e0e0e0;
-            color: #667eea;
+            color: rgb(152, 95, 253);
             border-radius: 4px;
             padding: 8px 12px;
             font-size: 13px;
@@ -43,8 +43,8 @@
             color: #764ba2;
         }
         .pagination .page-item.active .page-link {
-            background: #667eea;
-            border-color: #667eea;
+            background: rgb(152, 95, 253);
+            border-color: rgb(152, 95, 253);
             color: white;
         }
         .pagination .page-item.disabled .page-link {
@@ -123,7 +123,7 @@
                 position: absolute;
                 left: 12px;
                 font-weight: 600;
-                color: #667eea;
+                color: rgb(152, 95, 253);
                 text-align: left;
                 width: 40%;
             }
@@ -285,14 +285,6 @@
         </div>
     </div>
     <!-- End::app-content -->
-
-    @if(session('error'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                alert('{{ session("error") }}');
-            });
-        </script>
-    @endif
 @endsection
 
 @section('scripts')

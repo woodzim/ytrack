@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .page-header-section {
-            background: #667eea;
+            background: rgb(152, 95, 253);
             border-radius: 8px;
             padding: 24px;
             color: white;
@@ -68,7 +68,7 @@
             margin-bottom: 0;
         }
         .info-item i {
-            color: #667eea;
+            color: rgb(152, 95, 253);
             min-width: 20px;
         }
         .info-item p {
@@ -90,7 +90,7 @@
             font-size: 13px;
         }
         .form-control:focus, .form-select:focus {
-            border-color: #667eea;
+            border-color: rgb(152, 95, 253);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         .form-control:disabled, .form-select:disabled {
@@ -98,7 +98,7 @@
             color: #999;
         }
         .btn-primary {
-            background: #667eea;
+            background: rgb(152, 95, 253);
             border: none;
             padding: 10px 24px;
             font-weight: 600;
@@ -198,23 +198,6 @@
                         <h5>Edit Sesi</h5>
                     </div>
                     <div class="card-body">
-                        @if($errors->any())
-                            <div class="alert alert-danger error-alert">
-                                <strong>Terjadi kesalahan:</strong>
-                                <ul class="mb-0 mt-2">
-                                    @foreach($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        @if(session('error'))
-                            <div class="alert alert-warning error-alert">
-                                {{ session('error') }}
-                            </div>
-                        @endif
-
                         <!-- Session Metadata -->
                         <div class="meta-info">
                             <p><strong>ID Sesi:</strong> {{ $sesiAlat->id }}</p>

@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .page-header-section {
-            background: #667eea;
+            background: rgb(152, 95, 253);
             border-radius: 8px;
             padding: 24px;
             color: white;
@@ -83,7 +83,7 @@
             color: #666;
         }
         .badge-alat {
-            background-color: #667eea;
+            background-color: rgb(152, 95, 253);
             color: white;
             padding: 6px 12px;
             border-radius: 4px;
@@ -151,7 +151,7 @@
             padding: 12px;
             background: #f8f9fa;
             border-radius: 6px;
-            border-left: 3px solid #667eea;
+            border-left: 3px solid rgb(152, 95, 253);
         }
         .timeline-item strong {
             display: block;
@@ -250,12 +250,6 @@
                         <h5>Informasi Sesi</h5>
                     </div>
                     <div class="card-body">
-                        @if(session('error'))
-                            <div class="alert alert-warning" role="alert">
-                                {{ session('error') }}
-                            </div>
-                        @endif
-
                         <!-- ID Sesi -->
                         <div class="detail-group">
                             <div class="detail-label">ID Sesi</div>

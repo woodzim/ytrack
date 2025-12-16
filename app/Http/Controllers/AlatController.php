@@ -92,8 +92,12 @@ class AlatController extends Controller
      */
     public function destroy(Alat $alat)
     {
-        $alat->delete();
-
-        return redirect()->route('alat.index')->with('success', 'Alat berhasil dihapus');
+        try {
+            $alatId = $alat->id;
+            $alat->delete();
+            return redirect()->route('alat.index')->with('success', "Alat '$alatId' berhasil dihapus");
+        } catch (\Exception $e) {
+            return redirect()->route('alat.index')->with('error', 'Gagal menghapus alat. Pastikan tidak ada sesi yang menggunakan alat ini.');
+        }
     }
 }

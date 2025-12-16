@@ -99,8 +99,12 @@ class PerusahaanController extends Controller
      */
     public function destroy(Perusahaan $perusahaan)
     {
-        $perusahaan->delete();
-
-        return redirect()->route('perusahaan.index')->with('success', 'Perusahaan berhasil dihapus');
+        try {
+            $perusahaanNama = $perusahaan->nama;
+            $perusahaan->delete();
+            return redirect()->route('perusahaan.index')->with('success', "Perusahaan '$perusahaanNama' berhasil dihapus beserta semua data terkait.");
+        } catch (\Exception $e) {
+            return redirect()->route('perusahaan.index')->with('error', 'Gagal menghapus perusahaan. Silakan coba lagi.');
+        }
     }
 }
