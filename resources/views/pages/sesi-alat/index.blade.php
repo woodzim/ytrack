@@ -208,9 +208,9 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th style="width: 15%;">Alat</th>
-                                        <th style="width: 20%;">Kendaraan</th>
                                         <th style="width: 15%;">Perusahaan</th>
+                                        <th style="width: 20%;">Kendaraan</th>
+                                        <th style="width: 15%;">Alat</th>
                                         <th style="width: 15%;">Status</th>
                                         <th style="width: 20%;">Dibuat</th>
                                         <th style="width: 15%;" class="text-center">Aksi</th>
@@ -219,14 +219,14 @@
                                 <tbody>
                                     @foreach($sesiAlat as $item)
                                         <tr>
-                                            <td data-label="Alat">
-                                                <span class="badge bg-light text-dark">#{{ $item->alat->id }}</span>
+                                            <td data-label="Perusahaan">
+                                                <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan->nama : '-' }}</small>
                                             </td>
                                             <td data-label="Kendaraan">
                                                 <small class="text-muted">{{ $item->kendaraan ? $item->kendaraan->nama : '-' }}</small>
                                             </td>
-                                            <td data-label="Perusahaan">
-                                                <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan->nama : '-' }}</small>
+                                            <td data-label="Alat">
+                                                <span class="badge bg-light text-dark">#{{ $item->alat->id }}</span>
                                             </td>
                                             <td data-label="Status">
                                                 <span class="status-badge" style="background-color: {{ $item->aktif ? '#10b981' : '#6b7280' }}; color: white;">
