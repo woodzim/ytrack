@@ -92,7 +92,7 @@ class SesiAlatController extends Controller
         $sesiAlat->load('alat', 'kendaraan', 'perusahaan');
         
         // Load riwayat perjalanan with pagination
-        $riwayatPerjalanan = $sesiAlat->riwayatPerjalanan()->latest()->paginate(20);
+        $riwayatPerjalanan = $sesiAlat->riwayatPerjalanan()->orderBy('created_at')->get();
         
         return view('pages.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));
     }
