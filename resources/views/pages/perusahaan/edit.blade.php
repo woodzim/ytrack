@@ -15,7 +15,7 @@
         .info-badge {
             display: inline-block;
             background: #f0f3ff;
-            color: #667eea;
+            color: rgb(152, 95, 253);
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;

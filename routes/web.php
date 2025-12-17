@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\DashboardsController;
 use App\Http\Controllers\PerusahaanController;
+use App\Http\Controllers\KendaraanController;
+use App\Http\Controllers\AlatController;
+use App\Http\Controllers\SesiAlatController;
 use App\Http\Controllers\Controller;
 
 Route::get('/', function () {
@@ -20,3 +23,16 @@ Route::get('index', [DashboardsController::class, 'index']);
 
 /******** Perusahaan ********/
 Route::resource('perusahaan', PerusahaanController::class);
+
+/******** Kendaraan ********/
+Route::post('perusahaan/{perusahaan}/kendaraan', [KendaraanController::class, 'store'])->name('kendaraan.store');
+Route::put('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'update'])->name('kendaraan.update');
+Route::delete('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy');
+
+/******** Alat ********/
+Route::resource('alat', AlatController::class);
+
+/******** Sesi Alat ********/
+Route::resource('sesi-alat', SesiAlatController::class);
+Route::put('sesi-alat/{sesiAlat}/toggle', [SesiAlatController::class, 'toggle'])->name('sesi-alat.toggle');
+Route::get('sesi-alat-kendaraan/{idPerusahaan}', [SesiAlatController::class, 'getKendaraanByPerusahaan'])->name('sesi-alat.kendaraan');

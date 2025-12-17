@@ -3,7 +3,7 @@
 @section('styles')
     <style>
         .page-header-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: rgb(152, 95, 253);
             border-radius: 8px;
             padding: 24px;
             color: white;
@@ -33,7 +33,7 @@
         }
         .pagination .page-link {
             border: 1px solid #e0e0e0;
-            color: #667eea;
+            color: rgb(152, 95, 253);
             border-radius: 4px;
             padding: 8px 12px;
             font-size: 13px;
@@ -43,8 +43,8 @@
             color: #764ba2;
         }
         .pagination .page-item.active .page-link {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #667eea;
+            background: rgb(152, 95, 253);
+            border-color: rgb(152, 95, 253);
             color: white;
         }
         .pagination .page-item.disabled .page-link {
@@ -52,8 +52,8 @@
             cursor: not-allowed;
         }
         .search-card {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            border: 1px solid rgba(102, 126, 234, 0.1);
+            background: #f0f3ff;
+            border: 1px solid #e0e0e0;
         }
         
         /* Tablet (768px - 991px) */
@@ -158,7 +158,7 @@
                 position: absolute;
                 left: 12px;
                 font-weight: 600;
-                color: #667eea;
+                color: rgb(152, 95, 253);
                 text-align: left;
                 width: 40%;
             }
@@ -403,15 +403,6 @@
         </div>
     </div>
     <!-- End::app-content -->
-
-    @if(session('success'))
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // You can use a toast notification library here
-                console.log('{{ session("success") }}');
-            });
-        </script>
-    @endif
 @endsection
 
 @section('scripts')

@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Kendaraan extends Model
+{
+    protected $table = 'kendaraan';
+    
+    protected $fillable = [
+        'id_perusahaan',
+        'nama',
+    ];
+
+    // Relationships
+    public function perusahaan()
+    {
+        return $this->belongsTo(Perusahaan::class, 'id_perusahaan');
+    }
+
+    public function sesiAlat()
+    {
+        return $this->hasMany(SesiAlat::class, 'id_kendaraan');
+    }
+
+    public function riwayatPerjalanan()
+    {
+        return $this->hasMany(RiwayatPerjalanan::class, 'id_kendaraan');
+    }
+}
