@@ -90,7 +90,11 @@ class SesiAlatController extends Controller
     public function show(SesiAlat $sesiAlat)
     {
         $sesiAlat->load('alat', 'kendaraan', 'perusahaan');
-        return view('pages.sesi-alat.show', compact('sesiAlat'));
+        
+        // Load riwayat perjalanan with pagination
+        $riwayatPerjalanan = $sesiAlat->riwayatPerjalanan()->latest()->paginate(20);
+        
+        return view('pages.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));
     }
 
     /**

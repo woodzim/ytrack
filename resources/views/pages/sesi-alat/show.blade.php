@@ -164,6 +164,24 @@
             font-size: 13px;
             color: #333;
         }
+        .table {
+            margin-bottom: 0;
+        }
+        .table tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        .table thead th {
+            border-bottom: 2px solid #e0e0e0 !important;
+            padding: 12px 8px !important;
+        }
+        .table tbody td {
+            padding: 10px 8px !important;
+            vertical-align: middle;
+        }
 
         /* Mobile Responsive */
         @media (max-width: 991px) {
@@ -241,7 +259,7 @@
     <!-- End::page-header -->
 
     <!-- Start::app-content -->
-    <div class="row">
+    <div class="row mb-12">
         <div class="col-12">
             <div class="detail-container">
                 <!-- Main Detail Card -->
@@ -372,7 +390,81 @@
             </div>
         </div>
     </div>
-    <!-- End::app-content -->
+
+    <!-- Riwayat Perjalanan Section -->
+    <div class="row my-4">
+        <div class="col-12">
+            <div class="detail-card">
+                <div class="card-header">
+                    <h5><i class="ri-map-pin-line me-2"></i>Riwayat Perjalanan</h5>
+                </div>
+                <div class="card-body">
+                    @if($riwayatPerjalanan->count() > 0)
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead>
+                                    <tr style="background-color: #f8f9fa;">
+                                        <th style="font-size: 12px; font-weight: 600; color: #666;">Waktu</th>
+                                        <th style="font-size: 12px; font-weight: 600; color: #666;">Latitude</th>
+                                        <th style="font-size: 12px; font-weight: 600; color: #666;">Longitude</th>
+                                        <th style="font-size: 12px; font-weight: 600; color: #666;">Ketinggian</th>
+                                        <th style="font-size: 12px; font-weight: 600; color: #666;">Satelit</th>
+                                        <th style="font-size: 12px; font-weight: 600; color: #666;">Kecepatan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($riwayatPerjalanan as $riwayat)
+                                        <tr>
+                                            <td style="font-size: 12px;">
+                                                <i class="ri-time-line me-1"></i>{{ $riwayat->created_at->translatedFormat('d/m/Y H:i:s') }}
+                                            </td>
+                                            <td style="font-size: 12px;">{{ $riwayat->lat }}</td>
+                                            <td style="font-size: 12px;">{{ $riwayat->long }}</td>
+                                            <td style="font-size: 12px;">
+                                                @if($riwayat->alt)
+                                                    {{ $riwayat->alt }} m
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td style="font-size: 12px;">
+                                                @if($riwayat->sat)
+                                                    <span class="badge" style="background-color: rgb(152, 95, 253); color: white;">{{ $riwayat->sat }}</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td style="font-size: 12px;">
+                                                @if($riwayat->speed)
+                                                    <span style="color: #10b981; font-weight: 600;">{{ $riwayat->speed }} km/h</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        @if($riwayatPerjalanan->hasPages())
+                            <div class="mt-3 d-flex justify-content-center">
+                                {{ $riwayatPerjalanan->links() }}
+                            </div>
+                        @endif
+                    @else
+                        <div style="text-align: center; padding: 40px 20px; color: #999;">
+                            <i class="ri-map-pin-2-line" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                            <p style="margin: 0;">Belum ada data riwayat perjalanan</p>
+                            <small>Data GPS tracking akan muncul di sini</small>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Riwayat Perjalanan Section -->
 @endsection
 
 @section('scripts')

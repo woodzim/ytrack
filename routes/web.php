@@ -7,7 +7,6 @@ use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\AlatController;
 use App\Http\Controllers\SesiAlatController;
-use App\Http\Controllers\Controller;
 
 Route::get('/', function () {
     return view('welcome');
