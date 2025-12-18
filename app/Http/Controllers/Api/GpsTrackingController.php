@@ -47,7 +47,7 @@ class GpsTrackingController extends Controller
                 $idPerusahaan = $activeSesiAlat->id_perusahaan;
                 $idKendaraan = $activeSesiAlat->id_kendaraan;
             } else {
-                Log::warning('Tidak ada sesi alat aktif untuk id_alat: ' . $validated['id_alat'], [
+                Log::channel('uncomplete_track_histories')->warning('Tidak ada sesi alat aktif untuk id_alat: ' . $validated['id_alat'], [
                     'id_alat' => $validated['id_alat'],
                     'lat' => $validated['lat'] ?? null,
                     'long' => $validated['long'] ?? null,
@@ -66,7 +66,7 @@ class GpsTrackingController extends Controller
 
                     // id_sesi_alat, id_perusahaan, id_kendaraan remain null
                 } else {
-                    Log::warning('Alat tidak ditemukan untuk id_alat: ' . $validated['id_alat'], [
+                    Log::channel('uncomplete_track_histories')->warning('Alat tidak ditemukan untuk id_alat: ' . $validated['id_alat'], [
                         'id_alat' => $validated['id_alat'],
                         'lat' => $validated['lat'] ?? null,
                         'long' => $validated['long'] ?? null,

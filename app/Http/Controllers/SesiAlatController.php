@@ -25,6 +25,8 @@ class SesiAlatController extends Controller
                 $q->where('id', 'like', '%' . $search . '%');
             })->orWhereHas('kendaraan', function ($q) use ($search) {
                 $q->where('nama', 'like', '%' . $search . '%');
+            })->orWhereHas('perusahaan', function ($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%');
             });
         }
 
@@ -33,8 +35,8 @@ class SesiAlatController extends Controller
         }
 
         $sesiAlat = $sesiAlat
+            ->orderBy('id_alat', 'asc')
             ->orderBy('aktif', 'desc')
-            ->orderBy('updated_at', 'desc')
             ->paginate(10)
             ->appends(request()->query());
 

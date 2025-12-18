@@ -585,14 +585,14 @@
 
             // Initialize map dengan zoom lebih rendah
             const map = L.map('map-container', {
-                maxZoom: 14,
+                maxZoom: 19,
                 minZoom: 4
             });
 
             // Gunakan CartoDB Positron untuk tampilan lebih clean/simple
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 attribution: '© OpenStreetMap contributors, © CARTO',
-                maxZoom: 14
+                maxZoom: 19
             }).addTo(map);
 
             // Get all coordinates from the page
