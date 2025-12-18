@@ -264,7 +264,7 @@
                                                 <small class="text-muted">{{ $item->kendaraan ? $item->kendaraan->nama : '-' }}</small>
                                             </td>
                                             <td data-label="Alat">
-                                                <span class="badge bg-light text-dark">#{{ $item->alat ? $item->alat->id : '-' }}</span>
+                                                <span class="badge bg-light text-dark">{{ $item->alat ? $item->alat->id : '-' }}</span>
                                             </td>
                                             <td data-label="Status">
                                                 <span class="status-badge" style="background-color: {{ $item->aktif ? '#10b981' : '#6b7280' }}; color: white;">

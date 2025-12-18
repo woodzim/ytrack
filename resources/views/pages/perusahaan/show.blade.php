@@ -287,7 +287,7 @@
                     <div class="detail-row">
                         <span class="detail-label">ID Perusahaan</span>
                         <span class="detail-value">
-                            <strong>#{{ $perusahaan->id }}</strong>
+                            <strong>{{ $perusahaan->id }}</strong>
                         </span>
                     </div>
 

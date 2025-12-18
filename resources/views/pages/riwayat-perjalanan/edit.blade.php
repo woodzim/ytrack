@@ -264,7 +264,7 @@
                 <div class="card-body">
                     <div class="info-group">
                         <strong>ID Alat:</strong><br>
-                        <span class="text-muted">#{{ $riwayat->id_alat }}</span>
+                        <span class="text-muted">{{ $riwayat->id_alat }}</span>
                     </div>
 
                     @if($riwayat->id_perusahaan)

@@ -374,7 +374,7 @@
                                         <tr>
                                             <td data-label="ID Alat">
                                                 <div class="d-flex align-items-center gap-2">
-                                                    <span class="badge bg-light text-dark">#{{ $item->id }}</span>
+                                                    <span class="badge bg-light text-dark">{{ $item->id }}</span>
                                                     <a href="{{ route('sesi-alat.index', ['search' => $item->id]) }}" class="btn btn-sm btn-outline-primary btn-wave" title="Cari Sesi">
                                                         <i class="ri-search-line"></i>
                                                     </a>
