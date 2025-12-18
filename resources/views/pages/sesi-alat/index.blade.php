@@ -13,6 +13,7 @@
             margin: 0;
             font-size: 28px;
             font-weight: 600;
+            color: white;
         }
         .page-header-section p {
             margin: 8px 0 0 0;
@@ -21,7 +22,7 @@
         }
         .table-wrapper {
             border-radius: 8px;
-            overflow: hidden;
+            overflow: visible;
         }
         .table-action-btns .btn-sm {
             padding: 5px 8px;
@@ -56,6 +57,41 @@
             padding: 4px 8px;
         }
         
+        /* Horizontal Scrollable Table */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+        }
+        .table-responsive .table {
+            min-width: 100%;
+            white-space: nowrap;
+        }
+        .table-responsive .table thead th,
+        .table-responsive .table tbody td {
+            white-space: nowrap;
+            padding: 12px 24px;
+        }
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Ensure card-body doesn't hide overflow */
+        .card-body {
+            overflow: visible;
+        }
+        
         /* Mobile Responsive */
         @media (max-width: 767px) {
             .page-header-section {
@@ -64,6 +100,7 @@
             }
             .page-header-section h1 {
                 font-size: 18px;
+                color: white;
             }
             .page-header-section p {
                 font-size: 12px;
@@ -208,52 +245,69 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th style="width: 15%;">Alat</th>
-                                        <th style="width: 20%;">Kendaraan</th>
                                         <th style="width: 15%;">Perusahaan</th>
+                                        <th style="width: 20%;">Kendaraan</th>
+                                        <th style="width: 15%;">Alat</th>
                                         <th style="width: 15%;">Status</th>
-                                        <th style="width: 20%;">Dibuat</th>
+                                        <th style="width: 15%;">Jumlah Track</th>
+                                        <th style="width: 20%;">Waktu Track Terakhir</th>
                                         <th style="width: 15%;" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach($sesiAlat as $item)
                                         <tr>
-                                            <td data-label="Alat">
-                                                <span class="badge bg-light text-dark">#{{ $item->alat->id }}</span>
+                                            <td data-label="Perusahaan">
+                                                <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan->nama : '-' }}</small>
                                             </td>
                                             <td data-label="Kendaraan">
                                                 <small class="text-muted">{{ $item->kendaraan ? $item->kendaraan->nama : '-' }}</small>
                                             </td>
-                                            <td data-label="Perusahaan">
-                                                <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan->nama : '-' }}</small>
+                                            <td data-label="Alat">
+                                                <span class="badge bg-light text-dark">#{{ $item->alat->id }}</span>
                                             </td>
                                             <td data-label="Status">
                                                 <span class="status-badge" style="background-color: {{ $item->aktif ? '#10b981' : '#6b7280' }}; color: white;">
                                                     {{ $item->aktif ? 'Aktif' : 'Nonaktif' }}
                                                 </span>
                                             </td>
-                                            <td data-label="Dibuat">
-                                                <small class="text-muted">{{ $item->created_at->translatedFormat('d M Y H:i') }}</small>
+                                            <td data-label="Jumlah Track">
+                                                <small class="text-muted">{{ $item->riwayatPerjalanan->count() }}</small>
                                             </td>
-                                            <td data-label="Aksi" class="table-action-btns text-center">
-                                                <a href="{{ route('sesi-alat.show', $item->id) }}" class="btn btn-sm btn-info btn-wave" title="Lihat">
-                                                    <i class="ri-eye-line"></i>
-                                                </a>
-                                                <form action="{{ route('sesi-alat.toggle', $item->id) }}" method="POST" style="display: inline;">
-                                                    @csrf
-                                                    @method('PUT')
-                                                    <button type="submit" class="btn btn-sm {{ $item->aktif ? 'btn-warning' : 'btn-success' }} btn-wave" title="{{ $item->aktif ? 'Nonaktifkan' : 'Aktifkan' }}">
-                                                        <i class="ri-{{ $item->aktif ? 'pause' : 'play' }}-line"></i>
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('sesi-alat.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Hapus sesi ini?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger btn-wave" title="Hapus">
-                                                        <i class="ri-delete-bin-line"></i>
-                                                    </button>
-                                                </form>
+                                            <td data-label="Tanggal Track">
+                                                @if ($item->riwayatPerjalanan->isEmpty())
+                                                    <small class="text-muted">Belum ada track</small>
+                                                @else
+                                                    <small class="text-muted">{{ $item->riwayatPerjalanan()->max('created_at') }}</small>
+                                                @endif
+                                            </td>
+                                            <td data-label="Aksi" class="table-action-btns text-end text-md-start">
+                                                <div class="mb-2">
+                                                    <a href="{{ route('sesi-alat.show', $item->id) }}" class="btn btn-sm btn-info btn-wave" title="Lihat">
+                                                        <i class="ri-eye-line"></i>
+                                                        Lihat Tracking
+                                                    </a>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <form action="{{ route('sesi-alat.toggle', $item->id) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        @method('PUT')
+                                                        <button type="submit" class="btn btn-sm {{ $item->aktif ? 'btn-warning' : 'btn-success' }} btn-wave" title="{{ $item->aktif ? 'Nonaktifkan' : 'Aktifkan' }}">
+                                                            <i class="ri-{{ $item->aktif ? 'pause' : 'play' }}-line"></i>
+                                                            {{ $item->aktif ? 'Nonaktifkan' : 'Aktifkan' }}
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                                <div>
+                                                    <form action="{{ route('sesi-alat.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Hapus sesi ini?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger btn-wave" title="Hapus">
+                                                            <i class="ri-delete-bin-line"></i>
+                                                            Hapus
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach

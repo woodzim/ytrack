@@ -795,22 +795,40 @@ export function iconHoverFn() {
   clearNavDropdown();
 }
 export function setNavActive() {
-  let currentPath = window.location.pathname.split("/")[0];
-
-  currentPath = location.pathname == "/" ? "index" : location.pathname.substring(1);
-  currentPath = currentPath.substring(currentPath.lastIndexOf("/") + 1);
+  let currentPath = location.pathname;
+  
+  // Normalisasi path (hapus trailing slash kecuali root)
+  if (currentPath !== '/' && currentPath.endsWith('/')) {
+    currentPath = currentPath.slice(0, -1);
+  }
+  
   let sidemenuItems = document.querySelectorAll(".side-menu__item");
+  
   sidemenuItems.forEach((e) => {
-    if (currentPath === "/") {
-      currentPath = "index";
+    let itemHref = e.getAttribute('href');
+    
+    // Skip jika href adalah javascript:void(0) atau #
+    if (!itemHref || itemHref.startsWith('javascript:') || itemHref.startsWith('#')) {
+      return;
     }
-
-    if (e.getAttribute('href') === window.location.href) {
+    
+    // Ekstrak path dari href (hapus domain jika ada)
+    let itemPath = new URL(itemHref, window.location.origin).pathname;
+    if (itemPath !== '/' && itemPath.endsWith('/')) {
+      itemPath = itemPath.slice(0, -1);
+    }
+    
+    // Check jika current path cocok dengan item path (exact match atau path dimulai dengan item path)
+    let isActive = itemPath === currentPath || (currentPath.startsWith(itemPath + '/') && itemPath !== '/');
+    
+    if (isActive) {
       e.classList.add('active');
       e.parentElement.classList.add('active');
       e.parentElement.classList.add('open');
+      
       let parent = e.closest('ul');
       let hasParent = parent;
+      
       if(hasParent.previousElementSibling){
         while (hasParent) {
             hasParent.previousElementSibling.classList.add('active');
@@ -867,6 +885,11 @@ function switcherArrowFn() {
   }
 
   checkHoriMenu();
+
+  // Only add event listeners if elements exist
+  if (!slideLeft || !slideRight) {
+    return;
+  }
 
   slideLeft.addEventListener("click", () => {
     let menuNav = document.querySelector(".main-menu");
@@ -1006,6 +1029,12 @@ export function checkHoriMenu() {
   let mainContainer1 = document.querySelector(".main-sidebar");
   let slideLeft = document.querySelector(".slide-left");
   let slideRight = document.querySelector(".slide-right");
+  
+  // Return early if essential elements don't exist
+  if (!menuNav || !mainContainer1) {
+    return;
+  }
+  
   let marginLeftValue = Math.ceil(
     Number(window.getComputedStyle(menuNav).marginLeft.split("px")[0])
   );
@@ -1014,14 +1043,16 @@ export function checkHoriMenu() {
   );
   let check = menuNav.scrollWidth - mainContainer1.offsetWidth;
   // Show/Hide the arrows
-  if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
-    slideRight.classList.remove("d-none");
-    slideLeft.classList.add("d-none");
-  } else {
-    slideRight.classList.add("d-none");
-    slideLeft.classList.add("d-none");
-    menuNav.style.marginLeft = "0px";
-    menuNav.style.marginRight = "0px";
+  if (slideRight && slideLeft) {
+    if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
+      slideRight.classList.remove("d-none");
+      slideLeft.classList.add("d-none");
+    } else {
+      slideRight.classList.add("d-none");
+      slideLeft.classList.add("d-none");
+      menuNav.style.marginLeft = "0px";
+      menuNav.style.marginRight = "0px";
+    }
   }
   if (
     document.querySelector("html").getAttribute("data-nav-layout") ===
@@ -1148,31 +1179,35 @@ export function checkHoriMenu() {
     if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
       if (Math.abs(check) < Math.abs(marginLeftValue)) {
         menuNav.style.marginLeft = -check + "px";
-        slideLeft.classList.remove("d-none");
-        slideRight.classList.add("d-none");
+        if (slideLeft) slideLeft.classList.remove("d-none");
+        if (slideRight) slideRight.classList.add("d-none");
       }
     }
-    if (marginLeftValue == 0) {
-      slideLeft.classList.add("d-none");
-    } else {
-      slideLeft.classList.remove("d-none");
+    if (slideLeft) {
+      if (marginLeftValue == 0) {
+        slideLeft.classList.add("d-none");
+      } else {
+        slideLeft.classList.remove("d-none");
+      }
     }
   } else {
     // RTL check the width and adjust the menu in screen
     if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
       if (Math.abs(check) < Math.abs(marginRightValue)) {
         menuNav.style.marginRight = -check + "px";
-        slideLeft.classList.remove("d-none");
-        slideRight.classList.add("d-none");
+        if (slideLeft) slideLeft.classList.remove("d-none");
+        if (slideRight) slideRight.classList.add("d-none");
       }
     }
-    if (marginRightValue == 0) {
-      slideLeft.classList.add("d-none");
-    } else {
-      slideLeft.classList.remove("d-none");
+    if (slideLeft) {
+      if (marginRightValue == 0) {
+        slideLeft.classList.add("d-none");
+      } else {
+        slideLeft.classList.remove("d-none");
+      }
     }
   }
-  if (marginLeftValue != 0 || marginRightValue != 0) {
+  if (slideLeft && (marginLeftValue != 0 || marginRightValue != 0)) {
     slideLeft.classList.remove("d-none");
   }
 }

@@ -13,6 +13,7 @@
             margin: 0;
             font-size: 28px;
             font-weight: 600;
+            color: white;
         }
         .page-header-section p {
             margin: 8px 0 0 0;
@@ -131,6 +132,7 @@
             }
             .page-header-section h1 {
                 font-size: 18px;
+                color: white;
             }
             .page-header-section p {
                 font-size: 12px;
