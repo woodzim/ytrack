@@ -868,6 +868,11 @@ function switcherArrowFn() {
 
   checkHoriMenu();
 
+  // Only add event listeners if elements exist
+  if (!slideLeft || !slideRight) {
+    return;
+  }
+
   slideLeft.addEventListener("click", () => {
     let menuNav = document.querySelector(".main-menu");
     let mainContainer1 = document.querySelector(".main-sidebar");
@@ -1006,6 +1011,12 @@ export function checkHoriMenu() {
   let mainContainer1 = document.querySelector(".main-sidebar");
   let slideLeft = document.querySelector(".slide-left");
   let slideRight = document.querySelector(".slide-right");
+  
+  // Return early if essential elements don't exist
+  if (!menuNav || !mainContainer1) {
+    return;
+  }
+  
   let marginLeftValue = Math.ceil(
     Number(window.getComputedStyle(menuNav).marginLeft.split("px")[0])
   );
@@ -1014,14 +1025,16 @@ export function checkHoriMenu() {
   );
   let check = menuNav.scrollWidth - mainContainer1.offsetWidth;
   // Show/Hide the arrows
-  if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
-    slideRight.classList.remove("d-none");
-    slideLeft.classList.add("d-none");
-  } else {
-    slideRight.classList.add("d-none");
-    slideLeft.classList.add("d-none");
-    menuNav.style.marginLeft = "0px";
-    menuNav.style.marginRight = "0px";
+  if (slideRight && slideLeft) {
+    if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
+      slideRight.classList.remove("d-none");
+      slideLeft.classList.add("d-none");
+    } else {
+      slideRight.classList.add("d-none");
+      slideLeft.classList.add("d-none");
+      menuNav.style.marginLeft = "0px";
+      menuNav.style.marginRight = "0px";
+    }
   }
   if (
     document.querySelector("html").getAttribute("data-nav-layout") ===
@@ -1148,31 +1161,35 @@ export function checkHoriMenu() {
     if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
       if (Math.abs(check) < Math.abs(marginLeftValue)) {
         menuNav.style.marginLeft = -check + "px";
-        slideLeft.classList.remove("d-none");
-        slideRight.classList.add("d-none");
+        if (slideLeft) slideLeft.classList.remove("d-none");
+        if (slideRight) slideRight.classList.add("d-none");
       }
     }
-    if (marginLeftValue == 0) {
-      slideLeft.classList.add("d-none");
-    } else {
-      slideLeft.classList.remove("d-none");
+    if (slideLeft) {
+      if (marginLeftValue == 0) {
+        slideLeft.classList.add("d-none");
+      } else {
+        slideLeft.classList.remove("d-none");
+      }
     }
   } else {
     // RTL check the width and adjust the menu in screen
     if (menuNav.scrollWidth > mainContainer1.offsetWidth) {
       if (Math.abs(check) < Math.abs(marginRightValue)) {
         menuNav.style.marginRight = -check + "px";
-        slideLeft.classList.remove("d-none");
-        slideRight.classList.add("d-none");
+        if (slideLeft) slideLeft.classList.remove("d-none");
+        if (slideRight) slideRight.classList.add("d-none");
       }
     }
-    if (marginRightValue == 0) {
-      slideLeft.classList.add("d-none");
-    } else {
-      slideLeft.classList.remove("d-none");
+    if (slideLeft) {
+      if (marginRightValue == 0) {
+        slideLeft.classList.add("d-none");
+      } else {
+        slideLeft.classList.remove("d-none");
+      }
     }
   }
-  if (marginLeftValue != 0 || marginRightValue != 0) {
+  if (slideLeft && (marginLeftValue != 0 || marginRightValue != 0)) {
     slideLeft.classList.remove("d-none");
   }
 }
