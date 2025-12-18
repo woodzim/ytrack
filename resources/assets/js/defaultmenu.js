@@ -795,22 +795,40 @@ export function iconHoverFn() {
   clearNavDropdown();
 }
 export function setNavActive() {
-  let currentPath = window.location.pathname.split("/")[0];
-
-  currentPath = location.pathname == "/" ? "index" : location.pathname.substring(1);
-  currentPath = currentPath.substring(currentPath.lastIndexOf("/") + 1);
+  let currentPath = location.pathname;
+  
+  // Normalisasi path (hapus trailing slash kecuali root)
+  if (currentPath !== '/' && currentPath.endsWith('/')) {
+    currentPath = currentPath.slice(0, -1);
+  }
+  
   let sidemenuItems = document.querySelectorAll(".side-menu__item");
+  
   sidemenuItems.forEach((e) => {
-    if (currentPath === "/") {
-      currentPath = "index";
+    let itemHref = e.getAttribute('href');
+    
+    // Skip jika href adalah javascript:void(0) atau #
+    if (!itemHref || itemHref.startsWith('javascript:') || itemHref.startsWith('#')) {
+      return;
     }
-
-    if (e.getAttribute('href') === window.location.href) {
+    
+    // Ekstrak path dari href (hapus domain jika ada)
+    let itemPath = new URL(itemHref, window.location.origin).pathname;
+    if (itemPath !== '/' && itemPath.endsWith('/')) {
+      itemPath = itemPath.slice(0, -1);
+    }
+    
+    // Check jika current path cocok dengan item path (exact match atau path dimulai dengan item path)
+    let isActive = itemPath === currentPath || (currentPath.startsWith(itemPath + '/') && itemPath !== '/');
+    
+    if (isActive) {
       e.classList.add('active');
       e.parentElement.classList.add('active');
       e.parentElement.classList.add('open');
+      
       let parent = e.closest('ul');
       let hasParent = parent;
+      
       if(hasParent.previousElementSibling){
         while (hasParent) {
             hasParent.previousElementSibling.classList.add('active');

@@ -250,7 +250,7 @@
                                         <th style="width: 15%;">Alat</th>
                                         <th style="width: 15%;">Status</th>
                                         <th style="width: 15%;">Jumlah Track</th>
-                                        <th style="width: 20%;">Diperbarui</th>
+                                        <th style="width: 20%;">Waktu Track Terakhir</th>
                                         <th style="width: 15%;" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -274,8 +274,12 @@
                                             <td data-label="Jumlah Track">
                                                 <small class="text-muted">{{ $item->riwayatPerjalanan->count() }}</small>
                                             </td>
-                                            <td data-label="Diperbarui">
-                                                <small class="text-muted">{{ $item->updated_at->translatedFormat('d M Y H:i') }}</small>
+                                            <td data-label="Tanggal Track">
+                                                @if ($item->riwayatPerjalanan->isEmpty())
+                                                    <small class="text-muted">Belum ada track</small>
+                                                @else
+                                                    <small class="text-muted">{{ $item->riwayatPerjalanan()->max('created_at') }}</small>
+                                                @endif
                                             </td>
                                             <td data-label="Aksi" class="table-action-btns text-end text-md-start">
                                                 <div class="mb-2">
