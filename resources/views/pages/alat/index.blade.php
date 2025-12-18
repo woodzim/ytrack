@@ -13,6 +13,7 @@
             margin: 0;
             font-size: 28px;
             font-weight: 600;
+            color: white;
         }
         .page-header-section p {
             margin: 8px 0 0 0;
@@ -97,6 +98,7 @@
             }
             .page-header-section h1 {
                 font-size: 22px;
+                color: white;
             }
             .page-header-section > div:last-child {
                 width: 100%;
@@ -124,6 +126,7 @@
             }
             .page-header-section h1 {
                 font-size: 18px;
+                color: white;
             }
             .page-header-section p {
                 font-size: 12px;
@@ -251,6 +254,7 @@
             }
             .page-header-section h1 {
                 font-size: 16px;
+                color: white;
             }
             .page-header-section p {
                 font-size: 11px;
@@ -381,9 +385,9 @@
                                             </td>
                                             <td data-label="Aktif">
                                                 @if($item->sesiAlat()->where('aktif', true)->exists())
-                                                    <span class="badge" style="background-color: #10b981; color: white;">Aktif</span>
+                                                    <span class="badge" style="background-color: #10b981; color: white;">Perangkat sedang digunakan</span>
                                                 @else
-                                                    <span class="badge" style="background-color: #6b7280; color: white;">Tidak Aktif</span>
+                                                    <span class="badge" style="background-color: #6b7280; color: white;">Perangkat sedang tidak digunakan</span>
                                                 @endif
                                             </td>
                                             <td data-label="Aksi" class="table-action-btns text-center">

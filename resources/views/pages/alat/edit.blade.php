@@ -161,7 +161,7 @@
                         <div class="info-value">{{ $alat->created_at->translatedFormat('d F Y H:i') }}</div>
                     </div>
                     <div class="info-row">
-                        <div class="info-label">Terakhir diubah</div>
+                        <div class="info-label">Diperbarui pada</div>
                         <div class="info-value">{{ $alat->updated_at->translatedFormat('d F Y H:i') }}</div>
                     </div>
                 </div>

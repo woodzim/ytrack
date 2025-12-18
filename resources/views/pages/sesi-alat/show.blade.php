@@ -18,6 +18,7 @@
             margin: 0;
             font-size: 28px;
             font-weight: 600;
+            color: white;
         }
 
         .page-header-section p {
@@ -274,6 +275,7 @@
             .page-header-section h1 {
                 font-size: 18px;
                 margin-bottom: 8px;
+                color: white;
             }
 
             .page-header-section p {
