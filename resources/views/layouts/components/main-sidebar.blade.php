@@ -134,6 +134,19 @@
                                 </li>
                             </ul>
                         </li>
+                        <li class="slide">
+                            <a href="{{ route('tracking-tidak-lengkap.index') }}" class="side-menu__item">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="side-menu-doublemenu__icon"
+                                    viewBox="0 0 256 256">
+                                    <rect width="256" height="256" fill="none" />
+                                    <circle cx="128" cy="128" r="96" opacity="0.2" />
+                                    <circle cx="128" cy="128" r="96" fill="none" stroke="currentColor"
+                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
+                                    <polyline points="128 72 128 128 172 156" fill="none" stroke="currentColor"
+                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
+                                </svg>
+                                Tracking Tidak Lengkap</a>
+                        </li>
                     </ul>
                 </li>
                 <!-- End::slide -->

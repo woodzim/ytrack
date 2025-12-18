@@ -9,6 +9,7 @@ use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\AlatController;
 use App\Http\Controllers\SesiAlatController;
 use App\Http\Controllers\RiwayatPerjalananController;
+use App\Http\Controllers\TrackingTidakLengkapController;
 
 Route::redirect('/', 'dashboard');
 
@@ -40,5 +41,10 @@ Route::middleware(['auth'])->group(function () {
     /******** Riwayat Perjalanan (Orphan Data) ********/
     Route::resource('riwayat-perjalanan', RiwayatPerjalananController::class, [
         'only' => ['index', 'show', 'edit', 'update', 'destroy']
+    ]);
+
+    /******** Tracking Tidak Lengkap ********/
+    Route::resource('tracking-tidak-lengkap', TrackingTidakLengkapController::class, [
+        'only' => ['index', 'edit', 'update', 'destroy']
     ]);
 });
