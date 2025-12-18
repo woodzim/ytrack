@@ -29,6 +29,35 @@
                 <li class="slide__category"><span class="category-name">Main</span></li>
                 <!-- End::slide__category -->
 
+                <!-- Start::slide Dashboard -->
+                <li class="slide">
+                    <a href="{{ route('dashboard') }}" class="side-menu__item">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 256 256">
+                            <rect width="256" height="256" fill="none" />
+                            <path d="M104,224H32a8,8,0,0,1-8-8V120a8,8,0,0,1,8-8h72a8,8,0,0,1,8,8v96A8,8,0,0,1,104,224Z"
+                                opacity="0.2" />
+                            <path
+                                d="M224,224h-72a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h72a8,8,0,0,1,8,8V216A8,8,0,0,1,224,224Z"
+                                opacity="0.2" />
+                            <path d="M104,224H32a8,8,0,0,1-8-8V120a8,8,0,0,1,8-8h72a8,8,0,0,1,8,8v96A8,8,0,0,1,104,224Z"
+                                fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="16" />
+                            <path
+                                d="M224,224h-72a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h72a8,8,0,0,1,8,8V216A8,8,0,0,1,224,224Z"
+                                fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="16" />
+                            <line x1="128" y1="80" x2="168" y2="80" fill="none"
+                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="16" />
+                            <line x1="128" y1="128" x2="168" y2="128" fill="none"
+                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                stroke-width="16" />
+                        </svg>
+                        <span class="side-menu__label">Dashboard</span>
+                    </a>
+                </li>
+                <!-- End::slide Dashboard -->
+
                 <!-- Start::slide -->
                 <li class="slide has-sub">
                     <a href="javascript:void(0);" class="side-menu__item">
@@ -59,18 +88,28 @@
                             <a href="javascript:void(0)">Menu</a>
                         </li>
                         <li class="slide">
-                            <a href="{{ route('sesi-alat.index') }}" class="side-menu__item">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="side-menu-doublemenu__icon"
-                                    viewBox="0 0 256 256">
-                                    <rect width="256" height="256" fill="none" />
-                                    <path d="M33.6,145.5A96,96,0,0,1,96,37.5v72Z" opacity="0.2" />
-                                    <path d="M33.6,145.5A96,96,0,0,1,96,37.5v72Z" fill="none" stroke="currentColor"
-                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
-                                    <path d="M128,128.42V32A96,96,0,1,1,45.22,176.64Z" fill="none"
-                                        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="16" />
-                                </svg>
-                                Sesi Alat</a>
+                            <a href="{{ route('sesi-alat.index') }}" class="side-menu__item d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="side-menu-doublemenu__icon"
+                                        viewBox="0 0 256 256">
+                                        <rect width="256" height="256" fill="none" />
+                                        <path d="M33.6,145.5A96,96,0,0,1,96,37.5v72Z" opacity="0.2" />
+                                        <path d="M33.6,145.5A96,96,0,0,1,96,37.5v72Z" fill="none"
+                                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="16" />
+                                        <path d="M128,128.42V32A96,96,0,1,1,45.22,176.64Z" fill="none"
+                                            stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                            stroke-width="16" />
+                                    </svg>
+                                    Sesi Alat
+                                </div>
+                                @php
+                                    $activeSesiAlatCount = \App\Models\SesiAlat::where('aktif', true)->count();
+                                @endphp
+                                @if ($activeSesiAlatCount > 0)
+                                    <span class="badge bg-white text-primary ms-2">{{ $activeSesiAlatCount }}</span>
+                                @endif
+                            </a>
                         </li>
                         <li class="slide has-sub">
                             <a href="javascript:void(0);" class="side-menu__item">
