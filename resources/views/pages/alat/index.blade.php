@@ -21,7 +21,7 @@
         }
         .table-wrapper {
             border-radius: 8px;
-            overflow: hidden;
+            overflow: visible;
         }
         .table-action-btns .btn-sm {
             padding: 5px 8px;
@@ -50,6 +50,41 @@
         .pagination .page-item.disabled .page-link {
             color: #ccc;
             cursor: not-allowed;
+        }
+        
+        /* Horizontal Scrollable Table */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+        }
+        .table-responsive .table {
+            min-width: 100%;
+            white-space: nowrap;
+        }
+        .table-responsive .table thead th,
+        .table-responsive .table tbody td {
+            white-space: nowrap;
+            padding: 12px 24px;
+        }
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Ensure card-body doesn't hide overflow */
+        .card-body {
+            overflow: visible;
         }
         
         /* Tablet (768px - 991px) */
@@ -326,6 +361,7 @@
                                     <tr>
                                         <th style="width: 30%;">ID Alat</th>
                                         <th style="width: 50%;">Dibuat</th>
+                                        <th style="width: 50%;">Aktif</th>
                                         <th style="width: 20%;" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -333,10 +369,22 @@
                                     @foreach($alat as $item)
                                         <tr>
                                             <td data-label="ID Alat">
-                                                <span class="badge bg-light text-dark">{{ $item->id }}</span>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <span class="badge bg-light text-dark">#{{ $item->id }}</span>
+                                                    <a href="{{ route('sesi-alat.index', ['search' => $item->id]) }}" class="btn btn-sm btn-outline-primary btn-wave" title="Cari Sesi">
+                                                        <i class="ri-search-line"></i>
+                                                    </a>
+                                                </div>
                                             </td>
                                             <td data-label="Dibuat">
                                                 <small class="text-muted">{{ $item->created_at->translatedFormat('d M Y H:i') }}</small>
+                                            </td>
+                                            <td data-label="Aktif">
+                                                @if($item->sesiAlat()->where('aktif', true)->exists())
+                                                    <span class="badge" style="background-color: #10b981; color: white;">Aktif</span>
+                                                @else
+                                                    <span class="badge" style="background-color: #6b7280; color: white;">Tidak Aktif</span>
+                                                @endif
                                             </td>
                                             <td data-label="Aksi" class="table-action-btns text-center">
                                                 <a href="{{ route('alat.show', $item->id) }}" class="btn btn-sm btn-info btn-wave" title="Lihat">

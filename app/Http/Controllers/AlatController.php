@@ -14,7 +14,7 @@ class AlatController extends Controller
     {
         $search = $request->input('search', '');
         
-        $alat = Alat::query();
+        $alat = Alat::with('sesiAlat');
         
         if ($search) {
             $alat->where('id', 'like', '%' . $search . '%');
