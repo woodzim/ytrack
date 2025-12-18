@@ -10,9 +10,7 @@ use App\Http\Controllers\AlatController;
 use App\Http\Controllers\SesiAlatController;
 use App\Http\Controllers\RiwayatPerjalananController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::redirect('/', 'dashboard');
 
 /******** Authentication ********/
 Route::get('login', [LoginController::class, 'showLogin'])->name('login');
@@ -22,7 +20,6 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     /******** Dashboards ********/
     Route::get('dashboard', [DashboardsController::class, 'index'])->name('dashboard');
-    Route::redirect('/', 'dashboard');
 
     /******** Perusahaan ********/
     Route::resource('perusahaan', PerusahaanController::class);
