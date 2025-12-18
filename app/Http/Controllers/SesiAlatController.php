@@ -18,7 +18,7 @@ class SesiAlatController extends Controller
         $search = $request->input('search', '');
         $filter_status = $request->input('status', '');
 
-        $sesiAlat = SesiAlat::with('alat', 'kendaraan', 'perusahaan');
+        $sesiAlat = SesiAlat::with('alat', 'kendaraan', 'perusahaan', 'riwayatPerjalanan');
 
         if ($search) {
             $sesiAlat->whereHas('alat', function ($q) use ($search) {
@@ -32,7 +32,11 @@ class SesiAlatController extends Controller
             $sesiAlat->where('aktif', (bool)$filter_status);
         }
 
-        $sesiAlat = $sesiAlat->paginate(10)->appends(request()->query());
+        $sesiAlat = $sesiAlat
+            ->orderBy('aktif', 'desc')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10)
+            ->appends(request()->query());
 
         return view('pages.sesi-alat.index', compact('sesiAlat', 'search', 'filter_status'));
     }
@@ -90,10 +94,10 @@ class SesiAlatController extends Controller
     public function show(SesiAlat $sesiAlat)
     {
         $sesiAlat->load('alat', 'kendaraan', 'perusahaan');
-        
+
         // Load riwayat perjalanan with pagination
         $riwayatPerjalanan = $sesiAlat->riwayatPerjalanan()->orderBy('created_at')->get();
-        
+
         return view('pages.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));
     }
 

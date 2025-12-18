@@ -7,6 +7,7 @@ use App\Models\RiwayatPerjalanan;
 use App\Models\SesiAlat;
 use App\Models\Alat;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class GpsTrackingController extends Controller
 {
@@ -46,17 +47,34 @@ class GpsTrackingController extends Controller
                 $idPerusahaan = $activeSesiAlat->id_perusahaan;
                 $idKendaraan = $activeSesiAlat->id_kendaraan;
             } else {
+                Log::warning('Tidak ada sesi alat aktif untuk id_alat: ' . $validated['id_alat'], [
+                    'id_alat' => $validated['id_alat'],
+                    'lat' => $validated['lat'] ?? null,
+                    'long' => $validated['long'] ?? null,
+                    'alt' => $validated['alt'] ?? null,
+                    'sat' => $validated['sat'] ?? null,
+                    'speed' => $validated['speed'] ?? null,
+                    'datetime' => $validated['datetime'] ?? null
+                ]);
+
                 // Step 2: Check if alat exists
                 $alat = Alat::find($validated['id_alat']);
 
                 if ($alat) {
                     // If alat exists, set id_alat but leave others null
                     $idAlat = $alat->id;
+
                     // id_sesi_alat, id_perusahaan, id_kendaraan remain null
                 } else {
-                    // If alat doesn't exist, all remain null
-                    // But still allow creating the record for tracking purposes
-                    // $idAlat = $validated['id_alat']; // Keep the alat ID from request
+                    Log::warning('Alat tidak ditemukan untuk id_alat: ' . $validated['id_alat'], [
+                        'id_alat' => $validated['id_alat'],
+                        'lat' => $validated['lat'] ?? null,
+                        'long' => $validated['long'] ?? null,
+                        'alt' => $validated['alt'] ?? null,
+                        'sat' => $validated['sat'] ?? null,
+                        'speed' => $validated['speed'] ?? null,
+                        'datetime' => $validated['datetime'] ?? null
+                    ]);
                 }
             }
 
@@ -66,8 +84,8 @@ class GpsTrackingController extends Controller
                 'id_perusahaan' => $idPerusahaan,
                 'id_kendaraan' => $idKendaraan,
                 'id_alat' => $idAlat,
-                'lat' => $validated['lat'],
-                'long' => $validated['long'],
+                'lat' => $validated['lat'] ?? null,
+                'long' => $validated['long'] ?? null,
                 'alt' => $validated['alt'] ?? null,
                 'sat' => $validated['sat'] ?? null,
                 'speed' => $validated['speed'] ?? null,
