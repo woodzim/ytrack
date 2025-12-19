@@ -6,6 +6,8 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+use function Symfony\Component\String\u;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -15,9 +17,19 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        if (User::where('email', 'admin@dumeg.id')->doesntExist()) {
+            User::factory()->create([
+                'name' => 'Admin',
+                'email' => 'admin@dumeg.id',
+                'password' => bcrypt('admindmg123'),
+            ]);
+        }
+
+        if  (User::where('email', 'test@example.com')->doesntExist()) {
+            User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+            ]);
+        }
     }
 }
