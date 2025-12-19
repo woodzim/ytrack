@@ -5,9 +5,6 @@
     $bodyClass = 'authentication-background';
 @endphp
 
-@section('styles')
-@endsection
-
 @section('content')
     <div class="authentication-basic-background">
         <img src="{{ asset('build/assets/images/media/backgrounds/9.png') }}" alt="">
@@ -19,15 +16,14 @@
                 <div class="card custom-card border-0 my-4">
                     <div class="card-body p-5">
                         <div class="mb-4">
-                            <a href="{{ url('index') }}">
-                                <img src="{{ asset('build/assets/images/brand-logos/toggle-logo.png') }}" alt="logo"
-                                    class="desktop-dark">
+                            <a href="{{ route('login') }}">
+                                <img src="{{ asset('images/long-logo.png') }}" alt="logo"
+                                    class="desktop-dark mt-3 mt-md-0">
                             </a>
                         </div>
                         <div>
                             <h4 class="mb-1 fw-semibold">
-                              <span>Hai, Selamat Datang</span>
-                              <br>di Y-Track!
+                              <span>Hai, Selamat Datang..</span>
                             </h4>
                             <p class="mb-4 text-muted fw-normal">Silakan masukkan kredensial Anda</p>
                         </div>

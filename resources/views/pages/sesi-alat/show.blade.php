@@ -2,331 +2,6 @@
 
 @section('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-    <style>
-        .page-header-section {
-            background: rgb(152, 95, 253);
-            border-radius: 8px;
-            padding: 24px;
-            color: white;
-            margin-bottom: 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-        }
-
-        .page-header-section h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 600;
-            color: white;
-        }
-
-        .page-header-section p {
-            margin: 8px 0 0 0;
-            opacity: 0.9;
-            font-size: 14px;
-        }
-
-        .status-badge-large {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 13px;
-            display: inline-block;
-        }
-
-        .status-badge-large.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
-
-        .detail-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-        }
-
-        .detail-card {
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .detail-card .card-header {
-            background: #f0f3ff;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 16px 20px;
-        }
-
-        .detail-card .card-header h5 {
-            margin: 0;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .detail-card .card-body {
-            padding: 24px;
-        }
-
-        .detail-group {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .detail-group:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .detail-label {
-            font-size: 12px;
-            color: #999;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-
-        .detail-value {
-            font-size: 16px;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .detail-value.secondary {
-            font-size: 13px;
-            font-weight: 400;
-            color: #666;
-        }
-
-        .badge-alat {
-            background-color: rgb(152, 95, 253);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .side-card {
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .side-card .card-header {
-            background: #f0f3ff;
-            border-bottom: 1px solid #e0e0e0;
-            padding: 16px 20px;
-        }
-
-        .side-card .card-header h5 {
-            margin: 0;
-            color: #333;
-            font-weight: 600;
-        }
-
-        .side-card .card-body {
-            padding: 16px;
-        }
-
-        .action-item {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .action-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .action-item button,
-        .action-item a {
-            flex: 1;
-        }
-
-        .btn-toggle-large {
-            padding: 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            border: none;
-            width: 100%;
-            color: white;
-            margin-bottom: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-toggle-large.active {
-            background: #10b981;
-        }
-
-        .btn-toggle-large.inactive {
-            background: #6b7280;
-        }
-
-        .btn-toggle-large:hover {
-            opacity: 0.9;
-        }
-
-        .btn-sm {
-            padding: 8px 12px;
-            font-size: 12px;
-            border-radius: 4px;
-        }
-
-        .timeline {
-            display: flex;
-            gap: 16px;
-        }
-
-        .timeline-item {
-            flex: 1;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 3px solid rgb(152, 95, 253);
-        }
-
-        .timeline-item strong {
-            display: block;
-            font-size: 12px;
-            color: #999;
-            margin-bottom: 4px;
-        }
-
-        .timeline-item span {
-            display: block;
-            font-size: 13px;
-            color: #333;
-        }
-
-        #map-container {
-            height: 400px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #e0e0e0;
-            overflow: hidden;
-        }
-
-        .leaflet-container {
-            border-radius: 8px;
-        }
-
-        .map-legend {
-            background: white;
-            padding: 12px 16px;
-            border-radius: 6px;
-            font-size: 12px;
-            color: #666;
-            margin-top: 12px;
-        }
-
-        .map-legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .map-legend-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .map-legend-item i {
-            margin-right: 8px;
-            color: #667eea;
-        }
-
-        .table {
-            margin-bottom: 0;
-        }
-
-        .table tbody tr {
-            border-bottom: 1px solid #f0f0f0;
-            transition: background-color 0.2s;
-        }
-
-        .table tbody tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .table thead th {
-            border-bottom: 2px solid #e0e0e0 !important;
-            padding: 12px 8px !important;
-        }
-
-        .table tbody td {
-            padding: 10px 8px !important;
-            vertical-align: middle;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 991px) {
-            .detail-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 767px) {
-            .page-header-section {
-                flex-direction: column;
-                padding: 12px;
-                margin-bottom: 16px;
-            }
-
-            .page-header-section h1 {
-                font-size: 18px;
-                margin-bottom: 8px;
-                color: white;
-            }
-
-            .page-header-section p {
-                font-size: 12px;
-            }
-
-            .status-badge-large {
-                margin-top: 8px;
-            }
-
-            .detail-card .card-body {
-                padding: 16px;
-            }
-
-            .side-card .card-body {
-                padding: 12px;
-            }
-
-            .detail-group {
-                margin-bottom: 16px;
-                padding-bottom: 16px;
-            }
-
-            .detail-label {
-                font-size: 11px;
-            }
-
-            .detail-value {
-                font-size: 14px;
-            }
-
-            .detail-value.secondary {
-                font-size: 12px;
-            }
-
-            .timeline {
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .action-item {
-                gap: 8px;
-            }
-
-            .action-item button,
-            .action-item a {
-                padding: 8px !important;
-                font-size: 11px !important;
-            }
-        }
-    </style>
 @endsection
 
 @section('content')
@@ -337,7 +12,7 @@
             <p>Informasi lengkap sesi GPS tracking</p>
         </div>
         <div>
-            <span class="status-badge-large"
+            <span class="status-badge-large mt-3"
                 style="background-color: {{ $sesiAlat->aktif ? '#10b981' : '#6b7280' }}; color: white;">
                 <i class="ri-{{ $sesiAlat->aktif ? 'check-double' : 'close' }}-line me-1"></i>
                 {{ $sesiAlat->aktif ? 'AKTIF' : 'NONAKTIF' }}
@@ -358,41 +33,34 @@
                     <div class="card-body">
                         <!-- ID Sesi -->
                         <div class="detail-group">
-                            <div class="detail-label">ID Sesi</div>
+                            <div class="detail-label" style="margin-bottom: 10px;">ID Sesi</div>
                             <div class="detail-value">{{ $sesiAlat->id }}</div>
                         </div>
 
                         <!-- Alat -->
                         <div class="detail-group">
-                            <div class="detail-label">Alat GPS</div>
+                            <div class="detail-label" style="margin-bottom: 10px;">Alat GPS</div>
                             <div class="detail-value">
-                                <span class="badge-alat">{{ $sesiAlat->alat->id }}</span>
+                                <span class="badge-alat">{{ $sesiAlat->alat ? $sesiAlat->alat->id : '-' }}</span>
                             </div>
                         </div>
 
                         <!-- Kendaraan -->
                         <div class="detail-group">
-                            <div class="detail-label">Kendaraan</div>
-                            <div class="detail-value">{{ $sesiAlat->kendaraan->nama }}</div>
-                            <div class="detail-value secondary">
-                                <small class="text-muted">
-                                    @if ($sesiAlat->kendaraan->perusahaan)
-                                        <i class="ri-building-line me-1"></i>{{ $sesiAlat->kendaraan->perusahaan->nama }}
-                                    @endif
-                                </small>
-                            </div>
+                            <div class="detail-label" style="margin-bottom: 10px;">Kendaraan</div>
+                            <div class="detail-value">{{  $sesiAlat->kendaraan ? $sesiAlat->kendaraan->nama : '-' }}</div>
                         </div>
 
                         <!-- Perusahaan -->
                         <div class="detail-group">
-                            <div class="detail-label">Perusahaan</div>
+                            <div class="detail-label" style="margin-bottom: 10px;">Perusahaan</div>
                             <div class="detail-value">
-                                {{ $sesiAlat->perusahaan ? $sesiAlat->perusahaan->nama : 'Dari Kendaraan' }}
+                                {{ $sesiAlat->perusahaan ? $sesiAlat->perusahaan->nama : '-' }}
                             </div>
                             @if ($sesiAlat->perusahaan)
                                 <div class="detail-value secondary">
                                     <small class="text-muted">
-                                        <i class="ri-map-pin-line me-1"></i>{{ $sesiAlat->perusahaan->alamat }}
+                                        <i class="ri-map-pin-line me-1"></i>{{ $sesiAlat->perusahaan ? $sesiAlat->perusahaan->alamat : '-' }}
                                     </small>
                                 </div>
                             @endif
@@ -400,7 +68,7 @@
 
                         <!-- Timeline -->
                         <div class="detail-group">
-                            <div class="detail-label">Timeline</div>
+                            <div class="detail-label" style="margin-bottom: 10px;">Timeline</div>
                             <div class="timeline">
                                 <div class="timeline-item">
                                     <strong>Dibuat</strong>
@@ -444,7 +112,7 @@
                             onsubmit="return confirm('Hapus sesi ini secara permanen? Tindakan ini tidak dapat dibatalkan.');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm w-100 mb-2">
+                            <button type="submit" class="btn btn-primary btn-sm w-100 mb-2">
                                 <i class="ri-delete-bin-line me-2"></i>Hapus Sesi
                             </button>
                         </form>
@@ -514,7 +182,7 @@
                                             <td style="font-size: 12px; font-weight: 600; text-align: center;">
                                                 <span
                                                     style="
-                                                    background-color: #667eea;
+                                                    background-color: #be1e2d;
                                                     color: white;
                                                     padding: 4px 8px;
                                                     border: 2px solid white;
@@ -540,8 +208,7 @@
                                             </td>
                                             <td style="font-size: 12px;">
                                                 @if ($riwayat->sat)
-                                                    <span class="badge"
-                                                        style="background-color: rgb(152, 95, 253); color: white;">{{ $riwayat->sat }}</span>
+                                                    <span class="badge bg-primary">{{ $riwayat->sat }}</span>
                                                 @else
                                                     <span class="text-muted">-</span>
                                                 @endif
@@ -626,7 +293,7 @@
                 function createNumberedIcon(number) {
                     return L.divIcon({
                         html: `<div style="
-                            background-color: #667eea;
+                            background-color: #be1e2d;
                             color: white;
                             border-radius: 50%;
                             width: 32px;
@@ -662,7 +329,7 @@
                 // Draw route line - lebih tebal agar terlihat jelas
                 const latlngs = coordinates.map(coord => [coord.lat, coord.lng]);
                 L.polyline(latlngs, {
-                    color: '#667eea',
+                    color: '#be1e2d',
                     weight: 3,
                     opacity: 0.8,
                     dashArray: '5, 5'

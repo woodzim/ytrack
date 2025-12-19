@@ -1,20 +1,5 @@
 @extends('layouts.master')
 
-@section('styles')
-    <style>
-        .form-card {
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .form-group-wrapper {
-            margin-bottom: 20px;
-        }
-        .page-title-section {
-            margin-bottom: 30px;
-        }
-    </style>
-@endsection
-
 @section('content')
     <!-- Start::page-header -->
     <div class="page-title-section">

@@ -15,7 +15,7 @@
         <title> Y-TRACK </title>
         
         <!-- Favicon -->
-        <link rel="icon" href="{{asset('build/assets/images/brand-logos/favicon.ico')}}" type="image/x-icon">
+        <link rel="icon" href="{{asset('images/square-logo.ico')}}" type="image/x-icon">
     
         <!-- Main Theme Js -->
         <script src="{{asset('build/assets/main.js')}}"></script>
