@@ -9,15 +9,11 @@
             <!-- Start::header-element -->
             <div class="header-element">
                 <div class="horizontal-logo">
-                    <a href="{{ url('index') }}" class="header-logo">
-                        <img src="{{ asset('build/assets/images/brand-logos/desktop-logo.png') }}" alt="logo"
-                            class="desktop-logo">
-                        <img src="{{ asset('build/assets/images/brand-logos/toggle-logo.png') }}" alt="logo"
-                            class="toggle-logo">
-                        <img src="{{ asset('build/assets/images/brand-logos/desktop-dark.png') }}" alt="logo"
-                            class="desktop-dark">
-                        <img src="{{ asset('build/assets/images/brand-logos/toggle-dark.png') }}" alt="logo"
-                            class="toggle-dark">
+                    <a href="{{ url('dashboard') }}" class="header-logo">
+                        <img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-logo">
+                        <img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-logo">
+                        <img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-dark">
+                        <img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-dark">
                     </a>
                 </div>
             </div>

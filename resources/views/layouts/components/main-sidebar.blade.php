@@ -2,13 +2,11 @@
 
     <!-- Start::main-sidebar-header -->
     <div class="main-sidebar-header">
-        <a href="{{ url('index') }}" class="header-logo">
-            <img src="{{ asset('build/assets/images/brand-logos/desktop-logo.png') }}" alt="logo" class="desktop-logo">
-            <img src="{{ asset('build/assets/images/brand-logos/toggle-dark.png') }}" alt="logo" class="toggle-dark">
-            <img src="{{ asset('build/assets/images/brand-logos/desktop-dark.png') }}" alt="logo"
-                class="desktop-dark">
-            <img src="{{ asset('build/assets/images/brand-logos/toggle-logo.png') }}" alt="logo"
-                class="toggle-logo">
+        <a href="{{ route('dashboard') }}" class="header-logo">
+            <img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-logo">
+            <img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-logo">
+            <img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-dark">
+            <img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-dark">
         </a>
     </div>
     <!-- End::main-sidebar-header -->
@@ -19,14 +17,13 @@
         <!-- Start::nav -->
         <nav class="main-menu-container nav nav-pills flex-column sub-open">
             <div class="slide-left" id="slide-left">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24"
-                    viewBox="0 0 24 24">
-                    <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
-                </svg>
+                <img src="{{ asset('images/square-logo.png') }}">
             </div>
             <ul class="main-menu">
                 <!-- Start::slide__category -->
-                <li class="slide__category"><span class="category-name">Main</span></li>
+                <div class="text-center mb-4 mt-3 d-block d-md-none">
+                    <img src="{{ asset('images/long-logo.png') }}" width="160" height="35" alt="logo" class="desktop-logo">
+                </div>
                 <!-- End::slide__category -->
 
                 <!-- Start::slide Dashboard -->
@@ -61,25 +58,7 @@
                 <!-- Start::slide -->
                 <li class="slide has-sub">
                     <a href="javascript:void(0);" class="side-menu__item">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" viewBox="0 0 256 256">
-                            <rect width="256" height="256" fill="none" />
-                            <path d="M133.66,34.34a8,8,0,0,0-11.32,0L40,116.69V216h64V152h48v64h64V116.69Z"
-                                opacity="0.2" />
-                            <line x1="16" y1="216" x2="240" y2="216" fill="none"
-                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="16" />
-                            <polyline points="152 216 152 152 104 152 104 216" fill="none" stroke="currentColor"
-                                stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
-                            <line x1="40" y1="116.69" x2="40" y2="216" fill="none"
-                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="16" />
-                            <line x1="216" y1="216" x2="216" y2="116.69" fill="none"
-                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="16" />
-                            <path d="M24,132.69l98.34-98.35a8,8,0,0,1,11.32,0L232,132.69" fill="none"
-                                stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="16" />
-                        </svg>
+                        <i class="ri-dashboard-line ri-2x me-2"></i>
                         <span class="side-menu__label">Menu</span>
                         <i class="ri-arrow-right-s-line side-menu__angle"></i>
                     </a>
@@ -88,7 +67,8 @@
                             <a href="javascript:void(0)">Menu</a>
                         </li>
                         <li class="slide">
-                            <a href="{{ route('sesi-alat.index') }}" class="side-menu__item d-flex align-items-center justify-content-between">
+                            <a href="{{ route('sesi-alat.index') }}"
+                                class="side-menu__item d-flex align-items-center justify-content-between">
                                 <div class="d-flex align-items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="side-menu-doublemenu__icon"
                                         viewBox="0 0 256 256">
@@ -140,8 +120,9 @@
                                     viewBox="0 0 256 256">
                                     <rect width="256" height="256" fill="none" />
                                     <circle cx="128" cy="128" r="96" opacity="0.2" />
-                                    <circle cx="128" cy="128" r="96" fill="none" stroke="currentColor"
-                                        stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
+                                    <circle cx="128" cy="128" r="96" fill="none"
+                                        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                        stroke-width="16" />
                                     <polyline points="128 72 128 128 172 156" fill="none" stroke="currentColor"
                                         stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
                                 </svg>
