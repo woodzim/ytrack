@@ -1,5 +1,9 @@
 @extends('layouts.master')
 
+@section('styles')
+    @vite(['resources/assets/scss/select2.scss', 'resources/assets/scss/select2-bootstrap-theme.scss'])
+@endsection
+
 @section('content')
     <!-- Start::page-header -->
     <div class="page-header-section d-flex align-items-center justify-content-between">
@@ -110,17 +114,44 @@
 @endsection
 
 @section('scripts')
+    @vite(['resources/assets/js/jquery.js', 'resources/assets/js/select2.js'])
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const perusahaanSelect = document.getElementById('id_perusahaan');
             const kendaraanSelect = document.getElementById('id_kendaraan');
+            const alatSelect = document.getElementById('id_alat');
 
-            // Load kendaraan when perusahaan is selected
-            perusahaanSelect.addEventListener('change', function() {
+            // Initialize Select2 on all select elements
+            $(perusahaanSelect).select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                allowClear: true,
+                placeholder: '-- Pilih Perusahaan --'
+            });
+
+            $(kendaraanSelect).select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                allowClear: true,
+                placeholder: '-- Pilih Kendaraan --'
+            });
+
+            $(alatSelect).select2({
+                theme: 'bootstrap-5',
+                width: '100%',
+                allowClear: true,
+                placeholder: '-- Pilih Alat --'
+            });
+
+            // Load kendaraan when perusahaan is selected using Select2 change event
+            $(perusahaanSelect).on('change', function() {
                 const idPerusahaan = this.value;
+                console.log('Perusahaan selected:', idPerusahaan);
 
                 if (!idPerusahaan) {
                     kendaraanSelect.innerHTML = '<option value="">-- Pilih Perusahaan Terlebih Dahulu --</option>';
+                    $(kendaraanSelect).val(null).trigger('change');
                     return;
                 }
 
@@ -128,6 +159,7 @@
                 fetch(`{{ url('/sesi-alat-kendaraan') }}/${idPerusahaan}`)
                     .then(response => response.json())
                     .then(data => {
+                        console.log('Kendaraan data received:', data);
                         kendaraanSelect.innerHTML = '<option value="">-- Pilih Kendaraan --</option>';
                         
                         if (data.length > 0) {
@@ -146,6 +178,8 @@
                         } else {
                             kendaraanSelect.innerHTML = '<option value="">Tidak ada kendaraan untuk perusahaan ini</option>';
                         }
+                        
+                        $(kendaraanSelect).val('{{ old('id_kendaraan', $sesiAlat->id_kendaraan) }}').trigger('change');
                     })
                     .catch(error => {
                         console.error('Error:', error);
@@ -155,7 +189,7 @@
 
             // Trigger change event on page load if perusahaan was already selected
             if (perusahaanSelect.value) {
-                perusahaanSelect.dispatchEvent(new Event('change'));
+                $(perusahaanSelect).trigger('change');
             }
         });
     </script>
