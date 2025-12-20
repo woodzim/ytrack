@@ -64,7 +64,7 @@
                         <li class="slide has-sub">
                             <a href="javascript:void(0);" class="side-menu__item">
                                 {{-- <i class="ri-database-2-fill pe-2 me-2 me-md-0 text-primary"></i> --}}
-                                Data Master<span class="badge bg-primary-transparent ms-2">2</span>
+                                Data Master
                                 <i class="ri-arrow-right-s-line side-menu__angle"></i>
                             </a>
                             <ul class="slide-menu child2">
