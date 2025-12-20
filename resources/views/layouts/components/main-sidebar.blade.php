@@ -77,9 +77,18 @@
                             </ul>
                         </li>
                         <li class="slide">
-                            <a href="{{ route('tracking-tidak-lengkap.index') }}" class="side-menu__item">
-                                {{-- <i class="ri-file-damage-fill pe-2 me-2 me-md-0 text-primary"></i> --}}
-                                Error Tracking</a>
+                            <a href="{{ route('tracking-tidak-lengkap.index') }}" class="side-menu__item d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    {{-- <i class="ri-file-damage-fill pe-2 me-2 me-md-0 text-primary"></i> --}}
+                                    Error Tracking
+                                </div>
+                                @php
+                                    $errorTracking = \App\Models\RiwayatPerjalanan::uncompleted()->count();
+                                @endphp
+                                @if ($errorTracking > 0)
+                                    <span class="badge bg-white text-primary ms-2">{{ $errorTracking }}</span>
+                                @endif
+                            </a>
                         </li>
                     </ul>
                 </li>

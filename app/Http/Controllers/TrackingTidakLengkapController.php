@@ -12,15 +12,10 @@ class TrackingTidakLengkapController extends Controller
      */
     public function index()
     {
-        $incompleteTrackings = RiwayatPerjalanan::where(function ($query) {
-            $query->whereNull('id_sesi_alat')
-                ->orWhereNull('id_alat')
-                ->orWhereNull('id_kendaraan')
-                ->orWhereNull('id_perusahaan');
-        })
-        ->with(['sesiAlat', 'alat', 'kendaraan', 'perusahaan'])
-        ->orderBy('created_at', 'desc')
-        ->paginate(15);
+        $incompleteTrackings = RiwayatPerjalanan::uncompleted()
+            ->with(['sesiAlat', 'alat', 'kendaraan', 'perusahaan'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
 
         return view('pages.tracking-tidak-lengkap.index', [
             'incompleteTrackings' => $incompleteTrackings
