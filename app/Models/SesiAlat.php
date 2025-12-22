@@ -12,6 +12,7 @@ class SesiAlat extends Model
         'id_alat',
         'id_kendaraan',
         'id_perusahaan',
+        'nama',
         'aktif',
     ];
 

@@ -59,7 +59,7 @@
                             </div>
 
                             <!-- Alat Select -->
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label for="id_alat" class="form-label">
                                     Alat <span class="text-required">*</span>
                                 </label>
@@ -74,6 +74,19 @@
                                 @error('id_alat')
                                     <small class="text-danger d-block mt-1">{{ $message }}</small>
                                 @enderror
+                            </div>
+
+                            <!-- Nama Sesi (Optional) -->
+                            <div class="mb-4">
+                                <label for="nama" class="form-label">
+                                    Nama Sesi <span class="text-muted">(Opsional)</span>
+                                </label>
+                                <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror" 
+                                       placeholder="Contoh: Sesi Tracking Koransi" value="{{ old('nama') }}">
+                                @error('nama')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                                <small class="text-muted d-block mt-1">Berikan nama unik untuk membedakan sesi jika diperlukan</small>
                             </div>
 
                             <!-- Form Actions -->

@@ -44,6 +44,12 @@
                         <span class="detail-value">{{ $sesiAlat->id }}</span>
                     </div>
 
+                    <!-- Nama Sesi -->
+                    <div class="detail-group">
+                        <label class="detail-label">Nama Sesi</label>
+                        <span class="detail-value">{{ $sesiAlat->nama ?? '-' }}</span>
+                    </div>
+
                     <!-- Alat -->
                     <div class="detail-group">
                         <label class="detail-label">Alat</label>

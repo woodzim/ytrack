@@ -62,6 +62,7 @@ class SesiAlatController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'nama' => 'nullable|string|max:255',
             'id_alat' => 'required|exists:alat,id',
             'id_kendaraan' => 'required|exists:kendaraan,id',
             'id_perusahaan' => 'required|exists:perusahaan,id',
@@ -122,6 +123,7 @@ class SesiAlatController extends Controller
     public function update(Request $request, SesiAlat $sesiAlat)
     {
         $validated = $request->validate([
+            'nama' => 'nullable|string|max:255',
             'id_alat' => 'required|exists:alat,id',
             'id_kendaraan' => 'required|exists:kendaraan,id',
             'id_perusahaan' => 'required|exists:perusahaan,id',

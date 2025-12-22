@@ -96,6 +96,19 @@
                             </small>
                         </div>
 
+                        <!-- Nama Sesi (Optional) -->
+                        <div class="mb-4">
+                            <label for="nama" class="form-label">
+                                Nama Sesi <span class="text-muted">(Opsional)</span>
+                            </label>
+                            <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror" 
+                                   placeholder="Contoh: Sesi Tracking Koransi" value="{{ old('nama', $sesiAlat->nama) }}">
+                            @error('nama')
+                                <small class="text-danger d-block mt-1">{{ $message }}</small>
+                            @enderror
+                            <small class="text-muted d-block mt-1">Berikan nama unik untuk membedakan sesi jika diperlukan</small>
+                        </div>
+
                         <!-- Form Actions -->
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">

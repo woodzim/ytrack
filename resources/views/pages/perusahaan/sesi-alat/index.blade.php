@@ -55,11 +55,12 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th style="width: 20%;">Kendaraan</th>
-                                        <th style="width: 20%;">Alat</th>
-                                        <th style="width: 20%;">Status</th>
-                                        <th style="width: 20%;">Jumlah Track</th>
-                                        <th style="width: 20%;">Waktu Track Terakhir</th>
+                                        <th style="width: 18%;">Kendaraan</th>
+                                        <th style="width: 15%;">Alat</th>
+                                        <th style="width: 15%;">Nama Sesi</th>
+                                        <th style="width: 15%;">Status</th>
+                                        <th style="width: 15%;">Jumlah Track</th>
+                                        <th style="width: 17%;">Waktu Track Terakhir</th>
                                         <th style="width: 15%;" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -71,6 +72,9 @@
                                             </td>
                                             <td data-label="Alat">
                                                 <span class="badge bg-light text-dark">{{ $item->alat->id ?? '-' }}</span>
+                                            </td>
+                                            <td data-label="Nama Sesi">
+                                                <small class="text-muted">{{ $item->nama ?? '-' }}</small>
                                             </td>
                                             <td data-label="Status">
                                                 @if ($item->aktif)

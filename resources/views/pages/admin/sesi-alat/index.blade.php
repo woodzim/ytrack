@@ -60,12 +60,13 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th style="width: 15%;">Perusahaan</th>
-                                        <th style="width: 20%;">Kendaraan</th>
-                                        <th style="width: 15%;">Alat</th>
-                                        <th style="width: 15%;">Status</th>
-                                        <th style="width: 15%;">Jumlah Track</th>
-                                        <th style="width: 20%;">Waktu Track Terakhir</th>
+                                        <th style="width: 10%;">Perusahaan</th>
+                                        <th style="width: 15%;">Kendaraan</th>
+                                        <th style="width: 12%;">Alat</th>
+                                        <th style="width: 15%;">Nama Sesi</th>
+                                        <th style="width: 12%;">Status</th>
+                                        <th style="width: 12%;">Jumlah Track</th>
+                                        <th style="width: 16%;">Waktu Track Terakhir</th>
                                         <th style="width: 15%;" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -80,6 +81,9 @@
                                             </td>
                                             <td data-label="Alat">
                                                 <span class="badge bg-light text-dark">{{ $item->alat ? $item->alat?->id : '-' }}</span>
+                                            </td>
+                                            <td data-label="Nama Sesi">
+                                                <small class="text-muted">{{ $item->nama ?? '-' }}</small>
                                             </td>
                                             <td data-label="Status">
                                                 <span class="status-badge" style="background-color: {{ $item->aktif ? '#10b981' : '#6b7280' }}; color: white;">
