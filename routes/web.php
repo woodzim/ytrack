@@ -3,13 +3,14 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\DashboardsController;
-use App\Http\Controllers\PerusahaanController;
-use App\Http\Controllers\KendaraanController;
-use App\Http\Controllers\AlatController;
-use App\Http\Controllers\SesiAlatController;
-use App\Http\Controllers\RiwayatPerjalananController;
-use App\Http\Controllers\TrackingTidakLengkapController;
+use App\Http\Controllers\Admin\DashboardsController;
+use App\Http\Controllers\Admin\PerusahaanController;
+use App\Http\Controllers\Admin\KendaraanController;
+use App\Http\Controllers\Admin\AlatController;
+use App\Http\Controllers\Admin\SesiAlatController;
+use App\Http\Controllers\Admin\RiwayatPerjalananController;
+use App\Http\Controllers\Admin\TrackingTidakLengkapController;
+use App\Http\Controllers\Perusahaan\KendaraanController as PerusahaanKendaraanController;
 
 Route::redirect('/', 'dashboard');
 
@@ -19,32 +20,39 @@ Route::post('login', [LoginController::class, 'login'])->name('login.store');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
-    /******** Dashboards ********/
-    Route::get('dashboard', [DashboardsController::class, 'index'])->name('dashboard');
+    Route::middleware('role:admin')->group(function () {
+        Route::get('dashboard', [DashboardsController::class, 'index'])->name('dashboard');
+        /******** Dashboards ********/
 
-    /******** Perusahaan ********/
-    Route::resource('perusahaan', PerusahaanController::class);
+        /******** Perusahaan ********/
+        Route::resource('perusahaan', PerusahaanController::class);
 
-    /******** Kendaraan ********/
-    Route::post('perusahaan/{perusahaan}/kendaraan', [KendaraanController::class, 'store'])->name('kendaraan.store');
-    Route::put('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'update'])->name('kendaraan.update');
-    Route::delete('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'destroy'])->name('kendaraan.destroy');
+        /******** Kendaraan ********/
+        Route::post('perusahaan/{perusahaan}/kendaraan', [KendaraanController::class, 'store'])->name('admin.kendaraan.store');
+        Route::put('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'update'])->name('admin.kendaraan.update');
+        Route::delete('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'destroy'])->name('admin.kendaraan.destroy');
 
-    /******** Alat ********/
-    Route::resource('alat', AlatController::class);
+        /******** Alat ********/
+        Route::resource('alat', AlatController::class);
 
-    /******** Sesi Alat ********/
-    Route::resource('sesi-alat', SesiAlatController::class);
-    Route::put('sesi-alat/{sesiAlat}/toggle', [SesiAlatController::class, 'toggle'])->name('sesi-alat.toggle');
-    Route::get('sesi-alat-kendaraan/{idPerusahaan}', [SesiAlatController::class, 'getKendaraanByPerusahaan'])->name('sesi-alat.kendaraan');
+        /******** Sesi Alat ********/
+        Route::resource('sesi-alat', SesiAlatController::class);
+        Route::put('sesi-alat/{sesiAlat}/toggle', [SesiAlatController::class, 'toggle'])->name('sesi-alat.toggle');
+        Route::get('sesi-alat-kendaraan/{idPerusahaan}', [SesiAlatController::class, 'getKendaraanByPerusahaan'])->name('sesi-alat.kendaraan');
 
-    /******** Riwayat Perjalanan (Orphan Data) ********/
-    Route::resource('riwayat-perjalanan', RiwayatPerjalananController::class, [
-        'only' => ['index', 'show', 'edit', 'update', 'destroy']
-    ]);
+        /******** Riwayat Perjalanan (Orphan Data) ********/
+        Route::resource('riwayat-perjalanan', RiwayatPerjalananController::class, [
+            'only' => ['index', 'show', 'edit', 'update', 'destroy']
+        ]);
 
-    /******** Tracking Tidak Lengkap ********/
-    Route::resource('tracking-tidak-lengkap', TrackingTidakLengkapController::class, [
-        'only' => ['index', 'edit', 'update', 'destroy']
-    ]);
+        /******** Tracking Tidak Lengkap ********/
+        Route::resource('tracking-tidak-lengkap', TrackingTidakLengkapController::class, [
+            'only' => ['index', 'edit', 'update', 'destroy']
+        ]);
+    });
+
+    Route::middleware('role:perusahaan')->group(function () {
+        /******** Kendaraan for Perusahaan ********/
+        Route::resource('kendaraan', PerusahaanKendaraanController::class);
+    });
 });

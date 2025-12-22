@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\RiwayatPerjalanan;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,7 @@ class TrackingTidakLengkapController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        return view('pages.tracking-tidak-lengkap.index', [
+        return view('pages.admin.tracking-tidak-lengkap.index', [
             'incompleteTrackings' => $incompleteTrackings
         ]);
     }
@@ -29,7 +30,7 @@ class TrackingTidakLengkapController extends Controller
     {
         $riwayat = $trackingTidakLengkap;
         
-        return view('pages.tracking-tidak-lengkap.edit', [
+        return view('pages.admin.tracking-tidak-lengkap.edit', [
             'riwayat' => $riwayat
         ]);
     }

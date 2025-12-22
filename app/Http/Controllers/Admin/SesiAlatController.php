@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\SesiAlat;
 use App\Models\Alat;
 use App\Models\Kendaraan;
@@ -40,7 +41,7 @@ class SesiAlatController extends Controller
             ->paginate(10)
             ->appends(request()->query());
 
-        return view('pages.sesi-alat.index', compact('sesiAlat', 'search', 'filter_status'));
+        return view('pages.admin.sesi-alat.index', compact('sesiAlat', 'search', 'filter_status'));
     }
 
     /**
@@ -52,7 +53,7 @@ class SesiAlatController extends Controller
         $kendaraan = Kendaraan::all();
         $perusahaan = Perusahaan::all();
 
-        return view('pages.sesi-alat.create', compact('alat', 'kendaraan', 'perusahaan'));
+        return view('pages.admin.sesi-alat.create', compact('alat', 'kendaraan', 'perusahaan'));
     }
 
     /**
@@ -100,7 +101,7 @@ class SesiAlatController extends Controller
         // Load riwayat perjalanan with pagination
         $riwayatPerjalanan = $sesiAlat->riwayatPerjalanan()->orderBy('created_at')->get();
 
-        return view('pages.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));
+        return view('pages.admin.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));
     }
 
     /**
@@ -112,7 +113,7 @@ class SesiAlatController extends Controller
         $kendaraan = Kendaraan::all();
         $perusahaan = Perusahaan::all();
 
-        return view('pages.sesi-alat.edit', compact('sesiAlat', 'alat', 'kendaraan', 'perusahaan'));
+        return view('pages.admin.sesi-alat.edit', compact('sesiAlat', 'alat', 'kendaraan', 'perusahaan'));
     }
 
     /**

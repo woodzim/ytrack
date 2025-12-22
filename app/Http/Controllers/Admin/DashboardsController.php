@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SesiAlat;
 use App\Models\RiwayatPerjalanan;
@@ -30,7 +31,7 @@ class DashboardsController extends Controller
             ->limit(5)
             ->get();
 
-        return view('pages.dashboards.index', [
+        return view('pages.admin.dashboards.index', [
             'totalSesiAlatAktif' => $totalSesiAlatAktif,
             'totalAlat' => $totalAlat,
             'totalKendaraan' => $totalKendaraan,

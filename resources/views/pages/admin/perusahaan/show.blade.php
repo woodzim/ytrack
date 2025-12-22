@@ -104,7 +104,7 @@
                                             data-nama="{{ $kendaraan->nama }}">
                                             <i class="ri-edit-line"></i>
                                         </button>
-                                        <form action="{{ route('kendaraan.destroy', [$perusahaan->id, $kendaraan->id]) }}"
+                                        <form action="{{ route('admin.kendaraan.destroy', [$perusahaan->id, $kendaraan->id]) }}"
                                             method="POST" style="display: inline;"
                                             onsubmit="return confirm('Hapus kendaraan ini?');">
                                             @csrf
@@ -142,7 +142,7 @@
                     <h5 class="modal-title" id="addKendaraanModalLabel">Tambah Kendaraan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{ route('kendaraan.store', $perusahaan->id) }}" method="POST">
+                <form action="{{ route('admin.kendaraan.store', $perusahaan->id) }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group mb-3">
@@ -199,7 +199,7 @@
 
                 document.getElementById('editNamaKendaraan').value = nama;
                 const form = document.getElementById('editKendaraanForm');
-                form.action = '{{ route('kendaraan.update', [$perusahaan->id, ':id']) }}'.replace(':id', id);
+                form.action = '{{ route('admin.kendaraan.update', [$perusahaan->id, ':id']) }}'.replace(':id', id);
             });
         }
     </script>

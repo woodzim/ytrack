@@ -35,6 +35,8 @@
                 </li>
                 <!-- End::slide Dashboard -->
 
+                <!-- MENU FOR ADMIN ROLE -->
+                @role('admin')
                 <!-- Start::slide -->
                 <li class="slide has-sub">
                     <a href="javascript:void(0);" class="side-menu__item">
@@ -93,6 +95,19 @@
                     </ul>
                 </li>
                 <!-- End::slide -->
+                @endrole
+
+                <!-- MENU FOR PERUSAHAAN ROLE -->
+                @role('perusahaan')
+                <!-- Start::slide Kendaraan -->
+                <li class="slide">
+                    <a href="{{ route('kendaraan.index') }}" class="side-menu__item">
+                        <i class="ri-car-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+                        <span class="side-menu__label">Kendaraan</span>
+                    </a>
+                </li>
+                <!-- End::slide Kendaraan -->
+                @endrole
             </ul>
         </nav>
         <!-- End::nav -->

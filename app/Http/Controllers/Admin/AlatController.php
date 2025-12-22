@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Alat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +24,7 @@ class AlatController extends Controller
         
         $alat = $alat->paginate(10)->appends(request()->query());
         
-        return view('pages.alat.index', compact('alat', 'search'));
+        return view('pages.admin.alat.index', compact('alat', 'search'));
     }
 
     /**
@@ -31,7 +32,7 @@ class AlatController extends Controller
      */
     public function create()
     {
-        return view('pages.alat.create');
+        return view('pages.admin.alat.create');
     }
 
     /**
@@ -58,7 +59,7 @@ class AlatController extends Controller
      */
     public function show(Alat $alat)
     {
-        return view('pages.alat.show', compact('alat'));
+        return view('pages.admin.alat.show', compact('alat'));
     }
 
     /**
@@ -66,7 +67,7 @@ class AlatController extends Controller
      */
     public function edit(Alat $alat)
     {
-        return view('pages.alat.edit', compact('alat'));
+        return view('pages.admin.alat.edit', compact('alat'));
     }
 
     /**

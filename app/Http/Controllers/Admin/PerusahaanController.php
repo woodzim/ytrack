@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Perusahaan;
 use Illuminate\Http\Request;
 
@@ -23,7 +24,7 @@ class PerusahaanController extends Controller
         
         $perusahaan = $perusahaan->paginate(10)->appends(request()->query());
         
-        return view('pages.perusahaan.index', compact('perusahaan', 'search'));
+        return view('pages.admin.perusahaan.index', compact('perusahaan', 'search'));
     }
 
     /**
@@ -31,7 +32,7 @@ class PerusahaanController extends Controller
      */
     public function create()
     {
-        return view('pages.perusahaan.create');
+        return view('pages.admin.perusahaan.create');
     }
 
     /**
@@ -61,7 +62,7 @@ class PerusahaanController extends Controller
      */
     public function show(Perusahaan $perusahaan)
     {
-        return view('pages.perusahaan.show', compact('perusahaan'));
+        return view('pages.admin.perusahaan.show', compact('perusahaan'));
     }
 
     /**
@@ -69,7 +70,7 @@ class PerusahaanController extends Controller
      */
     public function edit(Perusahaan $perusahaan)
     {
-        return view('pages.perusahaan.edit', compact('perusahaan'));
+        return view('pages.admin.perusahaan.edit', compact('perusahaan'));
     }
 
     /**

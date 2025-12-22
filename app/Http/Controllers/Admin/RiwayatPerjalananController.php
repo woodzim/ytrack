@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\RiwayatPerjalanan;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -43,7 +44,7 @@ class RiwayatPerjalananController extends Controller
             ];
         })->sortByDesc('count');
 
-        return view('pages.riwayat-perjalanan.index', [
+        return view('pages.admin.riwayat-perjalanan.index', [
             'riwayatGrouped' => $riwayatGrouped,
             'alatSummary' => $alatSummary,
             'search' => $search,
@@ -70,7 +71,7 @@ class RiwayatPerjalananController extends Controller
             ->where('id_alat', $idAlat)
             ->count();
 
-        return view('pages.riwayat-perjalanan.show', [
+        return view('pages.admin.riwayat-perjalanan.show', [
             'riwayat' => $riwayat,
             'idAlat' => $idAlat,
             'totalCount' => $totalCount,
@@ -86,7 +87,7 @@ class RiwayatPerjalananController extends Controller
         $perusahaan = \App\Models\Perusahaan::all();
         $kendaraan = \App\Models\Kendaraan::all();
 
-        return view('pages.riwayat-perjalanan.edit', [
+        return view('pages.admin.riwayat-perjalanan.edit', [
             'riwayat' => $riwayat,
             'perusahaan' => $perusahaan,
             'kendaraan' => $kendaraan,
