@@ -22,100 +22,112 @@
             <ul class="main-menu">
                 <!-- Start::slide__category -->
                 <div class="text-center mb-4 mt-3 d-block d-md-none">
-                    <img src="{{ asset('images/long-logo.png') }}" width="160" height="35" alt="logo" class="desktop-logo">
+                    <img src="{{ asset('images/long-logo.png') }}" width="160" height="35" alt="logo"
+                        class="desktop-logo">
                 </div>
                 <!-- End::slide__category -->
 
-                <!-- Start::slide Dashboard -->
-                <li class="slide">
-                    <a href="{{ route('dashboard') }}" class="side-menu__item">
-                        <i class="ri-dashboard-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-                        <span class="side-menu__label">Dashboard</span>
-                    </a>
-                </li>
-                <!-- End::slide Dashboard -->
 
                 <!-- MENU FOR ADMIN ROLE -->
                 @role('admin')
-                <!-- Start::slide -->
-                <li class="slide has-sub">
-                    <a href="javascript:void(0);" class="side-menu__item">
-                        <i class="ri-map-pin-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-                        <span class="side-menu__label">Menu</span>
-                        <i class="ri-arrow-right-s-line side-menu__angle"></i>
-                    </a>
-                    <ul class="slide-menu child1">
-                        <li class="slide side-menu__label1">
-                            <a href="javascript:void(0)">Tracking</a>
-                        </li>
-                        <li class="slide">
-                            <a href="{{ route('sesi-alat.index') }}"
-                                class="side-menu__item d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center">
-                                    {{-- <i class="ri-focus-3-fill pe-2 me-2 me-md-0 text-primary"></i> --}}
-                                    Sesi Alat
-                                </div>
-                                @php
-                                    $activeSesiAlatCount = \App\Models\SesiAlat::where('aktif', true)->count();
-                                @endphp
-                                @if ($activeSesiAlatCount > 0)
-                                    <span class="badge bg-white text-primary ms-2">{{ $activeSesiAlatCount }}</span>
-                                @endif
-                            </a>
-                        </li>
-                        <li class="slide has-sub">
-                            <a href="javascript:void(0);" class="side-menu__item">
-                                {{-- <i class="ri-database-2-fill pe-2 me-2 me-md-0 text-primary"></i> --}}
-                                Data Master
-                                <i class="ri-arrow-right-s-line side-menu__angle"></i>
-                            </a>
-                            <ul class="slide-menu child2">
-                                <li class="slide">
-                                    <a href="{{ route('perusahaan.index') }}" class="side-menu__item">Perusahaan</a>
-                                </li>
-                                <li class="slide">
-                                    <a href="{{ route('alat.index') }}" class="side-menu__item">Alat</a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="slide">
-                            <a href="{{ route('tracking-tidak-lengkap.index') }}" class="side-menu__item d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center">
-                                    {{-- <i class="ri-file-damage-fill pe-2 me-2 me-md-0 text-primary"></i> --}}
-                                    Error Tracking
-                                </div>
-                                @php
-                                    $errorTracking = \App\Models\RiwayatPerjalanan::uncompleted()->count();
-                                @endphp
-                                @if ($errorTracking > 0)
-                                    <span class="badge bg-white text-primary ms-2">{{ $errorTracking }}</span>
-                                @endif
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <!-- End::slide -->
+                    <!-- Start::slide Dashboard -->
+                    <li class="slide">
+                        <a href="{{ route('dashboard') }}" class="side-menu__item">
+                            <i class="ri-dashboard-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+                            <span class="side-menu__label">Dashboard</span>
+                        </a>
+                    </li>
+                    <!-- End::slide Dashboard -->
+
+                    <!-- Start::slide -->
+                    <li class="slide has-sub">
+                        <a href="javascript:void(0);" class="side-menu__item">
+                            <i class="ri-map-pin-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+                            <span class="side-menu__label">Menu</span>
+                            <i class="ri-arrow-right-s-line side-menu__angle"></i>
+                        </a>
+                        <ul class="slide-menu child1">
+                            <li class="slide side-menu__label1">
+                                <a href="javascript:void(0)">Tracking</a>
+                            </li>
+                            <li class="slide">
+                                <a href="{{ route('sesi-alat.index') }}"
+                                    class="side-menu__item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        {{-- <i class="ri-focus-3-fill pe-2 me-2 me-md-0 text-primary"></i> --}}
+                                        Sesi Alat
+                                    </div>
+                                    @php
+                                        $activeSesiAlatCount = \App\Models\SesiAlat::where('aktif', true)->count();
+                                    @endphp
+                                    @if ($activeSesiAlatCount > 0)
+                                        <span class="badge bg-white text-primary ms-2">{{ $activeSesiAlatCount }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                            <li class="slide has-sub">
+                                <a href="javascript:void(0);" class="side-menu__item">
+                                    {{-- <i class="ri-database-2-fill pe-2 me-2 me-md-0 text-primary"></i> --}}
+                                    Data Master
+                                    <i class="ri-arrow-right-s-line side-menu__angle"></i>
+                                </a>
+                                <ul class="slide-menu child2">
+                                    <li class="slide">
+                                        <a href="{{ route('perusahaan.index') }}" class="side-menu__item">Perusahaan</a>
+                                    </li>
+                                    <li class="slide">
+                                        <a href="{{ route('alat.index') }}" class="side-menu__item">Alat</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="slide">
+                                <a href="{{ route('tracking-tidak-lengkap.index') }}"
+                                    class="side-menu__item d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        {{-- <i class="ri-file-damage-fill pe-2 me-2 me-md-0 text-primary"></i> --}}
+                                        Error Tracking
+                                    </div>
+                                    @php
+                                        $errorTracking = \App\Models\RiwayatPerjalanan::uncompleted()->count();
+                                    @endphp
+                                    @if ($errorTracking > 0)
+                                        <span class="badge bg-white text-primary ms-2">{{ $errorTracking }}</span>
+                                    @endif
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- End::slide -->
                 @endrole
 
                 <!-- MENU FOR PERUSAHAAN ROLE -->
                 @role('perusahaan')
-                <!-- Start::slide Kendaraan -->
-                <li class="slide">
-                    <a href="{{ route('kendaraan.index') }}" class="side-menu__item">
-                        <i class="ri-car-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-                        <span class="side-menu__label">Kendaraan</span>
-                    </a>
-                </li>
-                <!-- End::slide Kendaraan -->
+                    <!-- Start::slide Dashboard -->
+                    <li class="slide">
+                        <a href="{{ route('perusahaan.dashboard.index') }}" class="side-menu__item">
+                            <i class="ri-dashboard-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+                            <span class="side-menu__label">Dashboard</span>
+                        </a>
+                    </li>
+                    <!-- End::slide Dashboard -->
 
-                <!-- Start::slide Sesi Alat -->
-                <li class="slide">
-                    <a href="{{ route('perusahaan.sesi-alat.index') }}" class="side-menu__item">
-                        <i class="ri-map-pin-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-                        <span class="side-menu__label">Sesi Alat</span>
-                    </a>
-                </li>
-                <!-- End::slide Sesi Alat -->
+                    <!-- Start::slide Kendaraan -->
+                    <li class="slide">
+                        <a href="{{ route('kendaraan.index') }}" class="side-menu__item">
+                            <i class="ri-car-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+                            <span class="side-menu__label">Kendaraan</span>
+                        </a>
+                    </li>
+                    <!-- End::slide Kendaraan -->
+
+                    <!-- Start::slide Sesi Alat -->
+                    <li class="slide">
+                        <a href="{{ route('perusahaan.sesi-alat.index') }}" class="side-menu__item">
+                            <i class="ri-map-pin-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+                            <span class="side-menu__label">Sesi Alat</span>
+                        </a>
+                    </li>
+                    <!-- End::slide Sesi Alat -->
                 @endrole
             </ul>
         </nav>

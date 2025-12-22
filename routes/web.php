@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\RiwayatPerjalananController;
 use App\Http\Controllers\Admin\TrackingTidakLengkapController;
 use App\Http\Controllers\Perusahaan\KendaraanController as PerusahaanKendaraanController;
 use App\Http\Controllers\Perusahaan\SesiAlatController as PerusahaanSesiAlatController;
+use App\Http\Controllers\Perusahaan\DashboardController as PerusahaanDashboardController;
 
 Route::redirect('/', 'dashboard');
 
@@ -27,12 +28,16 @@ Route::middleware(['auth'])->group(function () {
 
         /******** Sesi Alat for Perusahaan ********/
         Route::prefix('perusahaan')->name('perusahaan.')->group(function () {
+            /******** Dashboard for Perusahaan ********/
+            Route::get('dashboard', [PerusahaanDashboardController::class, 'index'])->name('dashboard.index');
+            Route::put('dashboard', [PerusahaanDashboardController::class, 'update'])->name('dashboard.update');
+
             Route::resource('sesi-alat', PerusahaanSesiAlatController::class, [
                 'only' => ['index', 'show']
             ])->names('sesi-alat');
         });
     });
-    
+
     Route::middleware('role:admin')->group(function () {
         Route::get('dashboard', [DashboardsController::class, 'index'])->name('dashboard');
         /******** Dashboards ********/
