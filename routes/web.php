@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\SesiAlatController;
 use App\Http\Controllers\Admin\RiwayatPerjalananController;
 use App\Http\Controllers\Admin\TrackingTidakLengkapController;
 use App\Http\Controllers\Perusahaan\KendaraanController as PerusahaanKendaraanController;
+use App\Http\Controllers\Perusahaan\SesiAlatController as PerusahaanSesiAlatController;
 
 Route::redirect('/', 'dashboard');
 
@@ -20,6 +21,18 @@ Route::post('login', [LoginController::class, 'login'])->name('login.store');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['auth'])->group(function () {
+    Route::middleware('role:perusahaan')->group(function () {
+        /******** Kendaraan for Perusahaan ********/
+        Route::resource('kendaraan', PerusahaanKendaraanController::class);
+
+        /******** Sesi Alat for Perusahaan ********/
+        Route::prefix('perusahaan')->name('perusahaan.')->group(function () {
+            Route::resource('sesi-alat', PerusahaanSesiAlatController::class, [
+                'only' => ['index', 'show']
+            ])->names('sesi-alat');
+        });
+    });
+    
     Route::middleware('role:admin')->group(function () {
         Route::get('dashboard', [DashboardsController::class, 'index'])->name('dashboard');
         /******** Dashboards ********/
@@ -49,10 +62,5 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('tracking-tidak-lengkap', TrackingTidakLengkapController::class, [
             'only' => ['index', 'edit', 'update', 'destroy']
         ]);
-    });
-
-    Route::middleware('role:perusahaan')->group(function () {
-        /******** Kendaraan for Perusahaan ********/
-        Route::resource('kendaraan', PerusahaanKendaraanController::class);
     });
 });

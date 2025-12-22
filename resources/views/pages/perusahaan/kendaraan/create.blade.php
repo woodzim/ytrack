@@ -13,7 +13,7 @@
         <div class="col-12">
             <div class="card form-card">
                 <div class="card-body">
-                    <form action="{{ route('perusahaan.kendaraan.store') }}" method="POST">
+                    <form action="{{ route('kendaraan.store') }}" method="POST">
                         @csrf
 
                         <div class="form-group-wrapper">
@@ -30,7 +30,7 @@
                             <button type="submit" class="btn btn-primary btn-wave flex-sm-grow-1">
                                 <i class="ri-save-line me-2"></i>Simpan Kendaraan
                             </button>
-                            <a href="{{ route('perusahaan.kendaraan.index') }}" class="btn btn-outline-secondary btn-wave flex-sm-grow-1">
+                            <a href="{{ route('kendaraan.index') }}" class="btn btn-outline-secondary btn-wave flex-sm-grow-1">
                                 <i class="ri-arrow-left-line me-2"></i>Kembali
                             </a>
                         </div>

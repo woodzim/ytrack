@@ -40,7 +40,11 @@
                             <strong>Status</strong>
                         </div>
                         <div class="detail-value">
-                            <span class="badge bg-success">Aktif</span>
+                            @if ($kendaraan->sesiAlat()->where('aktif', true)->exists())
+                                <span class="badge bg-success">Sedang dalam perjalanan</span>
+                            @else
+                                <span class="badge bg-danger">Tidak sedang dalam perjalanan</span>
+                            @endif
                         </div>
                     </div>
 
@@ -49,7 +53,7 @@
                             <strong>Dibuat Pada</strong>
                         </div>
                         <div class="detail-value">
-                            {{ $kendaraan->created_at->format('d M Y H:i') }}
+                            {{ $kendaraan->created_at?->format('d M Y H:i') ?? '-' }}
                         </div>
                     </div>
 
@@ -58,23 +62,23 @@
                             <strong>Terakhir Diperbarui</strong>
                         </div>
                         <div class="detail-value">
-                            {{ $kendaraan->updated_at->format('d M Y H:i') }}
+                            {{ $kendaraan->updated_at?->format('d M Y H:i') ?? '-' }}
                         </div>
                     </div>
                 </div>
                 <div style="padding: 16px; background: #f9f9f9; border-top: 1px solid #f0f0f0; border-radius: 0 0 8px 8px;">
                     <div class="btn-action-group">
-                        <a href="{{ route('perusahaan.kendaraan.edit', $kendaraan->id) }}" class="btn btn-warning btn-wave">
+                        <a href="{{ route('kendaraan.edit', $kendaraan->id) }}" class="btn btn-warning btn-wave">
                             <i class="ri-edit-line me-2"></i>Edit
                         </a>
-                        <form action="{{ route('perusahaan.kendaraan.destroy', $kendaraan->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Anda yakin ingin menghapus kendaraan ini?');">
+                        <form action="{{ route('kendaraan.destroy', $kendaraan->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Anda yakin ingin menghapus kendaraan ini?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-primary btn-wave">
                                 <i class="ri-delete-bin-line me-2"></i>Hapus
                             </button>
                         </form>
-                        <a href="{{ route('perusahaan.kendaraan.index') }}" class="btn btn-outline-secondary btn-wave">
+                        <a href="{{ route('kendaraan.index') }}" class="btn btn-outline-secondary btn-wave">
                             <i class="ri-arrow-left-line me-2"></i>Kembali
                         </a>
                     </div>
@@ -94,7 +98,7 @@
                             <div class="stat-item">
                                 <div class="stat-label text-muted">Sesi Alat</div>
                                 <div class="stat-value">
-                                    <strong class="fs-5">{{ $kendaraan->sesiAlat->count() }}</strong>
+                                    <strong class="fs-5">{{ $kendaraan->sesiAlat?->count() ?? '0' }}</strong>
                                 </div>
                             </div>
                         </div>
@@ -102,7 +106,7 @@
                             <div class="stat-item">
                                 <div class="stat-label text-muted">Riwayat Perjalanan</div>
                                 <div class="stat-value">
-                                    <strong class="fs-5">{{ $kendaraan->riwayatPerjalanan->count() }}</strong>
+                                    <strong class="fs-5">{{ $kendaraan->riwayatPerjalanan?->count() ?? '0' }}</strong>
                                 </div>
                             </div>
                         </div>

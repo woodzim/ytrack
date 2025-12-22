@@ -195,7 +195,7 @@
                                             </td>
                                             <td style="font-size: 12px;">
                                                 <i
-                                                    class="ri-time-line me-1"></i>{{ $riwayat->created_at->translatedFormat('d/m/Y H:i:s') }}
+                                                    class="ri-time-line me-1"></i>{{ $riwayat->created_at?->translatedFormat('d-m-Y H:i:s') ?? '-' }}
                                             </td>
                                             <td style="font-size: 12px;">{{ $riwayat->lat }}</td>
                                             <td style="font-size: 12px;">{{ $riwayat->long }}</td>

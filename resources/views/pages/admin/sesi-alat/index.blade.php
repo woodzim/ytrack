@@ -73,13 +73,13 @@
                                     @foreach($sesiAlat as $item)
                                         <tr>
                                             <td data-label="Perusahaan">
-                                                <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan->nama : '-' }}</small>
+                                                <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan?->nama : '-' }}</small>
                                             </td>
                                             <td data-label="Kendaraan">
-                                                <small class="text-muted">{{ $item->kendaraan ? $item->kendaraan->nama : '-' }}</small>
+                                                <small class="text-muted">{{ $item->kendaraan ? $item->kendaraan?->nama : '-' }}</small>
                                             </td>
                                             <td data-label="Alat">
-                                                <span class="badge bg-light text-dark">{{ $item->alat ? $item->alat->id : '-' }}</span>
+                                                <span class="badge bg-light text-dark">{{ $item->alat ? $item->alat?->id : '-' }}</span>
                                             </td>
                                             <td data-label="Status">
                                                 <span class="status-badge" style="background-color: {{ $item->aktif ? '#10b981' : '#6b7280' }}; color: white;">
@@ -87,10 +87,10 @@
                                                 </span>
                                             </td>
                                             <td data-label="Jumlah Track">
-                                                <small class="text-muted">{{ $item->riwayatPerjalanan->count() }}</small>
+                                                <small class="text-muted">{{ $item->riwayatPerjalanan?->count() ?? '0' }}</small>
                                             </td>
                                             <td data-label="Tanggal Track">
-                                                @if ($item->riwayatPerjalanan->isEmpty())
+                                                @if ($item->riwayatPerjalanan?->isEmpty())
                                                     <small class="text-muted">Belum ada track</small>
                                                 @else
                                                     <small class="text-muted">{{ $item->riwayatPerjalanan()->max('created_at') }}</small>

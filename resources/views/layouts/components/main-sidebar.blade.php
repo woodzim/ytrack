@@ -107,6 +107,15 @@
                     </a>
                 </li>
                 <!-- End::slide Kendaraan -->
+
+                <!-- Start::slide Sesi Alat -->
+                <li class="slide">
+                    <a href="{{ route('perusahaan.sesi-alat.index') }}" class="side-menu__item">
+                        <i class="ri-map-pin-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+                        <span class="side-menu__label">Sesi Alat</span>
+                    </a>
+                </li>
+                <!-- End::slide Sesi Alat -->
                 @endrole
             </ul>
         </nav>
