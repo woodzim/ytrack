@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\SesiAlatController;
 use App\Http\Controllers\Admin\RiwayatPerjalananController;
 use App\Http\Controllers\Admin\TrackingTidakLengkapController;
 use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Perusahaan\KendaraanController as PerusahaanKendaraanController;
 use App\Http\Controllers\Perusahaan\SesiAlatController as PerusahaanSesiAlatController;
 use App\Http\Controllers\Perusahaan\DashboardController as PerusahaanDashboardController;
@@ -46,6 +47,10 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware('role:admin')->group(function () {
         Route::get('dashboard', [DashboardsController::class, 'index'])->name('dashboard');
         /******** Dashboards ********/
+
+        /******** Profile ********/
+        Route::get('profile', [ProfileController::class, 'index'])->name('admin.profile.index');
+        Route::put('profile', [ProfileController::class, 'update'])->name('admin.profile.update');
 
         /******** Pengguna ********/
         Route::get('users', [UsersController::class, 'index'])->name('users.index');

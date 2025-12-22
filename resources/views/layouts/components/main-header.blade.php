@@ -200,14 +200,14 @@
                     </div>
                     <div class="dropdown-divider"></div>
                     <ul class="list-unstyled mb-0">
-                        {{-- <li>
+                        <li>
                             <ul class="list-unstyled mb-0 sub-list">
                                 <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="javascript:void(0);"><i
+                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile.index') }}"><i
                                             class="ti ti-user-circle me-2 fs-18"></i>Profil</a>
                                 </li>
                             </ul>
-                        </li> --}}
+                        </li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                                 @csrf
