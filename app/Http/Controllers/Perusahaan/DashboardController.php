@@ -8,6 +8,7 @@ use App\Models\SesiAlat;
 use App\Models\Kendaraan;
 use App\Models\RiwayatPerjalanan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -16,7 +17,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $idPerusahaan = auth()->user()->id_perusahaan;
+        $idPerusahaan = Auth::user()->id_perusahaan;
         
         // Get perusahaan data
         $perusahaan = Perusahaan::find($idPerusahaan);
@@ -55,19 +56,35 @@ class DashboardController extends Controller
      */
     public function update(Request $request)
     {
-        $idPerusahaan = auth()->user()->id_perusahaan;
+        $idPerusahaan = Auth::user()->id_perusahaan;
         
         $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
             'nama' => 'required|string|max:255',
             'alamat' => 'required|string|max:500',
         ], [
+            'name.required' => 'Nama pengguna wajib diisi',
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'email.unique' => 'Email sudah terdaftar',
             'nama.required' => 'Nama perusahaan wajib diisi',
             'alamat.required' => 'Alamat perusahaan wajib diisi',
         ]);
         
-        $perusahaan = Perusahaan::find($idPerusahaan);
-        $perusahaan->update($validated);
+        // Update user data
+        Auth::user()->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+        ]);
         
-        return back()->with('success', 'Data perusahaan berhasil diperbarui');
+        // Update perusahaan data
+        $perusahaan = Perusahaan::find($idPerusahaan);
+        $perusahaan->update([
+            'nama' => $validated['nama'],
+            'alamat' => $validated['alamat'],
+        ]);
+        
+        return back()->with('success', 'Data profil dan perusahaan berhasil diperbarui');
     }
 }
