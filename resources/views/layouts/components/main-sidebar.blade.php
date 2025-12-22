@@ -73,10 +73,29 @@
                                 </a>
                                 <ul class="slide-menu child2">
                                     <li class="slide">
-                                        <a href="{{ route('perusahaan.index') }}" class="side-menu__item">Perusahaan</a>
+                                        <a href="{{ route('perusahaan.index') }}"
+                                            class="side-menu__item d-flex align-items-center justify-content-between">
+                                            <span>Perusahaan</span>
+                                            @php
+                                                $perusahaanCount = \App\Models\Perusahaan::count();
+                                            @endphp
+                                            @if ($perusahaanCount > 0)
+                                                <span
+                                                    class="badge bg-white text-primary ms-2">{{ $perusahaanCount }}</span>
+                                            @endif
+                                        </a>
                                     </li>
                                     <li class="slide">
-                                        <a href="{{ route('alat.index') }}" class="side-menu__item">Alat</a>
+                                        <a href="{{ route('alat.index') }}"
+                                            class="side-menu__item d-flex align-items-center justify-content-between">
+                                            <span>Alat</span>
+                                            @php
+                                                $alatCount = \App\Models\Alat::count();
+                                            @endphp
+                                            @if ($alatCount > 0)
+                                                <span class="badge bg-white text-primary ms-2">{{ $alatCount }}</span>
+                                            @endif
+                                        </a>
                                     </li>
                                 </ul>
                             </li>
