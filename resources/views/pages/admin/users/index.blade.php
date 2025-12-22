@@ -58,10 +58,11 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th style="width: 25%;">Nama</th>
-                                        <th style="width: 25%;">Email</th>
-                                        <th style="width: 20%;">Role</th>
-                                        <th style="width: 30%;">Tanggal Daftar</th>
+                                        <th style="width: 20%;">Nama</th>
+                                        <th style="width: 20%;">Email</th>
+                                        <th style="width: 15%;">Role</th>
+                                        <th style="width: 20%;">Tanggal Daftar</th>
+                                        <th style="width: 25%;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -84,6 +85,18 @@
                                                 <small class="text-muted">
                                                     {{ $user->created_at?->format('d-m-Y') ?? '-' }}
                                                 </small>
+                                            </td>
+                                            <td data-label="Aksi">
+                                                @if ($user->hasRole('perusahaan'))
+                                                    <button type="button" class="btn btn-sm btn-primary btn-wave"
+                                                        data-bs-toggle="modal" data-bs-target="#resetPasswordModal"
+                                                        data-user-id="{{ $user->id }}"
+                                                        data-user-name="{{ $user->name }}">
+                                                        <i class="ri-lock-password-line me-1"></i>Atur Ulang Password
+                                                    </button>
+                                                @else
+                                                    <span class="text-muted small">-</span>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach
@@ -112,7 +125,131 @@
         </div>
     </div>
     <!-- End::app-content -->
+
+    <!-- Reset Password Modal -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetPasswordLabel">
+                        <i class="ri-lock-password-line me-2"></i>Atur Ulang Password
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="resetPasswordForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="alert alert-info mb-3" role="alert">
+                            <i class="ri-information-line me-2"></i>
+                            <span id="userNameDisplay"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password Baru</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password" name="password"
+                                    placeholder="Minimal 8 karakter" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted d-block mt-1">Minimal 8 karakter</small>
+                            @error('password')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password_confirmation"
+                                    name="password_confirmation" placeholder="Konfirmasi password baru" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirm">
+                                    <i class="ri-eye-line"></i>
+                                </button>
+                            </div>
+                            @error('password_confirmation')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
+    <script>
+        // Reset password modal setup
+        const resetPasswordModal = document.getElementById('resetPasswordModal');
+        const resetPasswordForm = document.getElementById('resetPasswordForm');
+        const userNameDisplay = document.getElementById('userNameDisplay');
+        const passwordInput = document.getElementById('password');
+        const passwordConfirmInput = document.getElementById('password_confirmation');
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const togglePasswordConfirmBtn = document.getElementById('togglePasswordConfirm');
+
+        // Handle modal show event to populate form with user data
+        resetPasswordModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userName = button.getAttribute('data-user-name');
+
+            // Update modal title and form
+            userNameDisplay.textContent = `Atur ulang password untuk: ${userName}`;
+
+            // Update form action
+            resetPasswordForm.action = `{{ route('users.index') }}/${userId}/password`;
+
+            // Clear previous values
+            passwordInput.value = '';
+            passwordConfirmInput.value = '';
+            passwordInput.type = 'password';
+            passwordConfirmInput.type = 'password';
+            togglePasswordBtn.innerHTML = '<i class="ri-eye-line"></i>';
+            togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-line"></i>';
+        });
+
+        // Toggle password visibility
+        togglePasswordBtn.addEventListener('click', function() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                togglePasswordBtn.innerHTML = '<i class="ri-eye-off-line"></i>';
+            } else {
+                passwordInput.type = 'password';
+                togglePasswordBtn.innerHTML = '<i class="ri-eye-line"></i>';
+            }
+        });
+
+        // Toggle password confirmation visibility
+        togglePasswordConfirmBtn.addEventListener('click', function() {
+            if (passwordConfirmInput.type === 'password') {
+                passwordConfirmInput.type = 'text';
+                togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-off-line"></i>';
+            } else {
+                passwordConfirmInput.type = 'password';
+                togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-line"></i>';
+            }
+        });
+
+        // Handle form submission
+        resetPasswordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Validate password match
+            if (passwordInput.value !== passwordConfirmInput.value) {
+                alert('Password tidak sesuai dengan konfirmasi password');
+                return;
+            }
+
+            // Submit form
+            this.submit();
+        });
+    </script>
 @endsection

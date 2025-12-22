@@ -54,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
 
         /******** Pengguna ********/
         Route::get('users', [UsersController::class, 'index'])->name('users.index');
+        Route::put('users/{id}/password', [UsersController::class, 'updatePassword'])->name('users.updatePassword');
 
         /******** Perusahaan ********/
         Route::resource('perusahaan', PerusahaanController::class);
