@@ -19,20 +19,28 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        if (User::where('email', 'admin@dumeg.id')->doesntExist()) {
-            User::factory()->create([
-                'name' => 'Admin',
-                'email' => 'admin@dumeg.id',
-                'password' => bcrypt('admindmg123'),
-            ]);
-        }
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
 
-        if  (User::where('email', 'test@example.com')->doesntExist()) {
-            User::factory()->create([
-                'name' => 'Test User',
-                'email' => 'test@example.com',
-            ]);
-        }
+        $admin1 = User::firstOrCreate(
+            ['email' => 'admin@dumeg.id'],
+            [
+            'name' => 'Admin',
+            'password' => bcrypt('admindmg123'),
+            ]
+        );
+
+        // Assign admin role
+        $admin1->assignRole($adminRole);
+
+        $admin2 = User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+            'name' => 'Test User',
+            ]
+        );
+
+        // Assign admin role
+        $admin2->assignRole($adminRole);
 
         // Create company account
         $perusahaan = Perusahaan::firstOrCreate(
