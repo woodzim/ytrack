@@ -66,6 +66,11 @@
                                 <div class="d-grid mt-3">
                                     <button type="submit" class="btn btn-primary">Masuk</button>
                                 </div>
+                                <p class="text-center mt-3">
+                                    <a href="{{ route('register') }}" class="text-primary fw-semibold">
+                                        Buat akun
+                                    </a>
+                                </p>
                             </form>
                         </div>
                     </div>
