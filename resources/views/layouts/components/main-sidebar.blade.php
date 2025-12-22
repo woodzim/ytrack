@@ -98,6 +98,15 @@
                         </ul>
                     </li>
                     <!-- End::slide -->
+
+                    <!-- Start::slide Users -->
+                    <li class="slide">
+                        <a href="{{ route('users.index') }}" class="side-menu__item">
+                            <i class="ri-user-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+                            <span class="side-menu__label">Pengguna</span>
+                        </a>
+                    </li>
+                    <!-- End::slide Users -->
                 @endrole
 
                 <!-- MENU FOR PERUSAHAAN ROLE -->
