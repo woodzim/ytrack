@@ -200,6 +200,7 @@
                     </div>
                     <div class="dropdown-divider"></div>
                     <ul class="list-unstyled mb-0">
+                        @role('admin')
                         <li>
                             <ul class="list-unstyled mb-0 sub-list">
                                 <li>
@@ -208,6 +209,7 @@
                                 </li>
                             </ul>
                         </li>
+                        @endrole
                         <li>
                             <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                                 @csrf
