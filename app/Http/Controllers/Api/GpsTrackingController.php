@@ -8,6 +8,7 @@ use App\Models\SesiAlat;
 use App\Models\Alat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Events\RiwayatPerjalananCreated;
 
 class GpsTrackingController extends Controller
 {
@@ -114,6 +115,18 @@ class GpsTrackingController extends Controller
                 'sat' => $validated['sat'] ?? null,
                 'speed' => $validated['speed'] ?? null,
             ]);
+
+            if ($idSesiAlat) {
+                event(new RiwayatPerjalananCreated(
+                    $idSesiAlat,
+                    $riwayat->lat,
+                    $riwayat->long,
+                    $riwayat->created_at->toDateTimeString(),
+                    $riwayat->speed,
+                    $riwayat->alt,
+                    $riwayat->sat
+                ));
+            }
 
             return response()->json([
                 'status_code' => 201,

@@ -49,12 +49,8 @@ class SesiAlatController extends Controller
      */
     public function create()
     {
-        $alat = Alat::all();
-        $kendaraan = Kendaraan::all();
-        $perusahaan = Perusahaan::all();
-
-        return view('pages.admin.sesi-alat.create', compact('alat', 'kendaraan', 'perusahaan'));
-    }
+    $perusahaan = Perusahaan::all();
+    return view('pages.admin.sesi-alat.create', compact('perusahaan'));    }
 
     /**
      * Store a newly created resource in storage.
@@ -194,8 +190,28 @@ class SesiAlatController extends Controller
      */
     public function getKendaraanByPerusahaan($idPerusahaan)
     {
-        $kendaraan = Kendaraan::where('id_perusahaan', $idPerusahaan)->get();
+        $kendaraanTerpakai = SesiAlat::where('aktif', true)
+                            ->pluck('id_kendaraan')
+                            ->toArray();
+
+        $kendaraan = Kendaraan::where('id_perusahaan', $idPerusahaan)
+                        ->whereNotIn('id', $kendaraanTerpakai)
+                        ->get();
+
         return response()->json($kendaraan);
+    }
+
+    public function getAlatByPerusahaan($idPerusahaan)
+    {
+        $alatTerpakai = SesiAlat::where('aktif', true)
+                        ->pluck('id_alat')
+                        ->toArray();
+
+        $alat = Alat::where('id_perusahaan', $idPerusahaan)
+                    ->whereNotIn('id', $alatTerpakai)
+                    ->get();
+
+        return response()->json($alat);
     }
 
     /**

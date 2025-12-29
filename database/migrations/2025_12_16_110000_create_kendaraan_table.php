@@ -14,14 +14,19 @@ return new class extends Migration
         Schema::create('kendaraan', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_perusahaan');
+            $table->unsignedBigInteger('id_jenis_kendaraan');
             $table->string('nama');
+            $table->string('plat');
             $table->timestamps();
 
             // Foreign key constraint with cascade delete
             $table->foreign('id_perusahaan')
-                  ->references('id')
-                  ->on('perusahaan')
-                  ->onDelete('cascade');
+                    ->references('id')
+                    ->on('perusahaan');
+
+            $table->foreign('id_jenis_kendaraan')
+                    ->references('id')
+                    ->on('jenis_kendaraan');
         });
     }
 

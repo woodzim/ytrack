@@ -7,6 +7,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Admin\DashboardsController;
 use App\Http\Controllers\Admin\PerusahaanController;
 use App\Http\Controllers\Admin\KendaraanController;
+use App\Http\Controllers\Admin\JenisKendaraanController;
 use App\Http\Controllers\Admin\AlatController;
 use App\Http\Controllers\Admin\SesiAlatController;
 use App\Http\Controllers\Admin\RiwayatPerjalananController;
@@ -59,7 +60,11 @@ Route::middleware(['auth'])->group(function () {
         /******** Perusahaan ********/
         Route::resource('perusahaan', PerusahaanController::class);
 
+        /******** Jenis Kendaraan ********/
+        Route::resource('jenis-kendaraan', JenisKendaraanController::class);
+        
         /******** Kendaraan ********/
+        Route::resource('kendaraan', KendaraanController::class);
         Route::post('perusahaan/{perusahaan}/kendaraan', [KendaraanController::class, 'store'])->name('admin.kendaraan.store');
         Route::put('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'update'])->name('admin.kendaraan.update');
         Route::delete('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'destroy'])->name('admin.kendaraan.destroy');
@@ -71,7 +76,8 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('sesi-alat', SesiAlatController::class);
         Route::put('sesi-alat/{sesiAlat}/toggle', [SesiAlatController::class, 'toggle'])->name('sesi-alat.toggle');
         Route::get('sesi-alat-kendaraan/{idPerusahaan}', [SesiAlatController::class, 'getKendaraanByPerusahaan'])->name('sesi-alat.kendaraan');
-
+        Route::get('sesi-alat-alat/{idPerusahaan}', [SesiAlatController::class, 'getAlatByPerusahaan'])->name('sesi-alat.alat');
+        
         /******** Riwayat Perjalanan (Orphan Data) ********/
         Route::resource('riwayat-perjalanan', RiwayatPerjalananController::class, [
             'only' => ['index', 'show', 'edit', 'update', 'destroy']

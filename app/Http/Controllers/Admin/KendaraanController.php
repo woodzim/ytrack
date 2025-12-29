@@ -12,6 +12,23 @@ class KendaraanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    public function index(Request $request)
+    {
+        $search = $request->input('search', '');
+        
+        $kendaraan = Kendaraan::query();
+        
+        if ($search) {
+            $kendaraan  ->where('nama', 'like', '%' . $search . '%')
+                        ->orWhere('plat', 'like', '%' . $search . '%');
+        }
+        
+        $kendaraan = $kendaraan->paginate(10)->appends(request()->query());
+        
+        return view('pages.admin.kendaraan.index', compact('kendaraan', 'search'));
+    }
+
     public function store(Request $request, Perusahaan $perusahaan)
     {
         $validated = $request->validate([
