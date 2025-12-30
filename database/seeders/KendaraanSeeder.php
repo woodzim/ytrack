@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class KendaraanSeeder extends Seeder
 {
@@ -12,40 +14,35 @@ class KendaraanSeeder extends Seeder
     {
         $now = Carbon::now();
 
-        // 1. Ambil semua ID perusahaan
-        $perusahaanIds = DB::table('perusahaan')->pluck('id')->toArray();
-
-        // 2. Ambil semua ID jenis kendaraan (PENTING: Ambil ID-nya untuk relasi)
+        // 1. Ambil semua ID sebagai Collection (Hapus ->toArray() agar bisa pakai ->random())
+        $perusahaanIds = DB::table('perusahaan')->pluck('id');
         $jenisKendaraanIds = DB::table('jenis_kendaraan')->pluck('id');
 
-        // Validasi: Pastikan data master (Perusahaan & Jenis Kendaraan) sudah ada
-        if (empty($perusahaanIds) || $jenisKendaraanIds->isEmpty()) {
+        // Validasi: Pastikan data master ada
+        if ($perusahaanIds->isEmpty() || $jenisKendaraanIds->isEmpty()) {
             $this->command->warn('Data Perusahaan atau Jenis Kendaraan masih kosong. Seeding dibatalkan.');
             return;
         }
 
         $kendaraan = [];
 
-        foreach ($perusahaanIds as $idPerusahaan) {
-            // Kita buat 2 kendaraan per perusahaan dengan jenis acak
+        // 2. Loop sebanyak 15 kali untuk membuat 15 item
+        for ($i = 1; $i <= 15; $i++) {
             
-            // Kendaraan 1
-            $kendaraan[] = [
-                'id_perusahaan' => $idPerusahaan,
-                // Mengambil satu ID jenis kendaraan secara acak
-                'id_jenis_kendaraan' => $jenisKendaraanIds->random(), 
-                'nama' => 'Armada 01 - ' . $idPerusahaan,
-                'plat' => 'B ' . rand(1000, 9999) . ' XYZ',
-                'created_at' => $now,
-                'updated_at' => $now,
-            ];
+            // Generate Plat Nomor Random (Contoh: B 1234 ABC)
+            $kodeWilayah = Arr::random(['B', 'D', 'F', 'L', 'N', 'DK']); 
+            $nomorPlat = rand(1000, 9999);
+            $kodeBelakang = Str::upper(Str::random(2)); // 2 Huruf acak
 
-            // Kendaraan 2
             $kendaraan[] = [
-                'id_perusahaan' => $idPerusahaan,
+                // Ambil 1 ID Perusahaan secara acak
+                'id_perusahaan' => $perusahaanIds->random(),
+                
+                // Ambil 1 ID Jenis Kendaraan secara acak
                 'id_jenis_kendaraan' => $jenisKendaraanIds->random(),
-                'nama' => 'Armada 02 - ' . $idPerusahaan,
-                'plat' => 'D ' . rand(1000, 9999) . ' ABC',
+                
+                'nama' => 'Unit Operasional #' . str_pad($i, 3, '0', STR_PAD_LEFT), // Cth: Unit Operasional #001
+                'plat' => "$kodeWilayah $nomorPlat $kodeBelakang",
                 'created_at' => $now,
                 'updated_at' => $now,
             ];

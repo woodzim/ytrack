@@ -127,10 +127,10 @@
         </div>
 
         @if ($jenisKendaraan->hasPages())
-          <div class="card-footer bg-white border-top">
-            <nav aria-label="Page navigation">
-              {{ $jenisKendaraan->links() }}
-            </nav>
+          <div class="card-footer bg-white border-top py-3">
+            <div class="d-flex justify-content-end">
+              {{ $jenisKendaraan->links('pagination::bootstrap-5') }}
+            </div>
           </div>
         @endif
       </div>

@@ -13,8 +13,12 @@ class Kendaraan extends Model
         'id_jenis_kendaraan',
         'nama',
         'plat',
-        'nama',
     ];
+
+    public function setPlatAttribute($value)
+    {
+        $this->attributes['plat'] = strtoupper($value);
+    }
 
     // Relationships
     public function perusahaan()

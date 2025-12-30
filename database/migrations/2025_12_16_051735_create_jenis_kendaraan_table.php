@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('jenis_kendaraan', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->enum('kategori', ['kendaraan', 'container']);
+            $table->string('nama')->unique();            
+            $table->enum('kategori', ['Kendaraan', 'Container']);
             $table->timestamps();
         });
     }

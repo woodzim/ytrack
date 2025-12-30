@@ -65,9 +65,6 @@ Route::middleware(['auth'])->group(function () {
         
         /******** Kendaraan ********/
         Route::resource('kendaraan', KendaraanController::class);
-        Route::post('perusahaan/{perusahaan}/kendaraan', [KendaraanController::class, 'store'])->name('admin.kendaraan.store');
-        Route::put('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'update'])->name('admin.kendaraan.update');
-        Route::delete('perusahaan/{perusahaan}/kendaraan/{kendaraan}', [KendaraanController::class, 'destroy'])->name('admin.kendaraan.destroy');
 
         /******** Alat ********/
         Route::resource('alat', AlatController::class);
