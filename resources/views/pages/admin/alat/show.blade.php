@@ -1,33 +1,8 @@
 @extends('layouts.master')
 
 @section('content')
-  <div class="detail-header mb-4">
-    <div class="d-flex align-items-center justify-content-between">
-      <div>
-        {{-- Judul Utama: Kode Sistem (YTR_XXX) --}}
-        <h1 class="mb-0 fw-bold">{{ $alat->kode_alat }}</h1>
+  {{-- ... (Header & Badge Status Biarkan Saja) ... --}}
 
-        {{-- Subjudul: Serial Number / ID Alat --}}
-        <div class="d-flex align-items-center mt-1">
-          <i class="ri-barcode-line me-2"></i>
-          <span>Serial Number: {{ $alat->id }}</span>
-        </div>
-      </div>
-
-      <div>
-        {{-- Badge Status di Header --}}
-        @if ($alat->is_aktif)
-          <span class="badge bg-success-transparent fs-13">
-            <i class="ri-wifi-line me-1"></i> Online
-          </span>
-        @else
-          <span class="badge bg-light text-muted border fs-13">
-            <i class="ri-zzz-line me-1"></i> Offline
-          </span>
-        @endif
-      </div>
-    </div>
-  </div>
   <div class="row">
     <div class="col-12 col-lg-8">
       <div class="card card-detail">
@@ -46,7 +21,7 @@
                   </td>
                 </tr>
 
-                {{-- Row 2: Serial Number / ID Alat (Fisik) --}}
+                {{-- Row 2: Serial Number --}}
                 <tr>
                   <th class="ps-4 py-3 text-muted">Serial Number / ID Alat</th>
                   <td class="py-3">
@@ -59,10 +34,7 @@
 
                 {{-- Row 3: Perusahaan --}}
                 <tr>
-                  <th class="ps-4 py-3 text-muted">Perusahaan / Lokasi
-
-                    [Image of office building icon]
-                  </th>
+                  <th class="ps-4 py-3 text-muted">Perusahaan / Lokasi</th>
                   <td class="py-3">
                     @if ($alat->perusahaan)
                       <div class="d-flex align-items-center">
@@ -81,39 +53,47 @@
                   </td>
                 </tr>
 
-                {{-- Row 4: Tanggal --}}
+                {{-- UPDATE ROW 4: TANGGAL DIDAFTARKAN --}}
                 <tr>
                   <th class="ps-4 py-3 text-muted">Didaftarkan Pada</th>
                   <td class="py-3">
-                    {{ $alat->created_at->translatedFormat('d F Y') }}
-                    <small class="text-muted ms-1">({{ $alat->created_at->format('H:i') }})</small>
+                    {{-- Tanggal --}}
+                    <span class="local-date">{{ $alat->created_at->toIso8601String() }}</span>
+                    {{-- Jam (dalam kurung) --}}
+                    <small class="text-muted ms-1">
+                      (<span class="local-time">{{ $alat->created_at->toIso8601String() }}</span>)
+                    </small>
                   </td>
                 </tr>
+
+                {{-- UPDATE ROW 5: TERAKHIR UPDATE --}}
                 <tr>
                   <th class="ps-4 py-3 text-muted">Terakhir Update</th>
                   <td class="py-3">
-                    {{ $alat->updated_at->translatedFormat('d F Y') }}
-                    <small class="text-muted ms-1">({{ $alat->updated_at->format('H:i') }})</small>
+                    {{-- Tanggal --}}
+                    <span class="local-date">{{ $alat->updated_at->toIso8601String() }}</span>
+                    {{-- Jam (dalam kurung) --}}
+                    <small class="text-muted ms-1">
+                      (<span class="local-time">{{ $alat->updated_at->toIso8601String() }}</span>)
+                    </small>
                   </td>
                 </tr>
+
               </tbody>
             </table>
           </div>
         </div>
 
+        {{-- Footer Buttons Biarkan Saja --}}
         <div class="card-footer bg-light border-top">
+          {{-- ... --}}
           <div class="d-flex gap-2">
-            {{-- Tombol Lihat Sesi --}}
             <a href="{{ route('sesi-alat.index', ['search' => $alat->id]) }}" class="btn btn-primary btn-wave">
               <i class="ri-history-line me-2"></i>Riwayat Sesi
             </a>
-
-            {{-- Tombol Edit --}}
             <a href="{{ route('alat.edit', $alat->id) }}" class="btn btn-warning btn-wave text-white">
               <i class="ri-edit-line me-2"></i>Edit Data
             </a>
-
-            {{-- Tombol Kembali --}}
             <a href="{{ route('alat.index') }}" class="btn btn-outline-secondary btn-wave ms-auto">
               <i class="ri-arrow-left-line me-2"></i>Kembali
             </a>
@@ -122,7 +102,9 @@
       </div>
     </div>
 
+    {{-- Kolom Kanan (Status & Statistik) Biarkan Saja --}}
     <div class="col-12 col-lg-4">
+      {{-- ... content kanan ... --}}
       <div class="card card-detail mb-3">
         <div class="card-header border-bottom bg-white py-3">
           <h5 class="card-title mb-0"><i class="ri-dashboard-3-line me-2"></i>Status Terkini</h5>
@@ -156,12 +138,45 @@
           <div class="d-flex justify-content-between align-items-center">
             <span class="text-muted">Perjalanan Terakhir</span>
             <span class="fw-bold text-end">
+              {{-- DiffForHumans biasanya sudah cukup oke (misal: 2 jam yang lalu) --}}
+              {{-- Tapi jika ingin 100% akurat browser, biarkan saja sbg teks server side untuk durasi --}}
               {{ $alat->sesiAlat()->latest()->first()?->created_at->diffForHumans() ?? '-' }}
             </span>
           </div>
         </div>
       </div>
-
     </div>
   </div>
+@endsection
+
+@section('scripts')
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // 1. Format Tanggal (25 Desember 2023)
+      function convertDate(dateString) {
+        if (!dateString) return '-';
+        return new Intl.DateTimeFormat('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }).format(new Date(dateString));
+      }
+
+      // 2. Format Jam (14:30)
+      function convertTime(dateString) {
+        if (!dateString) return '-';
+        return new Intl.DateTimeFormat('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }).format(new Date(dateString)).replace(/\./g, ':');
+      }
+
+      // Jalankan Konversi
+      document.querySelectorAll('.local-date').forEach(el => el.textContent = convertDate(el.textContent));
+      document.querySelectorAll('.local-time').forEach(el => el.textContent = convertTime(el.textContent));
+
+    });
+  </script>
 @endsection

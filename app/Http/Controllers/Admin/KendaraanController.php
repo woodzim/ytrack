@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Perusahaan;
 use App\Models\Kendaraan;
 use App\Models\JenisKendaraan;
+use App\Models\SesiAlat;
 use Illuminate\Http\Request;
 
 class KendaraanController extends Controller
@@ -18,12 +19,19 @@ class KendaraanController extends Controller
     {
         $search = $request->input('search');
 
-        $query = Kendaraan::with(['perusahaan', 'jenisKendaraan']);
+        // 1. Eager Load Relasi
+        // 2. Cek Status 'sedang_digunakan' secara efisien via query (bukan looping manual)
+        $query = Kendaraan::with(['perusahaan', 'jenisKendaraan'])
+            ->withExists(['sesiAlat as sedang_digunakan' => function ($q) {
+                $q->where('aktif', true);
+            }]);
 
         if ($search) {
             $query->where(function($q) use ($search) {
-                $q->where('nama', 'like', '%' . $search . '%')
-                    ->orWhere('plat', 'like', '%' . $search . '%')
+                // PENTING: Gunakan 'kendaraan.nama' bukan hanya 'nama'
+                // untuk menghindari error "Ambiguous column" jika tabel relasi juga punya kolom 'nama'
+                $q->where('kendaraan.nama', 'like', '%' . $search . '%')
+                    ->orWhere('kendaraan.plat', 'like', '%' . $search . '%')
                     ->orWhereHas('perusahaan', function($subQuery) use ($search) {
                         $subQuery->where('nama', 'like', '%' . $search . '%');
                     })
@@ -33,7 +41,7 @@ class KendaraanController extends Controller
             });
         }
 
-        $kendaraan = $query->latest() 
+        $kendaraan = $query->latest()
                             ->paginate(10)
                             ->appends(request()->query());
 
@@ -104,18 +112,32 @@ class KendaraanController extends Controller
      */
     public function destroy(Kendaraan $kendaraan)
     {
+        $sedangDigunakan = SesiAlat::where('id_kendaraan', $kendaraan->id)
+                            ->where('aktif', true)
+                            ->exists(); // Mengembalikan true jika data ditemukan
+
+        if ($sedangDigunakan) {
+            return redirect()->route('kendaraan.index')
+                ->with('error', "Gagal menghapus! Kendaraan '{$kendaraan->nama}' sedang digunakan dalam sesi aktif. Harap nonaktifkan sesi terlebih dahulu.");
+        }
+
         try {
-            // Ambil nama/plat untuk pesan notifikasi (opsional)
             $info = $kendaraan->nama . ' (' . $kendaraan->plat . ')';
             
             $kendaraan->delete();
 
-            // Redirect ke halaman Index Kendaraan (Daftar semua kendaraan)
             return redirect()->route('kendaraan.index')
                 ->with('success', "Kendaraan $info berhasil dihapus.");
                 
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == "23000") {
+                return redirect()->route('kendaraan.index')
+                    ->with('error', "Data tidak bisa dihapus karena memiliki riwayat perjalanan (terikat data lain).");
+            }
+
+            return redirect()->route('kendaraan.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus data.');
         } catch (\Exception $e) {
-            // Error handling jika ada masalah (misal constraint database)
             return redirect()->route('kendaraan.index')
                 ->with('error', 'Gagal menghapus data kendaraan.');
         }

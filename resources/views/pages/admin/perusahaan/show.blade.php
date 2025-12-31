@@ -38,8 +38,12 @@
           <div class="detail-row">
             <span class="detail-label">Dibuat Pada</span>
             <span class="detail-value">
-              {{ $perusahaan->created_at->translatedFormat('d M Y') }}
-              <div class="detail-value-meta">Pukul {{ $perusahaan->created_at->translatedFormat('H:i') }}
+              {{-- Bagian Tanggal --}}
+              <span class="local-date-only">{{ $perusahaan->created_at->toIso8601String() }}</span>
+
+              {{-- Bagian Jam --}}
+              <div class="detail-value-meta">
+                Pukul <span class="local-time-only">{{ $perusahaan->created_at->toIso8601String() }}</span>
               </div>
             </span>
           </div>
@@ -47,8 +51,12 @@
           <div class="detail-row">
             <span class="detail-label">Diperbarui Pada</span>
             <span class="detail-value">
-              {{ $perusahaan->updated_at->translatedFormat('d M Y') }}
-              <div class="detail-value-meta">Pukul {{ $perusahaan->updated_at->translatedFormat('H:i') }}
+              {{-- Bagian Tanggal --}}
+              <span class="local-date-only">{{ $perusahaan->updated_at->toIso8601String() }}</span>
+
+              {{-- Bagian Jam --}}
+              <div class="detail-value-meta">
+                Pukul <span class="local-time-only">{{ $perusahaan->updated_at->toIso8601String() }}</span>
               </div>
             </span>
           </div>
@@ -68,9 +76,8 @@
       </div>
     </div>
 
-    {{-- Kolom Kanan: Statistik & Daftar Aset --}}
+    {{-- Kolom Kanan: Statistik & Daftar Aset (Biarkan Saja, tidak ada perubahan) --}}
     <div class="col-12 col-lg-4">
-
       <div class="card card-detail mb-4">
         <div class="card-body">
           <div class="row">
@@ -99,8 +106,6 @@
                     <h6 class="mb-1 fw-bold">{{ $kendaraan->nama }}</h6>
                     <span class="badge bg-light text-dark border">{{ $kendaraan->plat }}</span>
                   </div>
-                  {{-- Jika ingin link ke detail kendaraan, bisa dibuka komentar di bawah ini --}}
-                  {{-- <a href="{{ route('kendaraan.show', $kendaraan->id) }}" class="btn btn-sm btn-light"><i class="ri-arrow-right-s-line"></i></a> --}}
                 </li>
               @endforeach
             </ul>
@@ -111,10 +116,46 @@
           @endif
         </div>
       </div>
-
     </div>
   </div>
 @endsection
 
 @section('scripts')
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+      // 1. Fungsi Format Tanggal (Contoh: 25 Desember 2023)
+      function convertToLocalDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('id-ID', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }).format(date);
+      }
+
+      // 2. Fungsi Format Jam (Contoh: 14:30)
+      function convertToLocalTime(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }).format(date).replace(/\./g, ':');
+      }
+
+      // Eksekusi untuk Tanggal
+      document.querySelectorAll('.local-date-only').forEach(el => {
+        el.textContent = convertToLocalDate(el.textContent);
+      });
+
+      // Eksekusi untuk Jam
+      document.querySelectorAll('.local-time-only').forEach(el => {
+        el.textContent = convertToLocalTime(el.textContent);
+      });
+
+    });
+  </script>
 @endsection

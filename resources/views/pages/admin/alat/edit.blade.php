@@ -1,14 +1,8 @@
 @extends('layouts.master')
 
 @section('content')
-  <div class="form-header mb-4">
-    <div class="d-flex align-items-center justify-content-between">
-      <div>
-        <h1>Edit Alat</h1>
-        <p>Perbarui data perangkat {{ $alat->kode_alat }}</p>
-      </div>
-    </div>
-  </div>
+  {{-- ... (Header & Form Kiri Biarkan Saja) ... --}}
+
   <div class="row">
     <div class="col-12 col-lg-8">
       <div class="card form-card">
@@ -81,6 +75,7 @@
       </div>
     </div>
 
+    {{-- UPDATE BAGIAN LOG SISTEM (SIDEBAR KANAN) --}}
     <div class="col-12 col-lg-4">
       <div class="card form-card">
         <div class="card-header border-bottom bg-white py-3">
@@ -90,19 +85,58 @@
           <div class="mb-3">
             <small class="text-muted d-block mb-1">Dibuat pada:</small>
             <div class="fw-medium">
-              {{ $alat->created_at->translatedFormat('d F Y') }}
-              <span class="text-muted text-xs dynamic-date">({{ $alat->created_at->format('H:i') }})</span>
+              {{-- Tanggal --}}
+              <span class="local-date">{{ $alat->created_at->toIso8601String() }}</span>
+              {{-- Jam --}}
+              <span class="text-muted text-xs">
+                (<span class="local-time">{{ $alat->created_at->toIso8601String() }}</span>)
+              </span>
             </div>
           </div>
           <div class="mb-0">
             <small class="text-muted d-block mb-1">Terakhir diperbarui:</small>
             <div class="fw-medium">
-              {{ $alat->updated_at->translatedFormat('d F Y') }}
-              <span class="text-muted text-xs">({{ $alat->updated_at->format('H:i') }})</span>
+              {{-- Tanggal --}}
+              <span class="local-date">{{ $alat->updated_at->toIso8601String() }}</span>
+              {{-- Jam --}}
+              <span class="text-muted text-xs">
+                (<span class="local-time">{{ $alat->updated_at->toIso8601String() }}</span>)
+              </span>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+@endsection
+
+{{-- TAMBAHKAN BAGIAN SCRIPT INI --}}
+@section('scripts')
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Format Tanggal (Contoh: 25 Desember 2023)
+      function convertDate(dateString) {
+        if (!dateString) return '-';
+        return new Intl.DateTimeFormat('id-ID', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        }).format(new Date(dateString));
+      }
+
+      // 2. Format Jam (Contoh: 14:30)
+      function convertTime(dateString) {
+        if (!dateString) return '-';
+        return new Intl.DateTimeFormat('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }).format(new Date(dateString)).replace(/\./g, ':');
+      }
+
+      // Eksekusi perubahan teks di HTML
+      document.querySelectorAll('.local-date').forEach(el => el.textContent = convertDate(el.textContent));
+      document.querySelectorAll('.local-time').forEach(el => el.textContent = convertTime(el.textContent));
+    });
+  </script>
 @endsection

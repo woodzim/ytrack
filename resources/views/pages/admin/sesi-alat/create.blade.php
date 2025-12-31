@@ -1,132 +1,150 @@
 @extends('layouts.master')
 
 @section('styles')
-  @vite(['resources/assets/scss/select2.scss', 'resources/assets/scss/select2-bootstrap-theme.scss'])
+  {{-- 1. Gunakan CDN agar Select2 & Style termuat sempurna --}}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+
+  <style>
+    /* Agar tinggi input Select2 pas dengan konten custom (badge) */
+    .select2-container .select2-selection--single {
+      height: 48px !important;
+      display: flex;
+      align-items: center;
+    }
+
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+      display: block;
+      width: 100%;
+      padding-top: 4px;
+    }
+  </style>
 @endsection
 
 @section('content')
   <div class="page-header-section d-flex align-items-center justify-content-between">
     <div>
-      <h1>Buat Sesi Alat</h1>
-      <p>Tetapkan alat GPS untuk kendaraan tertentu</p>
+      <h1 class="fw-bold">Buat Sesi Alat</h1>
+      <p class="">Tetapkan alat GPS untuk kendaraan berdasarkan perusahaan</p>
     </div>
   </div>
+
   <div class="row">
-    <div class="col-12">
-      <div class="form-container">
-        <div class="form-card card custom-card">
-          <div class="card-header">
-            <div class="card-title">Informasi Sesi</div>
-          </div>
-          <div class="card-body">
-            <form action="{{ route('sesi-alat.store') }}" method="POST">
-              @csrf
+    {{-- KOLOM KIRI: FORM --}}
+    <div class="col-lg-8 col-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Informasi Sesi</div>
+        </div>
+        <div class="card-body">
+          <form action="{{ route('sesi-alat.store') }}" method="POST">
+            @csrf
 
-              <div class="mb-3">
-                <label for="id_perusahaan" class="form-label">
-                  Perusahaan <span class="text-danger">*</span>
-                </label>
-                <select name="id_perusahaan" id="id_perusahaan"
-                  class="form-select @error('id_perusahaan') is-invalid @enderror" required>
-                  <option value="">-- Pilih Perusahaan --</option>
-                  @foreach ($perusahaan as $item)
-                    <option value="{{ $item->id }}" {{ old('id_perusahaan') == $item->id ? 'selected' : '' }}>
-                      {{ $item->nama }}
-                    </option>
-                  @endforeach
-                </select>
-                @error('id_perusahaan')
-                  <small class="text-danger d-block mt-1">{{ $message }}</small>
-                @enderror
-              </div>
+            {{-- 1. Pilih Perusahaan --}}
+            <div class="mb-4">
+              <label for="id_perusahaan" class="form-label">
+                Perusahaan <span class="text-danger">*</span>
+              </label>
+              <select name="id_perusahaan" id="id_perusahaan"
+                class="form-select select2-custom @error('id_perusahaan') is-invalid @enderror" required>
+                <option value="">-- Pilih Perusahaan --</option>
+                @foreach ($perusahaan as $item)
+                  <option value="{{ $item->id }}" {{ old('id_perusahaan') == $item->id ? 'selected' : '' }}>
+                    {{ $item->nama }}
+                  </option>
+                @endforeach
+              </select>
+              @error('id_perusahaan')
+                <small class="text-danger d-block mt-1">{{ $message }}</small>
+              @enderror
+            </div>
 
-              <div class="mb-3">
+            <div class="row mb-4">
+              {{-- 2. Pilih Kendaraan (Load via AJAX) --}}
+              <div class="col-md-6">
                 <label for="id_kendaraan" class="form-label">
                   Kendaraan <span class="text-danger">*</span>
                 </label>
                 <select name="id_kendaraan" id="id_kendaraan"
-                  class="form-select @error('id_kendaraan') is-invalid @enderror" required disabled>
-                  <option value="">-- Pilih Perusahaan Terlebih Dahulu --</option>
+                  class="form-select select2-custom @error('id_kendaraan') is-invalid @enderror" required disabled>
+                  <option value="">-- Pilih Kendaraan --</option>
                 </select>
                 @error('id_kendaraan')
                   <small class="text-danger d-block mt-1">{{ $message }}</small>
                 @enderror
               </div>
 
-              <div class="mb-3">
+              {{-- 3. Pilih Alat (Load via AJAX) --}}
+              <div class="col-md-6">
                 <label for="id_alat" class="form-label">
                   Alat GPS <span class="text-danger">*</span>
                 </label>
-                {{-- Hapus @foreach loop PHP disini, kita pakai JS --}}
-                <select name="id_alat" id="id_alat" class="form-select @error('id_alat') is-invalid @enderror" required
-                  disabled>
-                  <option value="">-- Pilih Perusahaan Terlebih Dahulu --</option>
+                <select name="id_alat" id="id_alat"
+                  class="form-select select2-custom @error('id_alat') is-invalid @enderror" required disabled>
+                  <option value="">-- Pilih Alat --</option>
                 </select>
-
                 @error('id_alat')
                   <small class="text-danger d-block mt-1">{{ $message }}</small>
                 @enderror
-
-                {{-- Informasi Tambahan --}}
-                <div class="form-text text-muted">
-                  <i class="ri-information-line me-1"></i>Hanya alat yang dimiliki perusahaan yang akan muncul.
-                </div>
               </div>
-
-              <div class="mb-4">
-                <label for="nama" class="form-label">
-                  Nama Sesi <span class="text-muted fw-normal">(Opsional)</span>
-                </label>
-                <input type="text" name="nama" id="nama"
-                  class="form-control @error('nama') is-invalid @enderror" placeholder="Contoh: Sesi Tracking Koransi"
-                  value="{{ old('nama') }}">
-                @error('nama')
-                  <small class="text-danger d-block mt-1">{{ $message }}</small>
-                @enderror
-                <small class="text-muted d-block mt-1">Berikan nama unik untuk membedakan sesi jika diperlukan</small>
-              </div>
-
-              <div class="d-flex gap-2 justify-content-end">
-                <a href="{{ route('sesi-alat.index') }}" class="btn btn-light">
-                  <i class="ri-close-line me-1"></i>Batal
-                </a>
-                <button type="submit" class="btn btn-primary">
-                  <i class="ri-check-line me-1"></i>Buat Sesi
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="">
-          <div class="card custom-card bg-primary-transparent">
-            <div class="card-body">
-              <h6 class="fw-bold text-primary mb-3">Informasi Penting</h6>
-
-              <ul class="list-unstyled mb-0 d-grid gap-3">
-                <li class="d-flex align-items-start">
-                  <i class="ri-filter-3-line text-primary me-3"></i>
-                  <div>
-                    <strong>Filter Aset Otomatis</strong>
-                    <p class="small text-muted mb-0">Hanya kendaraan dan alat milik perusahaan terpilih yang muncul.</p>
-                  </div>
-                </li>
-                <li class="d-flex align-items-start">
-                  <i class="ri-link-unlink-m text-primary me-3"></i>
-                  <div>
-                    <strong>Satu Alat per Sesi</strong>
-                    <p class="small text-muted mb-0">Setiap alat GPS hanya dapat aktif di satu kendaraan sekaligus.</p>
-                  </div>
-                </li>
-                <li class="d-flex align-items-start">
-                  <i class="ri-car-line text-primary me-3"></i>
-                  <div>
-                    <strong>Satu Kendaraan per Alat</strong>
-                    <p class="small text-muted mb-0">Setiap kendaraan hanya dapat memiliki satu alat aktif sekaligus.</p>
-                  </div>
-                </li>
-              </ul>
             </div>
-          </div>
+
+            <div class="mb-4">
+              <label for="nama" class="form-label">
+                Nama Sesi <span class="text-muted fw-normal">(Opsional)</span>
+              </label>
+              <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror"
+                placeholder="Contoh: Sesi Tracking Koransi" value="{{ old('nama') }}">
+              <small class="text-muted d-block mt-1">Berikan nama unik untuk membedakan sesi jika diperlukan</small>
+              @error('nama')
+                <small class="text-danger d-block mt-1">{{ $message }}</small>
+              @enderror
+            </div>
+
+            <div class="d-flex gap-2 justify-content-end border-top pt-3">
+              <a href="{{ route('sesi-alat.index') }}" class="btn btn-light">
+                <i class="ri-close-line me-1"></i>Batal
+              </a>
+              <button type="submit" class="btn btn-primary">
+                <i class="ri-check-line me-1"></i>Buat Sesi
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {{-- KOLOM KANAN: INFO --}}
+    <div class="col-lg-4 col-12">
+      <div class="card custom-card bg-primary-transparent">
+        <div class="card-body">
+          <h6 class="fw-bold text-primary mb-3">Informasi Penting</h6>
+
+          <ul class="list-unstyled mb-0 d-grid gap-3">
+            <li class="d-flex align-items-start">
+              <i class="ri-filter-3-line text-primary me-3 mt-1"></i>
+              <div>
+                <strong>Filter Aset Otomatis</strong>
+                <p class="small text-muted mb-0">Hanya kendaraan dan alat milik perusahaan terpilih yang muncul.</p>
+              </div>
+            </li>
+            <li class="d-flex align-items-start">
+              <i class="ri-lock-line text-primary me-3 mt-1"></i>
+              <div>
+                <strong>Status Ketersediaan</strong>
+                <p class="small text-muted mb-0">Item yang sedang aktif di sesi lain akan ditandai "Digunakan" dan tidak
+                  bisa dipilih.</p>
+              </div>
+            </li>
+            <li class="d-flex align-items-start">
+              <i class="ri-car-line text-primary me-3 mt-1"></i>
+              <div>
+                <strong>Satu Kendaraan per Alat</strong>
+                <p class="small text-muted mb-0">Setiap kendaraan hanya dapat memiliki satu alat aktif sekaligus.</p>
+              </div>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -134,133 +152,194 @@
 @endsection
 
 @section('scripts')
-  @vite(['resources/assets/js/jquery.js', 'resources/assets/js/select2.js'])
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Definisikan Element
-      const perusahaanSelect = document.getElementById('id_perusahaan');
-      const kendaraanSelect = document.getElementById('id_kendaraan');
-      const alatSelect = document.getElementById('id_alat');
+    $(document).ready(function() {
+      const oldKendaraan = "{{ old('id_kendaraan') }}";
+      const oldAlat = "{{ old('id_alat') }}";
 
-      // 1. Initialize Select2
-      const configSelect2 = {
+      // ============================================
+      // 1. FORMATTER FUNCTION (Hanya untuk Kendaraan & Alat)
+      // ============================================
+      function formatOption(state) {
+        if (!state.id) return state.text;
+
+        const element = state.element;
+        const isActive = $(element).data('active') === true || $(element).data('active') === "true";
+        const info = $(element).data('info');
+
+        let $container = $('<div></div>');
+
+        if (isActive) {
+          // ITEM DIGUNAKAN
+          $container.addClass('text-muted opacity-75');
+          $container.append(
+            `<div class="d-flex justify-content-between align-items-center">
+                <strong>${state.text}</strong>
+                <span class="badge bg-danger-transparent text-danger border border-danger border-opacity-25">
+                    <i class="ri-lock-line me-1"></i>Digunakan
+                </span>
+            </div>`
+          );
+          if (info) {
+            $container.append(
+              `<small class="d-block mt-1 text-danger fst-italic" style="font-size:11px;"><i class="ri-information-line me-1"></i>${info}</small>`
+            );
+          }
+        } else {
+          // ITEM TERSEDIA
+          $container.append(
+            `<div class="d-flex justify-content-between align-items-center">
+                <strong>${state.text}</strong>
+                <span class="badge bg-success-transparent text-success border border-success border-opacity-25">
+                    <i class="ri-check-line me-1"></i>Tersedia
+                </span>
+            </div>`
+          );
+          if (info) {
+            $container.append(`<small class="d-block mt-1 text-muted" style="font-size:11px;">${info}</small>`);
+          }
+        }
+        return $container;
+      }
+
+      // ============================================
+      // 2. INIT SELECT2 (DIPISAH)
+      // ============================================
+
+      // A. Config Standar untuk PERUSAHAAN (Tanpa Badge Status)
+      $('#id_perusahaan').select2({
         theme: 'bootstrap-5',
         width: '100%',
-        allowClear: true
-      };
-
-      $(perusahaanSelect).select2({
-        ...configSelect2,
         placeholder: '-- Pilih Perusahaan --'
       });
-      $(kendaraanSelect).select2({
-        ...configSelect2,
-        placeholder: '-- Pilih Kendaraan --'
+
+      // B. Config Custom untuk KENDARAAN & ALAT (Dengan Badge Status)
+      const configWithStatus = {
+        theme: 'bootstrap-5',
+        width: '100%',
+        templateResult: formatOption, // Pakai formatter custom
+        templateSelection: formatOption, // Pakai formatter custom
+        escapeMarkup: function(m) {
+          return m;
+        }
+      };
+
+      $('#id_kendaraan').select2({
+        ...configWithStatus,
+        placeholder: ' Pilih Kendaraan '
       });
-      $(alatSelect).select2({
-        ...configSelect2,
-        placeholder: '-- Pilih Alat --'
+      $('#id_alat').select2({
+        ...configWithStatus,
+        placeholder: ' Pilih Alat '
       });
 
-      // 2. Logic AJAX: Saat Perusahaan Berubah
-      $(perusahaanSelect).on('change', function() {
-        const idPerusahaan = this.value;
-        console.log('Perusahaan selected:', idPerusahaan);
 
-        // --- RESET KONDISI AWAL ---
-        // Kosongkan dan matikan dropdown kendaraan
-        kendaraanSelect.innerHTML = '<option value="">-- Pilih Kendaraan --</option>';
-        kendaraanSelect.disabled = true;
-        $(kendaraanSelect).val(null).trigger('change');
+      // ============================================
+      // 3. LOGIC AJAX
+      // ============================================
+      $('#id_perusahaan').on('change', function() {
+        const idPerusahaan = $(this).val();
+        const $kendaraanSelect = $('#id_kendaraan');
+        const $alatSelect = $('#id_alat');
 
-        // Kosongkan dan matikan dropdown alat
-        alatSelect.innerHTML = '<option value="">-- Pilih Alat --</option>';
-        alatSelect.disabled = true;
-        $(alatSelect).val(null).trigger('change');
+        // Reset Dropdowns
+        $kendaraanSelect.empty().append('<option value="">-- Loading... --</option>').prop('disabled', true)
+          .trigger('change');
+        $alatSelect.empty().append('<option value="">-- Loading... --</option>').prop('disabled', true).trigger(
+          'change');
 
-        // Jika user memilih "kosong/pilih perusahaan", berhenti disini
         if (!idPerusahaan) {
-          kendaraanSelect.innerHTML = '<option value="">-- Pilih Perusahaan Terlebih Dahulu --</option>';
-          alatSelect.innerHTML = '<option value="">-- Pilih Perusahaan Terlebih Dahulu --</option>';
+          $kendaraanSelect.empty().append('<option value="">-- Pilih Perusahaan Terlebih Dahulu --</option>');
+          $alatSelect.empty().append('<option value="">-- Pilih Perusahaan Terlebih Dahulu --</option>');
           return;
         }
 
-        // =========================================
-        // FETCH 1: KENDARAAN
-        // =========================================
-        fetch(`{{ url('/sesi-alat-kendaraan') }}/${idPerusahaan}`)
-          .then(response => response.json())
-          .then(data => {
-            console.log('Kendaraan data:', data);
-            kendaraanSelect.innerHTML = '<option value="">-- Pilih Kendaraan --</option>';
+        // --- AJAX KENDARAAN ---
+        $.ajax({
+          url: `{{ url('/sesi-alat-kendaraan') }}/${idPerusahaan}`,
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            $kendaraanSelect.empty().append('<option value="">-- Pilih Kendaraan --</option>');
 
             if (data.length > 0) {
-              data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.id;
-                // Menampilkan Nama + Plat (jika ada)
-                let text = item.nama;
-                if (item.plat) text += ` (${item.plat})`;
-                else if (item.plat) text += ` (${item.plat})`;
-                option.textContent = text;
+              $.each(data, function(key, item) {
+                let label = item.nama;
+                // if (item.plat) label += ` (${item.plat})`;
 
-                // Re-select old input (saat validasi gagal)
-                if ('{{ old('id_kendaraan') }}' == item.id) {
-                  option.selected = true;
+                let info = item.is_active ? 'Kendaraan sedang dalam sesi aktif' : (
+                  `<i class="ri-info-card-line"></i> ${item.plat}` ||
+                  'Siap digunakan');
+
+                let newOption = new Option(label, item.id, false, false);
+
+                // Inject data attributes
+                $(newOption).attr('data-active', item.is_active);
+                $(newOption).attr('data-info', info);
+
+                if (item.is_active) {
+                  $(newOption).prop('disabled', true);
                 }
-                kendaraanSelect.appendChild(option);
-              });
-              kendaraanSelect.disabled = false;
-            } else {
-              kendaraanSelect.innerHTML = '<option value="">Tidak ada kendaraan tersedia</option>';
-            }
-            // Refresh UI Select2
-            $(kendaraanSelect).trigger('change');
-          })
-          .catch(error => {
-            console.error('Error Kendaraan:', error);
-            kendaraanSelect.innerHTML = '<option value="">Gagal memuat data</option>';
-          });
 
-        // =========================================
-        // FETCH 2: ALAT (Sesuai Permintaan)
-        // =========================================
-        fetch(`{{ url('/sesi-alat-alat') }}/${idPerusahaan}`)
-          .then(response => response.json())
-          .then(data => {
-            console.log('Alat data:', data);
-            alatSelect.innerHTML = '<option value="">-- Pilih Alat --</option>';
+                if (oldKendaraan == item.id && !item.is_active) {
+                  $(newOption).prop('selected', true);
+                }
+
+                $kendaraanSelect.append(newOption);
+              });
+              $kendaraanSelect.prop('disabled', false);
+            } else {
+              $kendaraanSelect.append('<option value="">Tidak ada kendaraan tersedia</option>');
+            }
+            $kendaraanSelect.trigger('change');
+          }
+        });
+
+        $.ajax({
+          url: `{{ url('/sesi-alat-alat') }}/${idPerusahaan}`,
+          type: 'GET',
+          dataType: 'json',
+          success: function(data) {
+            $alatSelect.empty().append('<option value="">-- Pilih Alat --</option>');
 
             if (data.length > 0) {
-              data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.id;
-                option.textContent = item.kode_alat; // Sesuaikan jika kolomnya bukan 'nama'
+              $.each(data, function(key, item) {
+                let info = item.is_active ?
+                  (item.current_vehicle ? `Sedang dipakai di: ${item.current_vehicle}` :
+                    'Sedang Aktif') :
+                  'Siap digunakan';
 
-                // Re-select old input
-                if ('{{ old('id_alat') }}' == item.id) {
-                  option.selected = true;
+                let newOption = new Option(item.kode_alat, item.id, false, false);
+
+                $(newOption).attr('data-active', item.is_active);
+                $(newOption).attr('data-info', info);
+
+                if (item.is_active) {
+                  $(newOption).prop('disabled', true);
                 }
-                alatSelect.appendChild(option);
+
+                if (oldAlat == item.id && !item.is_active) {
+                  $(newOption).prop('selected', true);
+                }
+
+                $alatSelect.append(newOption);
               });
-              alatSelect.disabled = false;
+              $alatSelect.prop('disabled', false);
             } else {
-              alatSelect.innerHTML = '<option value="">Tidak ada alat tersedia</option>';
+              $alatSelect.append('<option value="">Tidak ada alat tersedia</option>');
             }
-            // Refresh UI Select2
-            $(alatSelect).trigger('change');
-          })
-          .catch(error => {
-            console.error('Error Alat:', error);
-            alatSelect.innerHTML = '<option value="">Gagal memuat data</option>';
-          });
+            $alatSelect.trigger('change');
+          }
+        });
       });
 
-      // 3. Trigger saat halaman dimuat (jika ada error validasi sebelumnya)
-      if (perusahaanSelect.value) {
-        $(perusahaanSelect).trigger('change');
+      if ($('#id_perusahaan').val()) {
+        $('#id_perusahaan').trigger('change');
       }
+
     });
   </script>
 @endsection

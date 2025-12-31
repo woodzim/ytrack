@@ -3,37 +3,72 @@
 @section('styles')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <style>
-    .leaflet-marker-icon {
-      transition: transform 0.6s linear;
-      will-change: transform;
-    }
-
-    .pin-marker {
+    /* Wrapper Utama Marker */
+    .pin-wrapper {
       position: relative;
-      width: 36px;
-      height: 36px;
-      background: #be1e2d;
-      border-radius: 50% 50% 50% 0;
-      transform: rotate(-45deg);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      border: 3px solid white;
-    }
-
-    .pin-marker span {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      transform: rotate(45deg);
+      width: 50px;
+      height: 50px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 20px;
     }
 
-    .start-pin {
-      background: #be1e2d;
+    /* Icon Utama (Mobil/Bendera) */
+    .pin-wrapper i {
+      position: relative;
+      font-size: 32px;
+      z-index: 10;
+      /* Pastikan ikon di atas bayangan */
+      filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.3));
+      /* Efek melayang */
+      transition: all 0.3s ease;
+    }
+
+    /* Warna Khusus */
+    .truck-icon i {
+      color: #be1e2d;
+    }
+
+    /* Merah */
+    .start-icon i {
+      color: #be1e2d;
+    }
+
+    /* Hijau */
+
+    /* Animasi Denyut (Pulse) di Bawah */
+    .pin-pulse {
+      position: absolute;
+      width: 40px;
+      height: 15px;
+      /* Bentuk oval gepeng untuk bayangan/tanah */
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      bottom: 5px;
+      /* Posisi di kaki ikon */
+      z-index: 1;
+      animation: pulse-ring 2s infinite;
+    }
+
+    /* Warna Pulse Berbeda */
+    .truck-icon .pin-pulse {
+      background: rgba(190, 30, 45, 0.4);
+    }
+
+    .start-icon .pin-pulse {
+      background: rgba(16, 185, 129, 0.4);
+    }
+
+    @keyframes pulse-ring {
+      0% {
+        transform: scale(0.5);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(2.5);
+        opacity: 0;
+      }
     }
   </style>
 @endsection
@@ -200,7 +235,7 @@
               <table class="table table-sm table-hover">
                 <thead>
                   <tr style="background-color: #f8f9fa;">
-                    <th style="font-size: 12px; font-weight: 600; color: #666; width: 40px;">No</th>
+                    <th style="font-size: 12px; font-weight: 600; color: #666;">No</th>
                     <th style="font-size: 12px; font-weight: 600; color: #666;">Waktu</th>
                     <th style="font-size: 12px; font-weight: 600; color: #666;">Latitude</th>
                     <th style="font-size: 12px; font-weight: 600; color: #666;">Longitude</th>
@@ -212,19 +247,9 @@
                 <tbody>
                   @foreach ($riwayatPerjalanan as $riwayat)
                     <tr>
-                      <td style="font-size: 12px; font-weight: 600; text-align: center;">
-                        <span
-                          style="
-                            background-color: #be1e2d;
-                            color: white;
-                            padding: 4px 8px;
-                            border: 2px solid white;
-                            box-shadow:rgba(255, 255, 255, 0.2);
-                            border-radius: 100%;
-                            display: inline-block;
-                            min-width: 24px;
-                            text-align: center;
-                        ">{{ $loop->iteration }}</span>
+                      <td style="font-size: 12px; font-weight: 600; text-align: left;">
+                        <span class="badge bg-primary">
+                          {{ $loop->iteration }}</span>
                       </td>
                       <td style="font-size: 12px;">
                         <i
@@ -286,7 +311,7 @@
     let polyline = null;
     let liveLatLngs = [];
 
-    // --- Helper: Format Tanggal JS agar sama dengan PHP d-m-Y H:i:s ---
+    // --- Helper Format Tanggal ---
     function formatDateJS(dateString) {
       if (!dateString) return '-';
       const date = new Date(dateString);
@@ -299,23 +324,33 @@
       return `${d}-${m}-${y} ${h}:${min}:${s}`;
     }
 
+    // --- 1. ICON START (BENDERA HIJAU) ---
     function createStartIcon() {
       return L.divIcon({
-        html: `<div class="pin-marker start-pin" >
-            <span></span>
-            </div>`,
-        className: '',
-        iconAnchor: [18, 50]
+        html: `
+          <div class="pin-wrapper start-icon">
+            <div class=""></div>
+            <i class="ri-map-pin-line"></i>
+          </div>
+        `,
+        className: '', // Hapus style default leaflet box
+        iconSize: [50, 50],
+        iconAnchor: [25, 45] // Anchor di bagian bawah tengah agar pas di jalan
       });
     }
 
+    // --- 2. ICON TRUCK (TRUK MERAH) ---
     function createTruckIcon() {
       return L.divIcon({
-        html: `<div class="pin-marker start-pin" >
-            <span>🚚</span>
-            </div>`,
-        className: 'truck-marker',
-        iconAnchor: [18, 50]
+        html: `
+          <div class="pin-wrapper truck-icon">
+            <div class="pin-pulse"></div>
+            <i class="ri-map-pin-user-line"></i>
+          </div>
+        `,
+        className: '',
+        iconSize: [50, 50],
+        iconAnchor: [25, 45]
       });
     }
 
@@ -333,6 +368,7 @@
         maxZoom: 19
       }).addTo(map);
 
+      // --- AMBIL DATA DARI TABEL HTML (UNTUK INIT PERTAMA) ---
       const coordinates = [];
       const rows = document.querySelectorAll('.table tbody tr');
 
@@ -352,77 +388,83 @@
 
       if (coordinates.length > 0) {
         liveLatLngs = coordinates.map(c => [c.lat, c.lng]);
-
         const first = liveLatLngs[0];
         const last = liveLatLngs[liveLatLngs.length - 1];
 
+        // Marker Awal
         startMarker = L.marker(first, {
           icon: createStartIcon()
         }).addTo(map);
+
+        // Marker Akhir (Truk)
         truckMarker = L.marker(last, {
-          icon: createTruckIcon()
+          icon: createTruckIcon(),
+          zIndexOffset: 1000
         }).addTo(map);
 
+        // Garis Jalur
         polyline = L.polyline(liveLatLngs, {
           color: '#be1e2d',
           weight: 2,
           opacity: 0.8,
-          dashArray: '5, 5'
+          lineCap: 'round',
+          dashArray: '5, 5' // Efek garis putus-putus modern
         }).addTo(map);
 
         map.fitBounds(L.latLngBounds(liveLatLngs), {
-          padding: [150, 150]
+          padding: [50, 50]
         });
       } else {
-        // Set view default jika belum ada data
         map.setView([-0.502106, 117.153709], 13);
       }
 
       // ==========================================
-      // REALTIME LISTENER (MAP + TABEL)
+      // REALTIME LISTENER
       // ==========================================
       Echo.channel(`tracking.sesi.${window.SESI_ALAT_ID}`)
         .listen('RiwayatPerjalananCreated', (e) => {
-
-          // 1. UPDATE MAP (Logika Asli Tidak Diubah)
           const latLng = [e.lat, e.lng];
 
-          // Handle jika ini titik pertama kali masuk
+          // Jika data pertama kali masuk
           if (liveLatLngs.length === 0) {
             startMarker = L.marker(latLng, {
               icon: createStartIcon()
             }).addTo(map);
             truckMarker = L.marker(latLng, {
-              icon: createTruckIcon()
+              icon: createTruckIcon(),
+              zIndexOffset: 1000
             }).addTo(map);
             polyline = L.polyline([latLng], {
               color: '#be1e2d',
-              weight: 2,
+              weight: 4,
               opacity: 0.8,
-              dashArray: '5, 5'
+              lineCap: 'round',
+              dashArray: '10, 10'
             }).addTo(map);
-            map.setView(latLng, 16);
+            map.setView(latLng, 18);
           }
 
+          // Update Data Map
           liveLatLngs.push(latLng);
-
           if (polyline) polyline.setLatLngs(liveLatLngs);
-          if (truckMarker) truckMarker.setLatLng(latLng);
+
+          // Pindahkan Truk ke posisi baru
+          if (truckMarker) {
+            truckMarker.setLatLng(latLng);
+            // Opsional: Buka popup info saat bergerak
+            // truckMarker.bindPopup(`Speed: ${e.speed} km/h`).openPopup();
+          }
 
           map.panTo(latLng, {
             animate: true,
             duration: 0.5
           });
 
-          // 2. UPDATE TABEL SECARA REALTIME
+          // Update Tabel
           const tbody = document.querySelector('.table tbody');
-
           if (tbody) {
-            // Hitung nomor urut baru berdasarkan jumlah baris yang ada
             const newIndex = tbody.rows.length + 1;
             const formattedDate = formatDateJS(e.created_at || new Date());
-
-            // Siapkan HTML untuk Alt, Sat, Speed (dengan styling yang sama)
             const altDisplay = e.alt ? `${e.alt} m` : '<span class="text-muted">-</span>';
             const satDisplay = e.sat ? `<span class="badge bg-primary">${e.sat}</span>` :
               '<span class="text-muted">-</span>';
@@ -430,7 +472,6 @@
               `<span style="color: #10b981; font-weight: 600;">${e.speed} km/h</span>` :
               '<span class="text-muted">-</span>';
 
-            // Template Row (Copy-paste style dari Blade agar konsisten)
             const newRowHTML = `
                 <tr>
                   <td style="font-size: 12px; font-weight: 600; text-align: center;">
@@ -438,9 +479,7 @@
                         ${newIndex}
                     </span>
                   </td>
-                  <td style="font-size: 12px;">
-                    <i class="ri-time-line me-1"></i>${formattedDate}
-                  </td>
+                  <td style="font-size: 12px;"><i class="ri-time-line me-1"></i>${formattedDate}</td>
                   <td style="font-size: 12px;">${e.lat}</td>
                   <td style="font-size: 12px;">${e.lng}</td>
                   <td style="font-size: 12px;">${altDisplay}</td>
@@ -448,16 +487,10 @@
                   <td style="font-size: 12px;">${speedDisplay}</td>
                 </tr>
               `;
-
-            // Masukkan row baru ke bagian bawah tabel
             tbody.insertAdjacentHTML('beforeend', newRowHTML);
-
           } else {
-            // Edge Case: Jika halaman awalnya kosong (0 data), tabel belum dirender oleh Blade.
-            // Cara termudah adalah reload halaman agar tabel dirender ulang oleh Server.
             location.reload();
           }
-
         });
     });
   </script>

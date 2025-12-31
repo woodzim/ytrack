@@ -28,6 +28,8 @@ class SesiAlatController extends Controller
                 $q->where('nama', 'like', '%' . $search . '%');
             })->orWhereHas('perusahaan', function ($q) use ($search) {
                 $q->where('nama', 'like', '%' . $search . '%');
+            })->orWhereHas('alat', function ($q) use ($search) {
+                $q->where('kode_alat', 'like', '%' . $search . '%');
             });
         }
 
@@ -65,7 +67,6 @@ class SesiAlatController extends Controller
             'aktif' => 'boolean',
         ]);
 
-        // Check if alat is already in use with an active session
         $activeAlatSession = SesiAlat::where('id_alat', $validated['id_alat'])
             ->where('aktif', true)
             ->first();
@@ -74,7 +75,6 @@ class SesiAlatController extends Controller
             return back()->withInput()->with('error', 'Alat ini sudah digunakan oleh sesi lain yang aktif. Hentikan sesi sebelumnya terlebih dahulu.');
         }
 
-        // Check if kendaraan is already in use with an active session
         $activeKendaraanSession = SesiAlat::where('id_kendaraan', $validated['id_kendaraan'])
             ->where('aktif', true)
             ->first();
@@ -94,10 +94,7 @@ class SesiAlatController extends Controller
     public function show(SesiAlat $sesiAlat)
     {
         $sesiAlat->load('alat', 'kendaraan', 'perusahaan');
-
-        // Load riwayat perjalanan with pagination
         $riwayatPerjalanan = $sesiAlat->riwayatPerjalanan()->orderBy('created_at')->get();
-
         return view('pages.admin.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));
     }
 
@@ -126,7 +123,6 @@ class SesiAlatController extends Controller
             'aktif' => 'boolean',
         ]);
 
-        // Check if alat is already in use by another active session
         if ($validated['id_alat'] !== $sesiAlat->id_alat) {
             $activeAlatSession = SesiAlat::where('id_alat', $validated['id_alat'])
                 ->where('aktif', true)
@@ -138,7 +134,6 @@ class SesiAlatController extends Controller
             }
         }
 
-        // Check if kendaraan is already in use by another active session
         if ($validated['id_kendaraan'] !== $sesiAlat->id_kendaraan) {
             $activeKendaraanSession = SesiAlat::where('id_kendaraan', $validated['id_kendaraan'])
                 ->where('aktif', true)
@@ -160,7 +155,6 @@ class SesiAlatController extends Controller
      */
     public function toggle(SesiAlat $sesiAlat)
     {
-        // If trying to activate, check conflicts
         if (!$sesiAlat->aktif) {
             $activeAlatSession = SesiAlat::where('id_alat', $sesiAlat->id_alat)
                 ->where('aktif', true)
@@ -188,30 +182,69 @@ class SesiAlatController extends Controller
     /**
      * Get kendaraan by perusahaan (for AJAX)
      */
+    /**
+     * Get kendaraan by perusahaan (for AJAX)
+     * Mengembalikan SEMUA kendaraan, dengan flag is_active jika sedang dipakai.
+     */
+    /**
+     * Get kendaraan by perusahaan (for AJAX)
+     */
     public function getKendaraanByPerusahaan($idPerusahaan)
     {
-        $kendaraanTerpakai = SesiAlat::where('aktif', true)
-                            ->pluck('id_kendaraan')
-                            ->toArray();
+        $kendaraanList = Kendaraan::where('id_perusahaan', $idPerusahaan)
+            ->orderBy('nama', 'asc')
+            ->get();
 
-        $kendaraan = Kendaraan::where('id_perusahaan', $idPerusahaan)
-                        ->whereNotIn('id', $kendaraanTerpakai)
-                        ->get();
+        $data = $kendaraanList->map(function ($item) {
+            $isUsed = SesiAlat::where('id_kendaraan', $item->id)
+                ->where('aktif', true)
+                ->exists();
 
-        return response()->json($kendaraan);
+            return [
+                'id' => $item->id,
+                'nama' => $item->nama,
+                'plat' => $item->plat,
+                'is_active' => $isUsed
+            ];
+        });
+
+        $sortedData = $data->sortBy('is_active')->values();
+
+        return response()->json($sortedData);
     }
 
+    /**
+     * Get alat by perusahaan (for AJAX)
+     */
     public function getAlatByPerusahaan($idPerusahaan)
     {
-        $alatTerpakai = SesiAlat::where('aktif', true)
-                        ->pluck('id_alat')
-                        ->toArray();
+        $alatList = Alat::where('id_perusahaan', $idPerusahaan)
+            ->orderBy('kode_alat', 'asc')
+            ->get();
 
-        $alat = Alat::where('id_perusahaan', $idPerusahaan)
-                    ->whereNotIn('id', $alatTerpakai)
-                    ->get();
+        $data = $alatList->map(function ($item) {
+            $sesiAktif = SesiAlat::where('id_alat', $item->id)
+                ->where('aktif', true)
+                ->with('kendaraan')
+                ->first();
 
-        return response()->json($alat);
+            $vehicleInfo = null;
+            if ($sesiAktif && $sesiAktif->kendaraan) {
+                $vehicleInfo = $sesiAktif->kendaraan->nama . ' (' . $sesiAktif->kendaraan->plat . ')';
+            }
+
+            return [
+                'id' => $item->id,
+                'kode_alat' => $item->kode_alat,
+                'is_active' => $sesiAktif ? true : false,
+                'current_vehicle' => $vehicleInfo
+            ];
+        });
+
+        // 3. SORTING: Pindahkan yang aktif ke bawah
+        $sortedData = $data->sortBy('is_active')->values();
+
+        return response()->json($sortedData);
     }
 
     /**

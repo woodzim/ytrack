@@ -12,6 +12,7 @@
       </a>
     </div>
   </div>
+
   <div class="row">
     <div class="col-12">
       <div class="card mb-3">
@@ -54,14 +55,15 @@
                     <th>Plat Nomor</th>
                     <th>Jenis</th>
                     <th>Perusahaan</th>
-                    <th class="text-center">Aksi</th>
+                    {{-- 1. HEADER KOLOM STATUS --}}
+                    <th style="width: 15%;">Status</th>
+                    <th class="text-center" style="width: 15%;">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   @foreach ($kendaraan as $index => $item)
                     <tr>
                       <td data-label="No">
-                        {{-- Menggunakan nomor urut halaman --}}
                         <span class="badge bg-light text-dark">{{ $kendaraan->firstItem() + $index }}</span>
                       </td>
 
@@ -76,13 +78,26 @@
                       </td>
 
                       <td data-label="Jenis Kendaraan">
-                        {{-- Mengambil nama dari relasi jenisKendaraan --}}
                         {{ $item->jenisKendaraan->nama ?? '-' }}
                       </td>
 
                       <td data-label="Perusahaan">
-                        {{-- Mengambil nama dari relasi perusahaan --}}
                         <small class="text-primary">{{ $item->perusahaan->nama ?? '-' }}</small>
+                      </td>
+
+                      {{-- 2. ISI KOLOM STATUS --}}
+                      <td data-label="Status">
+                        @if ($item->sedang_digunakan)
+                          {{-- Tampilan jika Aktif (Dipakai) --}}
+                          <span class="badge bg-danger-transparent text-danger">
+                            <i class="ri-lock-line me-1"></i>Digunakan
+                          </span>
+                        @else
+                          {{-- Tampilan jika Tidak Aktif (Tersedia) --}}
+                          <span class="badge bg-success-transparent text-success">
+                            <i class="ri-checkbox-circle-line me-1"></i>Tersedia
+                          </span>
+                        @endif
                       </td>
 
                       <td data-label="Aksi" class="table-action-btns text-center">
@@ -90,15 +105,25 @@
                           title="Edit">
                           <i class="ri-edit-line"></i>
                         </a>
+
+                        {{-- Logika tambahan: Tombol hapus bisa didisable visualnya jika sedang dipakai --}}
                         <form action="{{ route('kendaraan.destroy', $item->id) }}" method="POST"
                           style="display: inline;"
                           onsubmit="return confirm('Anda yakin ingin menghapus kendaraan {{ $item->nama }}?');">
                           @csrf
                           @method('DELETE')
-                          {{-- Ganti jadi btn-danger (Merah) untuk hapus --}}
-                          <button type="submit" class="btn btn-sm btn-danger btn-wave" title="Hapus">
-                            <i class="ri-delete-bin-line"></i>
-                          </button>
+
+                          @if ($item->sedang_digunakan)
+                            {{-- Opsi A: Disable tombol hapus jika dipakai --}}
+                            <button type="button" class="btn btn-sm btn-light text-muted" title="Sedang digunakan"
+                              disabled>
+                              <i class="ri-delete-bin-line"></i>
+                            </button>
+                          @else
+                            <button type="submit" class="btn btn-sm btn-danger btn-wave" title="Hapus">
+                              <i class="ri-delete-bin-line"></i>
+                            </button>
+                          @endif
                         </form>
                       </td>
                     </tr>
@@ -107,13 +132,11 @@
               </table>
             </div>
           @else
-            {{-- Empty State --}}
             <div class="p-5 text-center">
               <div class="mb-3">
                 @if ($search)
                   <i class="ri-search-line" style="font-size: 48px; color: #ddd;"></i>
                 @else
-                  {{-- Ganti ikon gedung jadi ikon mobil --}}
                   <i class="ri-car-line" style="font-size: 56px; color: #ddd;"></i>
                 @endif
               </div>

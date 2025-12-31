@@ -12,7 +12,14 @@ class LoginController extends Controller
      */
     public function showLogin()
     {
+        // Cek jika user sudah login
         if (Auth::check()) {
+            // Jika role perusahaan -> ke dashboard.index
+            if (Auth::user()->hasRole('perusahaan')) {
+                return redirect()->route('perusahaan.dashboard.index');
+            }
+
+            // Jika admin -> ke dashboard (admin)
             return redirect()->route('dashboard');
         }
 
@@ -24,7 +31,7 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        // Validate the credentials
+        // Validate credentials
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -34,25 +41,27 @@ class LoginController extends Controller
             'password.required' => 'Password harus diisi',
         ]);
 
-        // Add remember me functionality
-        $remember = $request->has('remember') ? true : false;
+        $remember = $request->has('remember');
 
-        // Attempt to authenticate
+        // Attempt login
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
+            // LOGIKA REDIRECT
             if (Auth::user()->hasRole('perusahaan')) {
+                // Redirect khusus Perusahaan
                 return redirect()
-                    ->intended(route('kendaraan.index'))
+                    ->intended(route('perusahaan.dashboard.index')) // Sesuai request Anda
                     ->with('success', 'Login berhasil!');
             }
             
+            // Redirect Default (Admin)
             return redirect()
                 ->intended(route('dashboard'))
                 ->with('success', 'Login berhasil!');
         }
 
-        // Authentication failed
+        // Login gagal
         return back()
             ->withInput($request->only('email'))
             ->withErrors([

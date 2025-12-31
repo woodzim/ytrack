@@ -4,134 +4,157 @@ namespace App\Http\Controllers\Perusahaan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kendaraan;
+use App\Models\JenisKendaraan;
+use App\Models\SesiAlat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class KendaraanController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar kendaraan milik perusahaan yang sedang login.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $user = Auth::user();
-        
-        // Get search parameter
-        $search = request('search', '');
-        
-        // Get kendaraan for the logged-in perusahaan
-        $kendaraan = Kendaraan::where('id_perusahaan', $user->id_perusahaan)
-            ->when($search, function ($query) use ($search) {
-                return $query->where('nama', 'like', "%{$search}%");
-            })
-            ->paginate(10);
-        
+        $idPerusahaan = Auth::user()->id_perusahaan;
+        $search = $request->input('search');
+
+        // Update: Tambahkan withExists agar pengecekan status di view jauh lebih cepat
+        $query = Kendaraan::where('id_perusahaan', $idPerusahaan)
+            ->with('jenisKendaraan')
+            ->withExists(['sesiAlat as sedang_digunakan' => function ($q) {
+                $q->where('aktif', true);
+            }]);
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('plat', 'like', '%' . $search . '%')
+                    ->orWhere('nama', 'like', '%' . $search . '%');
+            });
+        }
+
+        $kendaraan = $query->latest()->paginate(10)->withQueryString();
+
         return view('pages.perusahaan.kendaraan.index', compact('kendaraan', 'search'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Form tambah kendaraan.
      */
     public function create()
     {
-        return view('pages.perusahaan.kendaraan.create');
+        $jenisKendaraan = JenisKendaraan::all();
+        return view('pages.perusahaan.kendaraan.create', compact('jenisKendaraan'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Simpan kendaraan baru.
      */
     public function store(Request $request)
     {
+        // 1. Validasi Input
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-        ], [
-            'nama.required' => 'Nama kendaraan harus diisi',
-            'nama.string' => 'Nama kendaraan harus berupa teks',
-            'nama.max' => 'Nama kendaraan maksimal 255 karakter',
+            'id_jenis_kendaraan' => 'required|exists:jenis_kendaraan,id',
+            'nama'               => 'required|string|max:255',
+            'plat'               => 'required|string|max:20|unique:kendaraan,plat',
+        ],[
+            'nama.required'               => 'Nama kendaraan harus diisi',
+            'plat.required'               => 'Nomor plat harus diisi',
+            'plat.unique'                 => 'Nomor plat ini sudah terdaftar',
+
         ]);
 
-        $user = Auth::user();
-
+        // 2. Simpan ke Database
         Kendaraan::create([
-            'id_perusahaan' => $user->id_perusahaan,
-            'nama' => $validated['nama'],
+            'id_perusahaan'      => Auth::user()->id_perusahaan,
+            'id_jenis_kendaraan' => $validated['id_jenis_kendaraan'],
+            'nama'               => $validated['nama'],
+            'plat'               => $validated['plat'],
         ]);
 
-        return redirect()->route('kendaraan.index')
-                       ->with('success', 'Kendaraan berhasil ditambahkan');
+        return redirect()->route('perusahaan.kendaraan.index')
+                            ->with('success', 'Kendaraan berhasil ditambahkan.');
     }
 
     /**
-     * Display the specified resource.
+     * Form edit kendaraan.
      */
-    public function show(Kendaraan $kendaraan)
+    public function edit($id)
     {
-        $user = Auth::user();
-        
-        // Verify that kendaraan belongs to this perusahaan
-        if ($kendaraan->id_perusahaan !== $user->id_perusahaan) {
-            return abort(403, 'Unauthorized');
-        }
+        // Pastikan hanya bisa edit kendaraan milik perusahaan sendiri
+        $kendaraan = Kendaraan::where('id', $id)
+            ->where('id_perusahaan', Auth::user()->id_perusahaan)
+            ->firstOrFail();
 
-        return view('pages.perusahaan.kendaraan.show', compact('kendaraan'));
+        $jenisKendaraan = JenisKendaraan::all();
+
+        return view('pages.perusahaan.kendaraan.edit', compact('kendaraan', 'jenisKendaraan'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update data kendaraan.
      */
-    public function edit(Kendaraan $kendaraan)
+    public function update(Request $request, $id)
     {
-        $user = Auth::user();
-        
-        // Verify that kendaraan belongs to this perusahaan
-        if ($kendaraan->id_perusahaan !== $user->id_perusahaan) {
-            return abort(403, 'Unauthorized');
-        }
-
-        return view('pages.perusahaan.kendaraan.edit', compact('kendaraan'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Kendaraan $kendaraan)
-    {
-        $user = Auth::user();
-        
-        // Verify that kendaraan belongs to this perusahaan
-        if ($kendaraan->id_perusahaan !== $user->id_perusahaan) {
-            return abort(403, 'Unauthorized');
-        }
+        $kendaraan = Kendaraan::where('id', $id)
+            ->where('id_perusahaan', Auth::user()->id_perusahaan)
+            ->firstOrFail();
 
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-        ], [
-            'nama.required' => 'Nama kendaraan harus diisi',
-            'nama.string' => 'Nama kendaraan harus berupa teks',
-            'nama.max' => 'Nama kendaraan maksimal 255 karakter',
+            'id_jenis_kendaraan' => 'required|exists:jenis_kendaraan,id',
+            'nama'               => 'required|string|max:255',
+            // VALIDASI UNIQUE UPDATE: Abaikan ID kendaraan ini saat pengecekan
+            'plat'               => 'required|string|max:20|unique:kendaraan,plat,' . $kendaraan->id,
+        ],[
+            'nama.required'               => 'Nama kendaraan harus diisi',
+            'plat.required'               => 'Nomor plat harus diisi',
+            'plat.unique'                 => 'Nomor plat ini sudah terdaftar',
+
         ]);
 
-        $kendaraan->update($validated);
+        $kendaraan->update([
+            'id_jenis_kendaraan' => $validated['id_jenis_kendaraan'],
+            'nama'               => $validated['nama'],
+            'plat'               => $validated['plat'],
+        ]);
 
-        return redirect()->route('kendaraan.show', $kendaraan->id)
-                       ->with('success', 'Kendaraan berhasil diperbarui');
+        return redirect()->route('perusahaan.kendaraan.index')
+                            ->with('success', 'Data kendaraan berhasil diperbarui.');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Hapus kendaraan.
      */
-    public function destroy(Kendaraan $kendaraan)
+    public function destroy($id)
     {
-        $user = Auth::user();
-        
-        // Verify that kendaraan belongs to this perusahaan
-        if ($kendaraan->id_perusahaan !== $user->id_perusahaan) {
-            return abort(403, 'Unauthorized');
+        $idPerusahaan = Auth::user()->id_perusahaan;
+
+        // 1. Cek apakah kendaraan ini sedang dipakai (Aktif)
+        $sedangDigunakan = SesiAlat::where('id_kendaraan', $id)
+            ->where('aktif', true)
+            ->exists();
+
+        if ($sedangDigunakan) {
+            // Jika aktif, kembalikan dengan pesan error
+            return redirect()->route('perusahaan.kendaraan.index')
+                ->with('error', 'Gagal menghapus! Kendaraan sedang beroperasi (Status: Jalan). Harap selesaikan sesi terlebih dahulu.');
         }
 
-        $kendaraan->delete();
+        // 2. Cari dan Hapus
+        $kendaraan = Kendaraan::where('id', $id)
+            ->where('id_perusahaan', $idPerusahaan)
+            ->firstOrFail();
 
-        return redirect()->route('kendaraan.index')
-                       ->with('success', 'Kendaraan berhasil dihapus');
+        try {
+            $kendaraan->delete();
+            
+            return redirect()->route('perusahaan.kendaraan.index')
+                ->with('success', 'Kendaraan berhasil dihapus.');
+                
+        } catch (\Exception $e) {
+            // Antisipasi jika database menolak (constraint)
+            return redirect()->route('perusahaan.kendaraan.index')
+                ->with('error', 'Kendaraan tidak bisa dihapus karena memiliki riwayat penggunaan.');
+        }
     }
 }

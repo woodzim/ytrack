@@ -19,7 +19,7 @@ class PerusahaanController extends Controller
         
         if ($search) {
             $perusahaan->where('nama', 'like', '%' . $search . '%')
-                       ->orWhere('alamat', 'like', '%' . $search . '%');
+                        ->orWhere('alamat', 'like', '%' . $search . '%');
         }
         
         $perusahaan = $perusahaan->paginate(10)->appends(request()->query());
