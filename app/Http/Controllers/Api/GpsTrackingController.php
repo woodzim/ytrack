@@ -8,6 +8,7 @@ use App\Models\SesiAlat;
 use App\Models\Alat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Events\RiwayatPerjalananCreated;
 
 class GpsTrackingController extends Controller
 {
@@ -17,6 +18,30 @@ class GpsTrackingController extends Controller
      */
     public function submitGps(Request $request)
     {
+        if (!$request->hasHeader('Authorization')) {
+            Log::warning('Mencoba mengakses submit-gps tanpa Authorization header.', [
+                'ip' => $request->ip(),
+                'user_agent' => $request->header('User-Agent')
+            ]);
+
+            return response()->json([
+                'status_code' => 401,
+                'message' => 'Unauthorized: Tidak ada header Authorization.'
+            ], 401);
+        }
+
+        if ($request->header('Authorization') !== config('gps_tracking.api_key')) {
+            Log::warning('Mencoba mengakses submit-gps dengan Authorization header yang tidak valid.', [
+                'ip' => $request->ip(),
+                'user_agent' => $request->header('User-Agent')
+            ]);
+
+            return response()->json([
+                'status_code' => 401,
+                'message' => 'Unauthorized: Header Authorization tidak valid.'
+            ], 401);
+        }
+
         try {
             // Validate request
             $validated = $request->validate([
@@ -90,6 +115,18 @@ class GpsTrackingController extends Controller
                 'sat' => $validated['sat'] ?? null,
                 'speed' => $validated['speed'] ?? null,
             ]);
+
+            if ($idSesiAlat) {
+                event(new RiwayatPerjalananCreated(
+                    $idSesiAlat,
+                    $riwayat->lat,
+                    $riwayat->long,
+                    $riwayat->created_at->toDateTimeString(),
+                    $riwayat->speed,
+                    $riwayat->alt,
+                    $riwayat->sat
+                ));
+            }
 
             return response()->json([
                 'status_code' => 201,

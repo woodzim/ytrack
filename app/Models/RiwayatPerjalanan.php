@@ -61,5 +61,18 @@ class RiwayatPerjalanan extends Model
     {
         return $this->belongsTo(Alat::class, 'id_alat');
     }
+
+    /**
+     * Scope a query to only include uncompleted riwayat perjalanan.
+     */
+    public function scopeUncompleted($query)
+    {
+        return $query->where(function ($query) {
+            $query->whereNull('id_sesi_alat')
+                ->orWhereNull('id_alat')
+                ->orWhereNull('id_kendaraan')
+                ->orWhereNull('id_perusahaan');
+        });
+    }
 }
 

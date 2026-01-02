@@ -18,6 +18,10 @@ class Perusahaan extends Model
     {
         return $this->hasMany(Kendaraan::class, 'id_perusahaan');
     }
+    public function alat()
+    {
+        return $this->hasMany(Alat::class, 'id_perusahaan');
+    }
 
     public function sesiAlat()
     {

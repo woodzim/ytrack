@@ -21,19 +21,19 @@ return new class extends Migration
 
             // Foreign key constraints
             $table->foreign('id_alat')
-                  ->references('id')
-                  ->on('alat')
-                  ->cascadeOnDelete();
+                    ->references('id')
+                    ->on('alat')
+                    ->cascadeOnDelete();
 
             $table->foreign('id_kendaraan')
-                  ->references('id')
-                  ->on('kendaraan')
-                  ->cascadeOnDelete();
+                    ->references('id')
+                    ->on('kendaraan')
+                    ->cascadeOnDelete();
 
             $table->foreign('id_perusahaan')
-                  ->references('id')
-                  ->on('perusahaan')
-                  ->nullOnDelete();
+                    ->references('id')
+                    ->on('perusahaan')
+                    ->nullOnDelete();
         });
     }
 

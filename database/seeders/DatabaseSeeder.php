@@ -3,8 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Perusahaan;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\Models\Role;
+
+use function Symfony\Component\String\u;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +17,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            JenisKendaraanSeeder::class,
+            UserSeeder::class,       
+            PerusahaanSeeder::class, 
+            KendaraanSeeder::class,
         ]);
     }
 }

@@ -13,8 +13,13 @@ export default defineConfig({
                 'resources/css/app.css', 
                 'resources/sass/app.scss', 
                 'resources/js/app.js',
-  
+                
                 // Resources assets js file paths
+                'resources/assets/js/jquery.js',
+                'resources/assets/js/select2.js',
+                'resources/assets/scss/select2.scss',
+                'resources/assets/scss/select2-bootstrap-theme.scss',
+                
                 'resources/assets/js/add-products',
                 'resources/assets/js/alerts',
                 'resources/assets/js/analytics-dashboard',

@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('alat', function (Blueprint $table) {
             $table->string('id')->primary();
+            $table->string('kode_alat')->unique();
+            $table->unsignedBigInteger('id_perusahaan')->nullable();
             $table->timestamps();
+
+            $table->foreign('id_perusahaan')
+                ->references('id')
+                ->on('perusahaan')
+                ->onDelete('set null');
         });
     }
 

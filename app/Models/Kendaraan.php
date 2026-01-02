@@ -10,13 +10,25 @@ class Kendaraan extends Model
     
     protected $fillable = [
         'id_perusahaan',
+        'id_jenis_kendaraan',
         'nama',
+        'plat',
     ];
+
+    public function setPlatAttribute($value)
+    {
+        $this->attributes['plat'] = strtoupper($value);
+    }
 
     // Relationships
     public function perusahaan()
     {
         return $this->belongsTo(Perusahaan::class, 'id_perusahaan');
+    }
+    
+    public function jenisKendaraan()
+    {
+        return $this->belongsTo(JenisKendaraan::class, 'id_jenis_kendaraan');
     }
 
     public function sesiAlat()
