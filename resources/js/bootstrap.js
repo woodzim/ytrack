@@ -6,13 +6,20 @@ import Pusher from "pusher-js";
 window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
 
 window.Echo = new Echo({
-    broadcaster: "reverb",
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST ?? "localhost",
-    wsPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
-    wssPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
-    forceTLS: false,
-    enabledTransports: ["ws", "wss"],
+broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY, // <--- Pastikan ini pakai VITE_
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'mt1',
+    wsHost: import.meta.env.VITE_PUSHER_HOST ? import.meta.env.VITE_PUSHER_HOST : `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
+    wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
+    wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
+    forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
+    enabledTransports: ['ws', 'wss'],    // broadcaster: "reverb",
+    // key: import.meta.env.VITE_REVERB_APP_KEY,
+    // wsHost: import.meta.env.VITE_REVERB_HOST ?? "localhost",
+    // wsPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
+    // wssPort: import.meta.env.VITE_REVERB_PORT ?? 8080,
+    // forceTLS: false,
+    // enabledTransports: ["ws", "wss"],
 });
 
 /**

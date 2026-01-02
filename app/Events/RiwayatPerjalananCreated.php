@@ -7,10 +7,11 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RiwayatPerjalananCreated implements ShouldBroadcast
+class RiwayatPerjalananCreated implements ShouldBroadcast, ShouldQueue
 {
     public function __construct(
         public int $sesiAlatId,
@@ -26,6 +27,10 @@ class RiwayatPerjalananCreated implements ShouldBroadcast
     public function broadcastOn()
     {
         return new Channel('tracking.sesi.' . $this->sesiAlatId);
+    }
+    public function broadcastAs()
+    {
+        return 'LokasiBaru';
     }
 }
 
