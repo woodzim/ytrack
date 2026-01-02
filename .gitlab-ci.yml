@@ -13,7 +13,7 @@ build_assets:
     - main
   script:
     - echo "Installing dependencies..."
-    - npm ci --prefer-offline --no-audit
+    - npm install --prefer-offline --no-audit
     - echo "Building production assets..."
     - npm run build
     - echo "✅ Build completed successfully!"
