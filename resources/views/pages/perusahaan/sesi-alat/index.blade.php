@@ -26,9 +26,9 @@
               <label for="searchInput" class="form-label fw-medium mb-1">Cari Sesi</label>
               <div class="input-group">
                 <span class="input-group-text bg-light border-end-0"><i class="ri-search-line text-muted"></i></span>
-                {{-- Perbaikan: Menggunakan request('search') agar lebih aman --}}
+                {{-- Input pencarian --}}
                 <input type="text" id="searchInput" name="search" class="form-control border-start-0 ps-0"
-                  placeholder="Cari nama sesi, alat, atau kendaraan..." value="{{ request('search') }}">
+                  placeholder="Cari nama sesi, serial number alat, atau kendaraan..." value="{{ request('search') }}">
               </div>
             </div>
 
@@ -37,7 +37,6 @@
               <label for="statusFilter" class="form-label fw-medium mb-1">Status</label>
               <select id="statusFilter" name="status" class="form-select">
                 <option value="">Semua Status</option>
-                {{-- Perbaikan: Menggunakan request('status') --}}
                 <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Aktif</option>
                 <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Nonaktif</option>
               </select>
@@ -74,7 +73,7 @@
                   <tr>
                     <th scope="col">Nama Sesi</th>
                     <th scope="col">Kendaraan</th>
-                    <th scope="col">Alat GPS</th>
+                    <th scope="col">Alat GPS (SN)</th>
                     <th scope="col">Status</th>
                     <th scope="col">Update Terakhir</th>
                     <th scope="col" class="text-center" style="width: 150px;">Aksi</th>
@@ -106,8 +105,9 @@
                       <td>
                         @if ($item->alat)
                           <span class="badge bg-light text-dark border">
-                            <i class="ri-map-pin-user-line me-1"></i>
-                            {{ $item->alat->kode_alat }}
+                            <i class="ri-cpu-line me-1"></i>
+                            {{-- PERUBAHAN DI SINI: Menggunakan ID (Serial Number) --}}
+                            {{ $item->alat->id }}
                           </span>
                         @else
                           <span class="text-muted">-</span>
@@ -200,7 +200,6 @@
         if (rawDate) {
           const date = new Date(rawDate);
 
-          // PERBAIKAN: Menambahkan Jam dan Menit agar lebih detail
           const formatted = new Intl.DateTimeFormat('id-ID', {
             day: 'numeric',
             month: 'short', // 'Des'

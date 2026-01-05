@@ -87,7 +87,7 @@
 
               <div class="col-md-6">
                 <label for="id_alat" class="form-label">
-                  Alat GPS <span class="text-danger">*</span>
+                  Serial Number Alat (ID) <span class="text-danger">*</span>
                 </label>
                 <select class="form-select select2-custom @error('id_alat') is-invalid @enderror" id="id_alat"
                   name="id_alat" required>
@@ -96,15 +96,16 @@
                   @foreach ($alat as $a)
                     @php
                       $isActive = $a->sesiAlat->isNotEmpty();
+                      // Info logic: Jika aktif tampilkan dipakai dimana, jika tidak tampilkan status siap
                       $usedBy =
                           $isActive && $a->sesiAlat->first()->kendaraan
                               ? 'Dipakai di: ' . $a->sesiAlat->first()->kendaraan->nama
-                              : 'SN: ' . $a->id;
+                              : 'Siap digunakan';
                     @endphp
                     <option value="{{ $a->id }}" {{ $isActive ? 'disabled' : '' }}
                       {{ old('id_alat') == $a->id ? 'selected' : '' }} data-active="{{ $isActive ? 'true' : 'false' }}"
                       data-info="{{ $usedBy }}">
-                      {{ $a->kode_alat }}
+                      {{ $a->id }}
                     </option>
                   @endforeach
                 </select>

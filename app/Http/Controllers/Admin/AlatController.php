@@ -10,20 +10,9 @@ use Illuminate\Validation\Rule;
 
 class AlatController extends Controller
 {
-    private function generateKodeAlat()
-    {
-        $lastAlat = Alat::where('kode_alat', 'like', 'YTR_%')
-                        ->orderByRaw('LENGTH(kode_alat) DESC') 
-                        ->orderBy('kode_alat', 'desc')
-                        ->first();
-        if (!$lastAlat) {
-            return 'YTR_001';
-        }
-        $lastNumber = (int) substr($lastAlat->kode_alat, 4);
-        $newNumber = $lastNumber + 1;
-        return 'YTR_' . sprintf("%03d", $newNumber);
-    }
-
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
         $search = $request->input('search', '');
@@ -31,15 +20,16 @@ class AlatController extends Controller
 
         if ($search) {
             $alat->where(function($query) use ($search) {
-                $query->where('kode_alat', 'like', '%' . $search . '%') 
-                    ->orWhere('id', 'like', '%' . $search . '%')      
+                // Cari berdasarkan ID Alat atau Nama Perusahaan
+                $query->where('id', 'like', '%' . $search . '%')      
                     ->orWhereHas('perusahaan', function($q) use ($search) {
                         $q->where('nama', 'like', '%' . $search . '%');
                     });
             });
         }
         
-        $alat = $alat->orderByRaw('LENGTH(kode_alat) DESC')->orderBy('kode_alat', 'desc')->paginate(10);
+        // Urutkan berdasarkan data terbaru (created_at desc)
+        $alat = $alat->latest()->paginate(10);
 
         return view('pages.admin.alat.index', compact('alat', 'search'));
     }
@@ -50,20 +40,9 @@ class AlatController extends Controller
     public function create()
     {
         $listPerusahaan = Perusahaan::all();
-
-        $lastAlat = Alat::where('kode_alat', 'like', 'YTR_%')
-                        ->orderByRaw('LENGTH(kode_alat) DESC') 
-                        ->orderBy('kode_alat', 'desc')
-                        ->first();
-
-        if (!$lastAlat) {
-            $nextKode = 'YTR_001';
-        } else {
-            $lastNumber = (int) substr($lastAlat->kode_alat, 4);
-            $nextKode = 'YTR_' . sprintf("%03d", $lastNumber + 1);
-        }
-
-        return view('pages.admin.alat.create', compact('listPerusahaan', 'nextKode'));
+        
+        // Tidak perlu generate kode lagi, langsung return view
+        return view('pages.admin.alat.create', compact('listPerusahaan'));
     }
 
     /**
@@ -81,11 +60,10 @@ class AlatController extends Controller
             'perusahaan_id.exists' => 'Data perusahaan tidak valid',
         ]);
 
-        $validated['kode_alat'] = $this->generateKodeAlat();
-
+        // Hapus baris generate kode, langsung create
         Alat::create($validated);
 
-        return redirect()->route('alat.index')->with('success', 'Alat berhasil ditambahkan dengan kode: ' . $validated['kode_alat']);    
+        return redirect()->route('alat.index')->with('success', 'Alat berhasil ditambahkan: ' . $validated['id']);    
     }
 
     /**
@@ -93,9 +71,7 @@ class AlatController extends Controller
      */
     public function show(Alat $alat)
     {
-        // Pastikan relasi diload saat menampilkan detail
         $alat->load(['perusahaan', 'sesiAlat']);
-        
         return view('pages.admin.alat.show', compact('alat'));
     }
 
@@ -108,16 +84,17 @@ class AlatController extends Controller
         return view('pages.admin.alat.edit', compact('alat', 'listPerusahaan'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, Alat $alat)
     {
         $validated = $request->validate([
-            // PENGGUNAAN RULE CLASS (Lebih Rapi & Aman)
-            // Artinya: Wajib unik di tabel 'alat' kolom 'id', KECUALI id milik alat ini sendiri.
             'id' => [
                 'required', 
                 'string', 
                 'max:255', 
-                Rule::unique('alat', 'id')->ignore($alat->id, 'id') 
+                'unique:alat,id,' . $alat->id // Cara penulisan short syntax untuk ignore ID saat ini
             ],
             'id_perusahaan' => 'nullable|exists:perusahaan,id',
         ], [
@@ -125,7 +102,6 @@ class AlatController extends Controller
             'id.unique' => 'Serial Number ini sudah digunakan oleh alat lain',
         ]);
 
-        // Update data (kode_alat tidak ikut ter-update karena tidak ada di $validated, ini sudah benar)
         $alat->update($validated);
 
         return redirect()->route('alat.index')->with('success', 'Data alat berhasil diperbarui');

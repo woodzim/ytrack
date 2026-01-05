@@ -22,14 +22,19 @@ class SesiAlatController extends Controller
         $sesiAlat = SesiAlat::with('alat', 'kendaraan', 'perusahaan', 'riwayatPerjalanan');
 
         if ($search) {
-            $sesiAlat->whereHas('alat', function ($q) use ($search) {
-                $q->where('id', 'like', '%' . $search . '%');
-            })->orWhereHas('kendaraan', function ($q) use ($search) {
-                $q->where('nama', 'like', '%' . $search . '%');
-            })->orWhereHas('perusahaan', function ($q) use ($search) {
-                $q->where('nama', 'like', '%' . $search . '%');
-            })->orWhereHas('alat', function ($q) use ($search) {
-                $q->where('kode_alat', 'like', '%' . $search . '%');
+            $sesiAlat->where(function ($query) use ($search) {
+                // Cari berdasarkan ID Alat (Serial Number)
+                $query->whereHas('alat', function ($q) use ($search) {
+                    $q->where('id', 'like', '%' . $search . '%');
+                })
+                // Cari berdasarkan Nama Kendaraan
+                ->orWhereHas('kendaraan', function ($q) use ($search) {
+                    $q->where('nama', 'like', '%' . $search . '%');
+                })
+                // Cari berdasarkan Nama Perusahaan
+                ->orWhereHas('perusahaan', function ($q) use ($search) {
+                    $q->where('nama', 'like', '%' . $search . '%');
+                });
             });
         }
 
@@ -38,8 +43,8 @@ class SesiAlatController extends Controller
         }
 
         $sesiAlat = $sesiAlat
-            ->orderBy('id_alat', 'asc')
-            ->orderBy('aktif', 'desc')
+            ->orderBy('aktif', 'desc') // Prioritaskan sesi aktif di atas
+            ->orderBy('created_at', 'desc') // Urutkan sesi terbaru
             ->paginate(10)
             ->appends(request()->query());
 
@@ -51,8 +56,9 @@ class SesiAlatController extends Controller
      */
     public function create()
     {
-    $perusahaan = Perusahaan::all();
-    return view('pages.admin.sesi-alat.create', compact('perusahaan'));    }
+        $perusahaan = Perusahaan::all();
+        return view('pages.admin.sesi-alat.create', compact('perusahaan'));
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -67,6 +73,7 @@ class SesiAlatController extends Controller
             'aktif' => 'boolean',
         ]);
 
+        // Cek apakah alat sedang aktif di sesi lain
         $activeAlatSession = SesiAlat::where('id_alat', $validated['id_alat'])
             ->where('aktif', true)
             ->first();
@@ -75,6 +82,7 @@ class SesiAlatController extends Controller
             return back()->withInput()->with('error', 'Alat ini sudah digunakan oleh sesi lain yang aktif. Hentikan sesi sebelumnya terlebih dahulu.');
         }
 
+        // Cek apakah kendaraan sedang aktif di sesi lain
         $activeKendaraanSession = SesiAlat::where('id_kendaraan', $validated['id_kendaraan'])
             ->where('aktif', true)
             ->first();
@@ -123,6 +131,7 @@ class SesiAlatController extends Controller
             'aktif' => 'boolean',
         ]);
 
+        // Validasi jika alat berubah dan alat baru sedang aktif
         if ($validated['id_alat'] !== $sesiAlat->id_alat) {
             $activeAlatSession = SesiAlat::where('id_alat', $validated['id_alat'])
                 ->where('aktif', true)
@@ -134,6 +143,7 @@ class SesiAlatController extends Controller
             }
         }
 
+        // Validasi jika kendaraan berubah dan kendaraan baru sedang aktif
         if ($validated['id_kendaraan'] !== $sesiAlat->id_kendaraan) {
             $activeKendaraanSession = SesiAlat::where('id_kendaraan', $validated['id_kendaraan'])
                 ->where('aktif', true)
@@ -155,6 +165,7 @@ class SesiAlatController extends Controller
      */
     public function toggle(SesiAlat $sesiAlat)
     {
+        // Jika mau mengaktifkan sesi yang mati, cek dulu bentrok atau tidak
         if (!$sesiAlat->aktif) {
             $activeAlatSession = SesiAlat::where('id_alat', $sesiAlat->id_alat)
                 ->where('aktif', true)
@@ -179,13 +190,6 @@ class SesiAlatController extends Controller
         return back()->with('success', 'Sesi Alat berhasil ' . $status);
     }
 
-    /**
-     * Get kendaraan by perusahaan (for AJAX)
-     */
-    /**
-     * Get kendaraan by perusahaan (for AJAX)
-     * Mengembalikan SEMUA kendaraan, dengan flag is_active jika sedang dipakai.
-     */
     /**
      * Get kendaraan by perusahaan (for AJAX)
      */
@@ -218,11 +222,13 @@ class SesiAlatController extends Controller
      */
     public function getAlatByPerusahaan($idPerusahaan)
     {
+        // Ambil data alat berdasarkan perusahaan
         $alatList = Alat::where('id_perusahaan', $idPerusahaan)
-            ->orderBy('kode_alat', 'asc')
+            ->orderBy('id', 'asc') // Urutkan berdasarkan Serial Number (ID)
             ->get();
 
         $data = $alatList->map(function ($item) {
+            // Cek apakah alat sedang dipakai di sesi aktif
             $sesiAktif = SesiAlat::where('id_alat', $item->id)
                 ->where('aktif', true)
                 ->with('kendaraan')
@@ -234,14 +240,13 @@ class SesiAlatController extends Controller
             }
 
             return [
-                'id' => $item->id,
-                'kode_alat' => $item->kode_alat,
+                'id' => $item->id, // Ini adalah Serial Number
                 'is_active' => $sesiAktif ? true : false,
                 'current_vehicle' => $vehicleInfo
             ];
         });
 
-        // 3. SORTING: Pindahkan yang aktif ke bawah
+        // Sorting: Pindahkan yang sedang aktif (unavailable) ke bawah
         $sortedData = $data->sortBy('is_active')->values();
 
         return response()->json($sortedData);

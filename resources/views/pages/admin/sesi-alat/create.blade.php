@@ -78,7 +78,7 @@
               {{-- 3. Pilih Alat (Load via AJAX) --}}
               <div class="col-md-6">
                 <label for="id_alat" class="form-label">
-                  Alat GPS <span class="text-danger">*</span>
+                  Serial Number Alat <span class="text-danger">*</span>
                 </label>
                 <select name="id_alat" id="id_alat"
                   class="form-select select2-custom @error('id_alat') is-invalid @enderror" required disabled>
@@ -233,7 +233,7 @@
       });
       $('#id_alat').select2({
         ...configWithStatus,
-        placeholder: ' Pilih Alat '
+        placeholder: ' Pilih Alat (Serial Number) '
       });
 
 
@@ -298,6 +298,7 @@
           }
         });
 
+        // --- AJAX ALAT ---
         $.ajax({
           url: `{{ url('/sesi-alat-alat') }}/${idPerusahaan}`,
           type: 'GET',
@@ -312,7 +313,8 @@
                     'Sedang Aktif') :
                   'Siap digunakan';
 
-                let newOption = new Option(item.kode_alat, item.id, false, false);
+                // UPDATE: Menggunakan item.id (Serial Number) sebagai teks tampilan
+                let newOption = new Option(item.id, item.id, false, false);
 
                 $(newOption).attr('data-active', item.is_active);
                 $(newOption).attr('data-info', info);

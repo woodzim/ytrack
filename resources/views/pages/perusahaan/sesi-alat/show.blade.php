@@ -112,14 +112,19 @@
               </div>
             </div>
             <div class="col-md-6">
+              {{-- BAGIAN INI DIUPDATE: Menggunakan ID (Serial Number) --}}
               <div class="detail-group">
-                <label class="detail-label">Alat</label>
-                <span class="detail-value badge bg-primary text-light">{{ $sesiAlat->alat?->kode_alat }}</span>
+                <label class="detail-label">Serial Number (SN)</label>
+                <span class="detail-value badge bg-primary text-light">
+                  {{ $sesiAlat->alat?->id ?? '-' }}
+                </span>
               </div>
+
+              {{-- Field tambahan untuk Tipe (Opsional, jika ada kolom tipe di tabel alat) --}}
               <div class="detail-group">
-                <label class="detail-label">ID Alat</label>
+                <label class="detail-label">Status Alat</label>
                 <span class="detail-value text-muted">
-                  #{{ $sesiAlat->alat?->id ?? '-' }}
+                  {{ $sesiAlat->aktif ? 'Sedang Transmisi Data' : 'Idle / Offline' }}
                 </span>
               </div>
             </div>
@@ -412,8 +417,6 @@
           console.log("Data Masuk:", e);
 
           // Data Mapping (Sesuaikan dengan payload event Anda)
-          // Cek apakah e.lat atau e.location.lat (sesuaikan dengan Controller)
-          // Disini diasumsikan 'e.lat' langsung ada
           const lat = parseFloat(e.lat);
           const lng = parseFloat(e.lng);
           const latLng = [lat, lng];
@@ -452,8 +455,6 @@
 
           const tbody = document.querySelector('#history-table tbody');
           // Hitung nomor baru (karena append di bawah, nomor lanjut terus)
-          // Atau jika ingin di atas (prepend), sesuaikan logika.
-          // Kode Anda sebelumnya append (beforeend), jadi nomor bertambah.
           const newIndex = tbody.querySelectorAll('tr').length + 1;
 
           const altDisplay = e.alt ? `${e.alt} m` : '-';

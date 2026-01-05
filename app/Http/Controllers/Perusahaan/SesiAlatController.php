@@ -31,8 +31,6 @@ class SesiAlatController extends Controller
                 $q->where('nama', 'like', '%' . $search . '%');
             })->orWhereHas('perusahaan', function ($q) use ($search) {
                 $q->where('nama', 'like', '%' . $search . '%');
-            })->orWhereHas('alat', function ($q) use ($search) {
-                $q->where('kode_alat', 'like', '%' . $search . '%');
             });
         }
 
