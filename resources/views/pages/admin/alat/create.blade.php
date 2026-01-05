@@ -14,40 +14,28 @@
         <div class="card-body p-4">
           <form action="{{ route('alat.store') }}" method="POST">
             @csrf
-            {{-- 1. Input Kode Alat (Disabled / Read-Only) --}}
+
+            {{-- Input ID / Serial Number --}}
             <div class="form-group-wrapper mb-4">
-              <label class="form-label">Kode Alat</label>
+              <label for="id" class="form-label">Serial Number / ID Alat <span class="text-danger">*</span></label>
               <div class="input-group">
                 <span class="input-group-text bg-light border-end-0">
-                  <i class="ri-barcode-box-line text-muted"></i>
+                  <i class="ri-barcode-line text-muted"></i>
                 </span>
-                {{-- TAMPILKAN NEXT KODE DISINI --}}
-                <input type="text" class="form-control bg-light fw-bold text-muted" value="{{ $nextKode }}"
-                  disabled style="cursor: not-allowed;">
+                <input type="text" id="id" name="id" class="form-control @error('id') is-invalid @enderror"
+                  placeholder="Contoh: A0B1C2D3E4F5 atau ESP-123456" value="{{ old('id') }}" required>
               </div>
-              <div class="form-text text-muted">
-                <i class="ri-information-line me-1"></i>
-                Sistem akan otomatis menggunakan kode <strong>{{ $nextKode }}</strong> ini saat disimpan.
-              </div>
-            </div>
-
-            {{-- 2. Input Serial Number (Fisik) --}}
-            {{-- 2. Input Serial Number (Fisik) --}}
-            <div class="form-group-wrapper mb-4">
-              <label for="id" class="form-label">Serial Number / ID Alat <span
-                  class="text-danger">*</span></label>
-              <input type="text" id="id" name="id" class="form-control @error('id') is-invalid @enderror"
-                placeholder="Contoh: A0B1C2D3E4F5 atau ESP-123456" value="{{ old('id') }}" required>
 
               @error('id')
-                <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback d-block">{{ $message }}</div>
               @enderror
 
               <div class="form-text text-muted">
-                Lihat pada alat untuk serial number / ID alat.
+                Lihat pada label fisik perangkat untuk Serial Number atau ID unik.
               </div>
             </div>
 
+            {{-- Input Perusahaan --}}
             <div class="form-group-wrapper mb-4">
               <label for="id_perusahaan" class="form-label">Perusahaan (Opsional)</label>
               <select id="id_perusahaan" name="id_perusahaan"
@@ -86,8 +74,8 @@
       <div class="form-info-box">
         <h6><i class="ri-lightbulb-line me-2"></i>Informasi Penting</h6>
         <p>
-          ID Alat adalah pengenal unik untuk setiap perangkat GPS. Masukkan ID unik atau Serial Number (SN) sesuai yang
-          tertera pada label fisik perangkat GPS.
+          ID Alat adalah pengenal unik untuk setiap perangkat GPS. Pastikan ID yang dimasukkan sesuai dengan yang
+          tertera pada perangkat keras (Hardware) agar koneksi data berfungsi dengan benar.
         </p>
       </div>
     </div>

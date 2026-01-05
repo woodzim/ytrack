@@ -1,7 +1,12 @@
 @extends('layouts.master')
 
 @section('content')
-  {{-- ... (Header & Badge Status Biarkan Saja) ... --}}
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="page-title fw-medium fs-20 mb-0">Detail Alat</h1>
+      <p>Daftar Alat</p>
+    </div>
+  </div>
 
   <div class="row">
     <div class="col-12 col-lg-8">
@@ -13,26 +18,18 @@
           <div class="table-responsive">
             <table class="table table-borderless mb-0">
               <tbody>
-                {{-- Row 1: Kode Sistem --}}
+                {{-- Row 1: Serial Number --}}
                 <tr>
-                  <th class="ps-4 py-3 text-muted" style="width: 35%;">Kode Sistem</th>
+                  <th class="ps-4 py-3 text-muted" style="width: 35%;">Serial Number / ID Alat</th>
                   <td class="py-3">
-                    <span class="badge bg-primary-transparent fs-14">{{ $alat->kode_alat }}</span>
-                  </td>
-                </tr>
-
-                {{-- Row 2: Serial Number --}}
-                <tr>
-                  <th class="ps-4 py-3 text-muted">Serial Number / ID Alat</th>
-                  <td class="py-3">
-                    <strong class="text-dark fs-15">{{ $alat->id }}</strong>
+                    <strong class="text-dark fs-16 font-monospace">{{ $alat->id }}</strong>
                     <div class="small text-muted mt-1">
                       <i class="ri-qr-code-line me-1"></i>ID Unik Fisik
                     </div>
                   </td>
                 </tr>
 
-                {{-- Row 3: Perusahaan --}}
+                {{-- Row 2: Perusahaan --}}
                 <tr>
                   <th class="ps-4 py-3 text-muted">Perusahaan / Lokasi</th>
                   <td class="py-3">
@@ -53,26 +50,22 @@
                   </td>
                 </tr>
 
-                {{-- UPDATE ROW 4: TANGGAL DIDAFTARKAN --}}
+                {{-- Row 3: Tanggal Didaftarkan --}}
                 <tr>
                   <th class="ps-4 py-3 text-muted">Didaftarkan Pada</th>
                   <td class="py-3">
-                    {{-- Tanggal --}}
                     <span class="local-date">{{ $alat->created_at->toIso8601String() }}</span>
-                    {{-- Jam (dalam kurung) --}}
                     <small class="text-muted ms-1">
                       (<span class="local-time">{{ $alat->created_at->toIso8601String() }}</span>)
                     </small>
                   </td>
                 </tr>
 
-                {{-- UPDATE ROW 5: TERAKHIR UPDATE --}}
+                {{-- Row 4: Terakhir Update --}}
                 <tr>
                   <th class="ps-4 py-3 text-muted">Terakhir Update</th>
                   <td class="py-3">
-                    {{-- Tanggal --}}
                     <span class="local-date">{{ $alat->updated_at->toIso8601String() }}</span>
-                    {{-- Jam (dalam kurung) --}}
                     <small class="text-muted ms-1">
                       (<span class="local-time">{{ $alat->updated_at->toIso8601String() }}</span>)
                     </small>
@@ -84,10 +77,9 @@
           </div>
         </div>
 
-        {{-- Footer Buttons Biarkan Saja --}}
         <div class="card-footer bg-light border-top">
-          {{-- ... --}}
           <div class="d-flex gap-2">
+            {{-- Tombol Lihat Riwayat Sesi (Filter by ID) --}}
             <a href="{{ route('sesi-alat.index', ['search' => $alat->id]) }}" class="btn btn-primary btn-wave">
               <i class="ri-history-line me-2"></i>Riwayat Sesi
             </a>
@@ -102,16 +94,16 @@
       </div>
     </div>
 
-    {{-- Kolom Kanan (Status & Statistik) Biarkan Saja --}}
+    {{-- Kolom Kanan (Status & Statistik) --}}
     <div class="col-12 col-lg-4">
-      {{-- ... content kanan ... --}}
       <div class="card card-detail mb-3">
         <div class="card-header border-bottom bg-white py-3">
           <h5 class="card-title mb-0"><i class="ri-dashboard-3-line me-2"></i>Status Terkini</h5>
         </div>
         <div class="card-body text-center p-4">
           <div class="mb-3">
-            @if ($alat->is_aktif)
+            {{-- Menggunakan properti sedang_digunakan atau is_aktif sesuai model --}}
+            @if ($alat->sedang_digunakan ?? $alat->is_aktif)
               <div class="avatar avatar-xl bg-success-transparent text-success mb-3 rounded-circle">
                 <i class="ri-broadcast-line fs-24"></i>
               </div>
@@ -138,8 +130,6 @@
           <div class="d-flex justify-content-between align-items-center">
             <span class="text-muted">Perjalanan Terakhir</span>
             <span class="fw-bold text-end">
-              {{-- DiffForHumans biasanya sudah cukup oke (misal: 2 jam yang lalu) --}}
-              {{-- Tapi jika ingin 100% akurat browser, biarkan saja sbg teks server side untuk durasi --}}
               {{ $alat->sesiAlat()->latest()->first()?->created_at->diffForHumans() ?? '-' }}
             </span>
           </div>
@@ -153,7 +143,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-      // 1. Format Tanggal (25 Desember 2023)
+      // 1. Format Tanggal
       function convertDate(dateString) {
         if (!dateString) return '-';
         return new Intl.DateTimeFormat('id-ID', {
@@ -163,7 +153,7 @@
         }).format(new Date(dateString));
       }
 
-      // 2. Format Jam (14:30)
+      // 2. Format Jam
       function convertTime(dateString) {
         if (!dateString) return '-';
         return new Intl.DateTimeFormat('id-ID', {

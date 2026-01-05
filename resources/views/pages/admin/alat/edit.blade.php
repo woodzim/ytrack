@@ -1,7 +1,10 @@
 @extends('layouts.master')
 
 @section('content')
-  {{-- ... (Header & Form Kiri Biarkan Saja) ... --}}
+  <div class="form-header">
+    <h1>Edit Data Alat</h1>
+    <p>Perbarui informasi perangkat GPS</p>
+  </div>
 
   <div class="row">
     <div class="col-12 col-lg-8">
@@ -14,29 +17,19 @@
             @csrf
             @method('PUT')
 
-            {{-- 1. Kode Alat (Read Only / Tidak Bisa Diedit) --}}
-            <div class="form-group-wrapper mb-4">
-              <label class="form-label">Kode Alat (System)</label>
-              <div class="input-group">
-                <span class="input-group-text bg-light border-end-0">
-                  <i class="ri-barcode-box-line text-muted"></i>
-                </span>
-                <input type="text" class="form-control bg-light fw-bold text-dark" value="{{ $alat->kode_alat }}"
-                  disabled style="cursor: not-allowed;">
-              </div>
-              <div class="form-text text-muted">
-                Kode sistem bersifat permanen dan tidak dapat diubah.
-              </div>
-            </div>
-
-            {{-- 2. Serial Number / ID Alat --}}
+            {{-- 1. Serial Number / ID Alat --}}
             <div class="form-group-wrapper mb-4">
               <label for="id" class="form-label">Serial Number / ID Alat <span class="text-danger">*</span></label>
-              <input type="text" id="id" name="id" class="form-control @error('id') is-invalid @enderror"
-                placeholder="Contoh: A0B1C2D3E4F5" value="{{ old('id', $alat->id) }}" required>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="ri-barcode-line text-muted"></i>
+                </span>
+                <input type="text" id="id" name="id" class="form-control @error('id') is-invalid @enderror"
+                  placeholder="Contoh: A0B1C2D3E4F5" value="{{ old('id', $alat->id) }}" required>
+              </div>
 
               @error('id')
-                <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback d-block">{{ $message }}</div>
               @enderror
 
               <div class="form-text text-muted">
@@ -44,7 +37,7 @@
               </div>
             </div>
 
-            {{-- 3. Pilihan Perusahaan (Opsional) --}}
+            {{-- 2. Pilihan Perusahaan (Opsional) --}}
             <div class="form-group-wrapper mb-4">
               <label for="id_perusahaan" class="form-label">Perusahaan / Lokasi</label>
               <select name="id_perusahaan" id="id_perusahaan"
@@ -57,8 +50,13 @@
                   </option>
                 @endforeach
               </select>
+
+              <div class="form-text text-muted">
+                Pilih perusahaan tempat alat ini dipasang.
+              </div>
+
               @error('id_perusahaan')
-                <div class="invalid-feedback">{{ $message }}</div>
+                <div class="invalid-feedback d-block">{{ $message }}</div>
               @enderror
             </div>
 
@@ -75,7 +73,7 @@
       </div>
     </div>
 
-    {{-- UPDATE BAGIAN LOG SISTEM (SIDEBAR KANAN) --}}
+    {{-- SIDEBAR KANAN: LOG SISTEM --}}
     <div class="col-12 col-lg-4">
       <div class="card form-card">
         <div class="card-header border-bottom bg-white py-3">
@@ -85,9 +83,7 @@
           <div class="mb-3">
             <small class="text-muted d-block mb-1">Dibuat pada:</small>
             <div class="fw-medium">
-              {{-- Tanggal --}}
               <span class="local-date">{{ $alat->created_at->toIso8601String() }}</span>
-              {{-- Jam --}}
               <span class="text-muted text-xs">
                 (<span class="local-time">{{ $alat->created_at->toIso8601String() }}</span>)
               </span>
@@ -96,9 +92,7 @@
           <div class="mb-0">
             <small class="text-muted d-block mb-1">Terakhir diperbarui:</small>
             <div class="fw-medium">
-              {{-- Tanggal --}}
               <span class="local-date">{{ $alat->updated_at->toIso8601String() }}</span>
-              {{-- Jam --}}
               <span class="text-muted text-xs">
                 (<span class="local-time">{{ $alat->updated_at->toIso8601String() }}</span>)
               </span>
@@ -110,11 +104,10 @@
   </div>
 @endsection
 
-{{-- TAMBAHKAN BAGIAN SCRIPT INI --}}
 @section('scripts')
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1. Format Tanggal (Contoh: 25 Desember 2023)
+      // 1. Format Tanggal
       function convertDate(dateString) {
         if (!dateString) return '-';
         return new Intl.DateTimeFormat('id-ID', {
@@ -124,7 +117,7 @@
         }).format(new Date(dateString));
       }
 
-      // 2. Format Jam (Contoh: 14:30)
+      // 2. Format Jam
       function convertTime(dateString) {
         if (!dateString) return '-';
         return new Intl.DateTimeFormat('id-ID', {

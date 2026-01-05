@@ -12,7 +12,6 @@ class Alat extends Model
     protected $keyType = 'string';
     protected $fillable = [
         'id',
-        'kode_alat',
         'id_perusahaan',
     ];
 

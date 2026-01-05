@@ -15,14 +15,14 @@
 
   <div class="row">
     <div class="col-12">
-      {{-- 1. SEARCH FORM (Ditambahkan agar sinkron dengan Controller) --}}
+      {{-- 1. SEARCH FORM --}}
       <div class="card mb-3">
         <div class="card-body">
           <form action="{{ route('alat.index') }}" method="GET" class="d-flex gap-2 flex-wrap align-items-end">
             <div class="grow" style="min-width: 250px;">
               <label for="searchInput" class="form-label mb-2">Cari Alat</label>
               <input type="text" id="searchInput" name="search" class="form-control"
-                placeholder="Cari Kode Alat, ID Serial, atau Perusahaan..." value="{{ $search }}">
+                placeholder="Cari Serial Number (ID) atau Nama Perusahaan..." value="{{ $search }}">
             </div>
             <button type="submit" class="btn btn-primary btn-wave">
               <i class="ri-search-line me-2"></i>Cari
@@ -68,7 +68,8 @@
                 <thead class="table-light">
                   <tr>
                     <th style="width: 5%;">No</th>
-                    <th style="width: 20%;">Kode Alat</th>
+                    {{-- UBAH HEADER: Jadi Serial Number --}}
+                    <th style="width: 25%;">Serial Number (ID)</th>
                     <th style="width: 25%;">Perusahaan (Lokasi)</th>
                     <th style="width: 20%;">Status</th>
                     <th style="width: 15%;">Dibuat</th>
@@ -82,10 +83,13 @@
                         <span class="badge bg-light text-dark">{{ $alat->firstItem() + $index }}</span>
                       </td>
 
-                      <td data-label="Kode Alat">
-                        <div class="d-flex flex-column">
-                          <span class="fw-bold text-dark">{{ $item->kode_alat }}</span>
-                          <small class="text-muted">{{ $item->id }}</small> {{-- Menampilkan ID Serial --}}
+                      {{-- TAMPILAN BARU: Langsung ID --}}
+                      <td data-label="Serial Number">
+                        <div class="d-flex align-items-center">
+                          <span class="avatar avatar-xs me-2 avatar-rounded bg-light text-muted">
+                            <i class="ri-barcode-line"></i>
+                          </span>
+                          <span class="fw-bold text-dark font-monospace">{{ $item->id }}</span>
                         </div>
                       </td>
 
@@ -104,7 +108,6 @@
                         @endif
                       </td>
 
-                      {{-- 3. LOGIKA STATUS (Menggunakan sedang_digunakan dari Controller) --}}
                       <td data-label="Status">
                         @if ($item->sedang_digunakan)
                           <span class="badge bg-success-transparent text-success">
@@ -132,20 +135,17 @@
                           <i class="ri-edit-line"></i>
                         </a>
 
-                        {{-- 4. LOGIKA TOMBOL HAPUS --}}
                         <form action="{{ route('alat.destroy', $item->id) }}" method="POST" style="display: inline;"
-                          onsubmit="return confirm('Anda yakin ingin menghapus alat {{ $item->kode_alat }}?');">
+                          onsubmit="return confirm('Anda yakin ingin menghapus alat ID: {{ $item->id }}?');">
                           @csrf
                           @method('DELETE')
 
                           @if ($item->sedang_digunakan)
-                            {{-- Jika sedang digunakan, tombol disabled --}}
                             <button type="button" class="btn btn-sm btn-light text-muted" disabled
                               title="Alat sedang digunakan (Tidak bisa dihapus)">
                               <i class="ri-delete-bin-line"></i>
                             </button>
                           @else
-                            {{-- Jika tersedia, tombol aktif --}}
                             <button type="submit" class="btn btn-sm btn-danger btn-wave" title="Hapus">
                               <i class="ri-delete-bin-line"></i>
                             </button>
@@ -168,13 +168,14 @@
               </div>
               @if ($search)
                 <h5 class="text-muted mb-2">Tidak ada hasil pencarian</h5>
-                <p class="text-muted mb-3">Tidak ditemukan alat dengan kata kunci "{{ $search }}"</p>
+                <p class="text-muted mb-3">Tidak ditemukan alat dengan Serial Number atau Perusahaan
+                  "{{ $search }}"</p>
                 <a href="{{ route('alat.index') }}" class="btn btn-outline-primary btn-wave">
                   <i class="ri-arrow-left-line me-2"></i>Kembali ke Daftar
                 </a>
               @else
                 <h5 class="text-muted mb-2">Belum ada data alat</h5>
-                <p class="text-muted mb-3">Tambahkan perangkat GPS baru ke sistem</p>
+                <p class="text-muted mb-3">Tambahkan perangkat GPS baru menggunakan ID Serial Number</p>
                 <a href="{{ route('alat.create') }}" class="btn btn-primary btn-wave">
                   <i class="ri-add-line me-2"></i>Tambah Alat
                 </a>
