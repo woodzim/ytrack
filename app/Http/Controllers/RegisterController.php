@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Perusahaan;
+use App\Mail\NewCompanyRegistration;
+use App\Mail\AdminNewRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -58,16 +61,21 @@ class RegisterController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'id_perusahaan' => $perusahaan->id,
+            'is_validated' => false,
         ]);
 
         // Assign perusahaan role to user
         $user->assignRole('perusahaan');
 
-        // Authenticate the user
-        Auth::login($user);
+        // Send email to perusahaan
+        Mail::to($user->email)->send(new NewCompanyRegistration($user));
+
+        // Send email to admin
+        $adminEmail = config('app.admin_email');
+        Mail::to($adminEmail)->send(new AdminNewRegistration($user));
 
         return redirect()
-            ->route('perusahaan.dashboard.index')
-            ->with('success', 'Pendaftaran berhasil! Selamat datang di aplikasi GPS Tracking.');
+            ->route('login')
+            ->with('success', 'Pendaftaran berhasil! Silakan tunggu verifikasi dari admin sebelum mengakses dashboard.');
     }
 }

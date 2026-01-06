@@ -49,12 +49,21 @@ class LoginController extends Controller
 
             // LOGIKA REDIRECT
             if (Auth::user()->hasRole('perusahaan')) {
+                if (!Auth::user()->isValidated()) {
+                    Auth::logout();
+                    return back()
+                        ->withInput($request->only('email'))
+                        ->withErrors([
+                            'email' => 'Akun Anda belum diverifikasi oleh admin. Silakan tunggu atau hubungi admin.',
+                        ]);
+                }
+
                 // Redirect khusus Perusahaan
                 return redirect()
                     ->intended(route('perusahaan.dashboard.index')) // Sesuai request Anda
                     ->with('success', 'Login berhasil!');
             }
-            
+
             // Redirect Default (Admin)
             return redirect()
                 ->intended(route('dashboard'))

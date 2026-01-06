@@ -83,7 +83,7 @@
   <div class="page-header-section">
     <div>
       <h1>Detail Sesi Alat</h1>
-      <p>Informasi lengkap sesi GPS tracking</p>
+      <p>Informasi lengkap sesi YA-Track</p>
     </div>
     <div>
       <span class="status-badge-large mt-3"
@@ -273,7 +273,7 @@
                 <i class="ri-map-pin-2-line"
                   style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
                 <p style="margin: 0;">Belum ada data riwayat perjalanan</p>
-                <small>Data GPS tracking akan muncul di sini</small>
+                <small>Data YA-Track akan muncul di sini</small>
               </div>
             @endif
           </div>

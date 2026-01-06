@@ -5,7 +5,7 @@
     <div class="d-flex align-items-center justify-content-between mb-4 page-header-breadcrumb flex-wrap gap-2">
         <div>
             <h1 class="page-title fw-medium fs-20 mb-0">Selamat datang, {{  auth()->user()->name }}.</h1>
-            <p class="text-muted mb-0">Dashboard GPS Tracking System</p>
+            <p class="text-muted mb-0">Dashboard YA-Track</p>
         </div>
     </div>
     <!-- End::page-header -->
