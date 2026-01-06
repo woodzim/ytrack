@@ -80,6 +80,8 @@ Route::middleware(['auth'])->group(function () {
         /******** Pengguna ********/
         Route::get('users', [UsersController::class, 'index'])->name('users.index');
         Route::put('users/{id}/password', [UsersController::class, 'updatePassword'])->name('users.updatePassword');
+        Route::put('users/{id}/validate', [UsersController::class, 'validateUser'])->name('users.validate');
+        Route::put('users/{id}/reject', [UsersController::class, 'rejectUser'])->name('users.reject');
 
         /******** Perusahaan ********/
         Route::resource('perusahaan', PerusahaanController::class);

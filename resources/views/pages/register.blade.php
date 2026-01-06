@@ -24,7 +24,7 @@
                             <h4 class="mb-1 fw-semibold">
                                 <span>Daftar Perusahaan</span>
                             </h4>
-                            <p class="mb-4 text-muted fw-normal">Buat akun perusahaan baru untuk GPS Tracking System</p>
+                            <p class="mb-4 text-muted fw-normal">Buat akun perusahaan baru untuk YA-Track</p>
                         </div>
 
                         @if ($errors->any())

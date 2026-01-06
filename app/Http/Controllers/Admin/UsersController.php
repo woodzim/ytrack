@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Mail\CompanyValidationMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class UsersController extends Controller
 {
@@ -71,4 +73,53 @@ class UsersController extends Controller
 
         return redirect()->back()->with('success', 'Password untuk ' . $user->name . ' berhasil diatur ulang');
     }
+
+    /**
+     * Validate a perusahaan user account
+     */
+    public function validateUser($id)
+    {
+        // Find the user
+        $user = User::findOrFail($id);
+
+        // Only allow validating perusahaan role
+        if (!$user->hasRole('perusahaan')) {
+            return redirect()->back()->with('error', 'Hanya akun dengan role perusahaan yang dapat divalidasi');
+        }
+
+        // Update is_validated to true
+        $user->update([
+            'is_validated' => true,
+        ]);
+
+        // Send validation email
+        Mail::to($user->email)->send(new CompanyValidationMail($user, true));
+
+        return redirect()->back()->with('success', 'Akun ' . $user->name . ' berhasil divalidasi');
+    }
+
+    /**
+     * Reject/Unvalidate a perusahaan user account
+     */
+    public function rejectUser($id)
+    {
+        // Find the user
+        $user = User::findOrFail($id);
+
+        // Only allow rejecting perusahaan role
+        if (!$user->hasRole('perusahaan')) {
+            return redirect()->back()->with('error', 'Hanya akun dengan role perusahaan yang dapat ditolak');
+        }
+
+        // Update is_validated to false
+        $user->update([
+            'is_validated' => false,
+        ]);
+
+        // Send rejection email
+        Mail::to($user->email)->send(new CompanyValidationMail($user, false));
+
+        return redirect()->back()->with('success', 'Akun ' . $user->name . ' status validasi berhasil diperbarui');
+    }
 }
+

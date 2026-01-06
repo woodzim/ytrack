@@ -58,11 +58,12 @@
                             <table class="table table-hover mb-0">
                                 <thead class="table-light">
                                     <tr>
-                                        <th style="width: 20%;">Nama</th>
-                                        <th style="width: 20%;">Email</th>
-                                        <th style="width: 15%;">Role</th>
-                                        <th style="width: 20%;">Tanggal Daftar</th>
-                                        <th style="width: 25%;">Aksi</th>
+                                        <th style="width: 18%;">Nama</th>
+                                        <th style="width: 18%;">Email</th>
+                                        <th style="width: 12%;">Role</th>
+                                        <th style="width: 14%;">Status</th>
+                                        <th style="width: 16%;">Tanggal Daftar</th>
+                                        <th style="width: 22%;">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -81,6 +82,21 @@
                                                     <span class="badge bg-secondary">Tidak Ada Role</span>
                                                 @endforelse
                                             </td>
+                                            <td data-label="Status">
+                                                @if ($user->hasRole('perusahaan'))
+                                                    @if ($user->is_validated)
+                                                        <span class="badge bg-success">
+                                                            <i class="ri-check-line me-1"></i>Tervalidasi
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-warning">
+                                                            <i class="ri-time-line me-1"></i>Menunggu Validasi
+                                                        </span>
+                                                    @endif
+                                                @else
+                                                    <span class="badge bg-secondary">-</span>
+                                                @endif
+                                            </td>
                                             <td data-label="Tanggal Daftar">
                                                 <small class="text-muted">
                                                     {{ $user->created_at?->format('d-m-Y') ?? '-' }}
@@ -88,12 +104,29 @@
                                             </td>
                                             <td data-label="Aksi">
                                                 @if ($user->hasRole('perusahaan'))
-                                                    <button type="button" class="btn btn-sm btn-primary btn-wave"
-                                                        data-bs-toggle="modal" data-bs-target="#resetPasswordModal"
-                                                        data-user-id="{{ $user->id }}"
-                                                        data-user-name="{{ $user->name }}">
-                                                        <i class="ri-lock-password-line me-1"></i>Atur Ulang Password
-                                                    </button>
+                                                    <div class="d-flex gap-2" role="group">
+                                                        @if (!$user->is_validated)
+                                                            <button type="button"
+                                                                class="btn btn-sm {{ $user->is_validated ? 'btn-danger' : 'btn-success' }} btn-wave"
+                                                                data-bs-toggle="modal" data-bs-target="#validateUserModal"
+                                                                data-user-id="{{ $user->id }}"
+                                                                data-user-name="{{ $user->name }}"
+                                                                data-is-validated="{{ $user->is_validated ? '1' : '0' }}">
+                                                                @if ($user->is_validated)
+                                                                    <i class="ri-close-line"></i>
+                                                                @else
+                                                                    <i class="ri-check-line me-1"></i>
+                                                                @endif
+                                                                {{ $user->is_validated ? 'Batalkan Validasi' : 'Validasi' }}
+                                                            </button>
+                                                        @endif
+                                                        <button type="button" class="btn btn-sm btn-primary btn-wave"
+                                                            data-bs-toggle="modal" data-bs-target="#resetPasswordModal"
+                                                            data-user-id="{{ $user->id }}"
+                                                            data-user-name="{{ $user->name }}">
+                                                            <i class="ri-lock-password-line me-1"></i>Password
+                                                        </button>
+                                                    </div>
                                                 @else
                                                     <span class="text-muted small">-</span>
                                                 @endif
@@ -182,74 +215,137 @@
             </div>
         </div>
     </div>
+
+    <!-- Validate User Modal -->
+    <div class="modal fade" id="validateUserModal" tabindex="-1" aria-labelledby="validateUserLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="validateUserLabel">
+                        <i class="ri-shield-check-line me-2"></i>Validasi Akun Perusahaan
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="validateUserForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <div class="modal-body">
+                        <div class="alert alert-info mb-3" role="alert">
+                            <i class="ri-information-line me-2"></i>
+                            <span id="validateUserNameDisplay"></span>
+                        </div>
+                        <div id="validateMessage"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" id="validateSubmitBtn" class="btn btn-primary">Validasi</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('scripts')
     <script>
-        // Reset password modal setup
-        const resetPasswordModal = document.getElementById('resetPasswordModal');
-        const resetPasswordForm = document.getElementById('resetPasswordForm');
-        const userNameDisplay = document.getElementById('userNameDisplay');
-        const passwordInput = document.getElementById('password');
-        const passwordConfirmInput = document.getElementById('password_confirmation');
-        const togglePasswordBtn = document.getElementById('togglePassword');
-        const togglePasswordConfirmBtn = document.getElementById('togglePasswordConfirm');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reset password modal setup
+            const resetPasswordModal = document.getElementById('resetPasswordModal');
+            const resetPasswordForm = document.getElementById('resetPasswordForm');
+            const userNameDisplay = document.getElementById('userNameDisplay');
+            const passwordInput = document.getElementById('password');
+            const passwordConfirmInput = document.getElementById('password_confirmation');
+            const togglePasswordBtn = document.getElementById('togglePassword');
+            const togglePasswordConfirmBtn = document.getElementById('togglePasswordConfirm');
 
-        // Handle modal show event to populate form with user data
-        resetPasswordModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const userId = button.getAttribute('data-user-id');
-            const userName = button.getAttribute('data-user-name');
+            if (resetPasswordModal) {
+                resetPasswordModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute('data-user-id');
+                    const userName = button.getAttribute('data-user-name');
 
-            // Update modal title and form
-            userNameDisplay.textContent = `Atur ulang password untuk: ${userName}`;
+                    userNameDisplay.textContent = `Atur ulang password untuk: ${userName}`;
+                    resetPasswordForm.action = `{{ route('users.index') }}/${userId}/password`;
 
-            // Update form action
-            resetPasswordForm.action = `{{ route('users.index') }}/${userId}/password`;
-
-            // Clear previous values
-            passwordInput.value = '';
-            passwordConfirmInput.value = '';
-            passwordInput.type = 'password';
-            passwordConfirmInput.type = 'password';
-            togglePasswordBtn.innerHTML = '<i class="ri-eye-line"></i>';
-            togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-line"></i>';
-        });
-
-        // Toggle password visibility
-        togglePasswordBtn.addEventListener('click', function() {
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                togglePasswordBtn.innerHTML = '<i class="ri-eye-off-line"></i>';
-            } else {
-                passwordInput.type = 'password';
-                togglePasswordBtn.innerHTML = '<i class="ri-eye-line"></i>';
-            }
-        });
-
-        // Toggle password confirmation visibility
-        togglePasswordConfirmBtn.addEventListener('click', function() {
-            if (passwordConfirmInput.type === 'password') {
-                passwordConfirmInput.type = 'text';
-                togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-off-line"></i>';
-            } else {
-                passwordConfirmInput.type = 'password';
-                togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-line"></i>';
-            }
-        });
-
-        // Handle form submission
-        resetPasswordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // Validate password match
-            if (passwordInput.value !== passwordConfirmInput.value) {
-                alert('Password tidak sesuai dengan konfirmasi password');
-                return;
+                    passwordInput.value = '';
+                    passwordConfirmInput.value = '';
+                    passwordInput.type = 'password';
+                    passwordConfirmInput.type = 'password';
+                    togglePasswordBtn.innerHTML = '<i class="ri-eye-line"></i>';
+                    togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-line"></i>';
+                });
             }
 
-            // Submit form
-            this.submit();
+            if (togglePasswordBtn) {
+                togglePasswordBtn.addEventListener('click', function() {
+                    if (passwordInput.type === 'password') {
+                        passwordInput.type = 'text';
+                        togglePasswordBtn.innerHTML = '<i class="ri-eye-off-line"></i>';
+                    } else {
+                        passwordInput.type = 'password';
+                        togglePasswordBtn.innerHTML = '<i class="ri-eye-line"></i>';
+                    }
+                });
+            }
+
+            if (togglePasswordConfirmBtn) {
+                togglePasswordConfirmBtn.addEventListener('click', function() {
+                    if (passwordConfirmInput.type === 'password') {
+                        passwordConfirmInput.type = 'text';
+                        togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-off-line"></i>';
+                    } else {
+                        passwordConfirmInput.type = 'password';
+                        togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-line"></i>';
+                    }
+                });
+            }
+
+            if (resetPasswordForm) {
+                resetPasswordForm.addEventListener('submit', function(e) {
+                    if (passwordInput.value !== passwordConfirmInput.value) {
+                        e.preventDefault();
+                        alert('Password tidak sesuai dengan konfirmasi password');
+                        return;
+                    }
+                });
+            }
+
+            // Validate User Modal setup
+            const validateUserModal = document.getElementById('validateUserModal');
+            const validateUserForm = document.getElementById('validateUserForm');
+            const validateUserNameDisplay = document.getElementById('validateUserNameDisplay');
+            const validateMessage = document.getElementById('validateMessage');
+            const validateSubmitBtn = document.getElementById('validateSubmitBtn');
+
+            if (validateUserModal) {
+                validateUserModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const userId = button.getAttribute('data-user-id');
+                    const userName = button.getAttribute('data-user-name');
+                    const isValidated = button.getAttribute('data-is-validated') === '1';
+
+                    validateUserNameDisplay.textContent = `Pengguna: ${userName}`;
+
+                    const validateUrl = `{{ route('users.validate', '__ID__') }}`.replace('__ID__',
+                        userId);
+                    const rejectUrl = `{{ route('users.reject', '__ID__') }}`.replace('__ID__', userId);
+
+                    if (isValidated) {
+                        validateMessage.innerHTML =
+                            '<p>Apakah Anda yakin ingin <strong>membatalkan validasi</strong> akun ini? Pengguna tidak akan dapat login ke sistem.</p>';
+                        validateSubmitBtn.textContent = 'Batalkan Validasi';
+                        validateSubmitBtn.className = 'btn btn-warning';
+                        validateUserForm.action = rejectUrl;
+                    } else {
+                        validateMessage.innerHTML =
+                            '<p>Apakah Anda yakin ingin <strong>memvalidasi</strong> akun ini? Pengguna akan dapat login ke sistem.</p>';
+                        validateSubmitBtn.textContent = 'Validasi Akun';
+                        validateSubmitBtn.className = 'btn btn-success';
+                        validateUserForm.action = validateUrl;
+                    }
+                });
+            }
         });
     </script>
 @endsection
