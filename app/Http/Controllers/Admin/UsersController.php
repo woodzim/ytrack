@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Mail\CompanyValidationMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class UsersController extends Controller
@@ -93,7 +94,11 @@ class UsersController extends Controller
         ]);
 
         // Send validation email
-        Mail::to($user->email)->send(new CompanyValidationMail($user, true));
+        try {
+            Mail::to($user->email)->send(new CompanyValidationMail($user, true));
+        } catch (\Exception $e) {
+            Log::error('Failed to send validation email to company: ' . $e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'Akun ' . $user->name . ' berhasil divalidasi');
     }
@@ -117,7 +122,11 @@ class UsersController extends Controller
         ]);
 
         // Send rejection email
-        Mail::to($user->email)->send(new CompanyValidationMail($user, false));
+        try {
+            Mail::to($user->email)->send(new CompanyValidationMail($user, false));
+        } catch (\Exception $e) {
+            Log::error('Failed to send rejection email to company: ' . $e->getMessage());
+        }
 
         return redirect()->back()->with('success', 'Akun ' . $user->name . ' status validasi berhasil diperbarui');
     }
