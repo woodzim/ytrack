@@ -3,7 +3,7 @@
 @section('styles')
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <style>
-    /* --- Styling Map Icon --- */
+    /* --- Styling Map Icon (Sesuai Desain Anda) --- */
     .custom-pin-icon {
       background: transparent;
       border: none;
@@ -21,6 +21,7 @@
     .pin-wrapper i {
       font-size: 40px;
       color: #be1e2d;
+      /* Merah */
       filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.3));
       z-index: 2;
     }
@@ -56,11 +57,30 @@
       transition: background-color 0.2s ease;
     }
 
-    /* Warna highlight saat baris dipilih */
     .table-active-row {
       background-color: #e0f2fe !important;
       /* Biru muda */
       border-left: 4px solid #0ea5e9;
+    }
+
+    #map-container {
+      height: 400px;
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 20px;
+
+      /* --- KUNCI PERBAIKAN --- */
+      position: relative;
+      /* Pastikan posisi relative */
+      z-index: 1;
+      /* Angka kecil (0 atau 1) agar kalah tinggi dari Navbar (biasanya 1000+) */
+    }
+
+    /* OPSI TAMBAHAN: Jika tombol zoom (+ -) leaflet masih menembus navbar */
+    .leaflet-top,
+    .leaflet-bottom {
+      z-index: 400 !important;
+      /* Default leaflet kadang 1000, kita turunkan */
     }
   </style>
 @endsection
@@ -112,15 +132,12 @@
               </div>
             </div>
             <div class="col-md-6">
-              {{-- BAGIAN INI DIUPDATE: Menggunakan ID (Serial Number) --}}
               <div class="detail-group">
                 <label class="detail-label">Serial Number (SN)</label>
                 <span class="detail-value badge bg-primary text-light">
                   {{ $sesiAlat->alat?->id ?? '-' }}
                 </span>
               </div>
-
-              {{-- Field tambahan untuk Tipe (Opsional, jika ada kolom tipe di tabel alat) --}}
               <div class="detail-group">
                 <label class="detail-label">Status Alat</label>
                 <span class="detail-value text-muted">
@@ -157,35 +174,34 @@
                 </tr>
               </thead>
               <tbody>
-                @if ($riwayatPerjalanan->count() > 0)
-                  @foreach ($riwayatPerjalanan as $riwayat)
+                @php $totalData = $riwayatPerjalanan->count(); @endphp
+
+                @if ($totalData > 0)
+                  @foreach ($riwayatPerjalanan->sortByDesc('created_at') as $riwayat)
                     <tr class="clickable-row" data-lat="{{ $riwayat->lat }}" data-lng="{{ $riwayat->long }}"
-                      data-time="{{ $riwayat->created_at?->translatedFormat('H:i:s') }}"
+                      data-time="{{ $riwayat->created_at }}" {{-- Simpan Raw Date --}}
                       data-speed="{{ $riwayat->speed ?? 0 }}">
 
                       <td style="font-size: 12px; font-weight: 600;">
-                        <span class="rounded-circle py-1 px-2 bg-primary text-white">{{ $loop->iteration }}</span>
+                        <span class="rounded-circle py-1 px-2 bg-primary text-white number-badge">
+                          {{ $totalData - $loop->index }}
+                        </span>
                       </td>
+
                       <td style="font-size: 12px;">
-                        <i
-                          class="ri-time-line me-1"></i>{{ $riwayat->created_at?->translatedFormat('d-m-Y H:i:s') ?? '-' }}
+                        <i class="ri-time-line me-1"></i>
+                        {{ $riwayat->created_at?->translatedFormat('d-m-Y H:i:s') ?? '-' }}
                       </td>
                       <td style="font-size: 12px;">{{ $riwayat->lat }}</td>
                       <td style="font-size: 12px;">{{ $riwayat->long }}</td>
                       <td style="font-size: 12px;">{{ $riwayat->alt ? $riwayat->alt . ' m' : '-' }}</td>
                       <td style="font-size: 12px;">
-                        @if ($riwayat->sat)
-                          <span class="badge bg-primary">{{ $riwayat->sat }}</span>
-                        @else
-                          -
-                        @endif
+                        {!! $riwayat->sat ? '<span class="badge bg-primary">' . $riwayat->sat . '</span>' : '-' !!}
                       </td>
                       <td style="font-size: 12px;">
-                        @if ($riwayat->speed)
-                          <span style="color: #10b981; font-weight: 600;">{{ $riwayat->speed }} km/h</span>
-                        @else
-                          -
-                        @endif
+                        {!! $riwayat->speed
+                            ? '<span style="color: #10b981; font-weight: 600;">' . $riwayat->speed . ' km/h</span>'
+                            : '-' !!}
                       </td>
                     </tr>
                   @endforeach
@@ -196,7 +212,6 @@
                         <i class="ri-map-pin-2-line"
                           style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
                         <p style="margin: 0;">Belum ada data riwayat perjalanan</p>
-                        <small>Data GPS tracking akan muncul di sini secara realtime</small>
                       </div>
                     </td>
                   </tr>
@@ -212,13 +227,13 @@
 @endsection
 
 @section('scripts')
-  {{-- 1. LOAD LIBRARY (URUTAN PENTING: Leaflet -> Pusher -> Echo) --}}
+  {{-- 1. LOAD LIBRARY --}}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
 
   <script>
-    // --- 2. KONFIGURASI ECHO & PUSHER (Manual Config) ---
+    // --- 2. KONFIGURASI PUSHER ---
     window.Pusher = Pusher;
     window.Echo = new Echo({
       broadcaster: 'pusher',
@@ -226,262 +241,237 @@
       cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
       forceTLS: true
     });
-  </script>
 
-  <script>
     window.SESI_ALAT_ID = {{ $sesiAlat->id }};
 
     // --- VARIABEL GLOBAL ---
     let map = null;
     let polyline = null;
-    let startMarker = null; // Marker Titik Awal
-    let endMarker = null; // Marker Truk (Bergerak)
-    let selectedMarker = null; // Marker History (Biru)
-    let liveLatLngs = []; // Array Jalur
+    let startMarker = null;
+    let truckMarker = null;
+    let selectedMarker = null;
+    let liveLatLngs = [];
+    let isAutoPan = true;
 
-    // LOGIKA AUTO FOLLOW
-    let isAutoPan = true; // Default: Ikuti truk
+    // --- 3. HELPER: PARSE TANGGAL AMAN ---
+    const parseDateSafe = (input) => {
+      if (!input) return new Date();
+      if (input instanceof Date) return input;
 
-    // --- Helper Format ---
-    function formatDateJS(dateString) {
-      if (!dateString) return '-';
-      const date = new Date(dateString);
-      return date.toLocaleString('id-ID', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      }).replace(/\./g, ':');
-    }
+      // Bersihkan string dan pastikan format ISO
+      let safeString = input.toString().replace(' ', 'T');
 
-    function formatTimeJS(dateString) {
-      if (!dateString) return '-';
-      const date = new Date(dateString);
-      return `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
-    }
-
-    // --- Custom Icons (Sesuai Style Anda) ---
-    function createCustomIcon(type) {
-      let iconClass = '';
-      let wrapperClass = 'pin-wrapper';
-      let pulseHtml = '';
-
-      if (type === 'start') {
-        iconClass = 'ri-map-pin-line';
-      } else {
-        iconClass = 'ri-map-pin-user-line';
-        pulseHtml = '<div class="pin-pulse"></div>';
+      // Tambahkan 'Z' (UTC) jika belum ada, supaya dikonversi ke lokal
+      if (!safeString.endsWith('Z') && !safeString.includes('+')) {
+        safeString += 'Z';
       }
 
+      let d = new Date(safeString);
+      return isNaN(d.getTime()) ? new Date() : d;
+    };
+
+    // --- 4. FORMATTER DATE (Deteksi Zona Waktu Otomatis) ---
+    // Output: 12-01-2026 14:45:06 WIB
+    const formatDateJS = (d) => {
+      const dateObj = parseDateSafe(d);
+
+      // A. Ambil Komponen Waktu
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const year = dateObj.getFullYear();
+      const hours = String(dateObj.getHours()).padStart(2, '0');
+      const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+      const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+
+      // B. Deteksi Zona Waktu User (Browser)
+      // getTimezoneOffset() mengembalikan selisih menit dari UTC.
+      // Jakarta (UTC+7) = -420 menit. Bali (UTC+8) = -480 menit.
+      const offset = -dateObj.getTimezoneOffset();
+      let zona = '';
+
+      if (offset === 420) {
+        zona = 'WIB';
+      } else if (offset === 480) {
+        zona = 'WITA';
+      } else if (offset === 540) {
+        zona = 'WIT';
+      } else {
+        // Jika dibuka di luar negeri (opsional)
+        const jamOffset = offset / 60;
+        const tanda = jamOffset >= 0 ? '+' : '';
+        zona = `(UTC${tanda}${jamOffset})`;
+      }
+
+      return `${day}-${month}-${year} ${hours}:${minutes}:${seconds} ${zona}`;
+    };
+
+    // --- 5. CUSTOM ICON MAP ---
+    function createCustomIcon(type) {
+      let iconClass = type === 'start' ? 'ri-map-pin-line' : 'ri-map-pin-user-line';
+      let pulseHtml = type === 'end' ? '<div class="pin-pulse"></div>' : '';
       return L.divIcon({
-        html: `<div class="${wrapperClass}">${pulseHtml}<i class="${iconClass}"></i></div>`,
+        html: `<div class="pin-wrapper">${pulseHtml}<i class="${iconClass}"></i></div>`,
         className: 'custom-pin-icon',
-        iconSize: [40, 40],
-        iconAnchor: [25, 36]
+        iconSize: [50, 50],
+        iconAnchor: [25, 45]
       });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      const mapContainer = document.getElementById('map-container');
-      if (!mapContainer) return;
-
-      // 1. Init Map
-      map = L.map('map-container', {
-        maxZoom: 20,
-        minZoom: 1
-      });
+      // A. INIT MAP
+      map = L.map('map-container').setView([-2.5489, 118.0149], 5);
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap contributors, © CARTO',
+        attribution: '© OpenStreetMap, © CARTO',
         maxZoom: 20
       }).addTo(map);
 
-      // --- LOGIKA RESUME TRACKING ---
-      // Jika klik area kosong di peta, kembali ikuti truk
-      map.on('click', function() {
+      map.on('click', () => {
         if (!isAutoPan) {
           isAutoPan = true;
-          // Hapus seleksi history
           if (selectedMarker) {
             map.removeLayer(selectedMarker);
             selectedMarker = null;
           }
-          document.querySelectorAll('#history-table tbody tr').forEach(r => r.classList.remove(
-            'table-active-row'));
-
-          // Kembali ke truk
-          if (endMarker) {
-            map.panTo(endMarker.getLatLng());
-            endMarker.openPopup();
+          document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+          if (truckMarker) {
+            map.panTo(truckMarker.getLatLng());
+            truckMarker.openPopup();
           }
-          console.log("🔄 Resume Auto Tracking");
         }
       });
 
-      // 2. Load Data Existing dari Tabel
-      const rows = document.querySelectorAll('#history-table tbody tr:not(#empty-row)');
-      // Karena tabel biasanya urut DESC (terbaru diatas), kita loop dan masukkan ke depan array
-      // Agar array urut dari Awal -> Akhir
-      let tempCoords = [];
-      rows.forEach((row) => {
-        const lat = parseFloat(row.getAttribute('data-lat'));
-        const lng = parseFloat(row.getAttribute('data-lng'));
-        if (!isNaN(lat) && !isNaN(lng)) {
-          tempCoords.unshift([lat, lng]); // Masukkan ke awal array
+      // B. LOAD DATA HISTORY & FORMAT ULANG TABEL
+      const rows = document.querySelectorAll('#history-table tbody tr.clickable-row');
+
+      rows.forEach(row => {
+        // Ambil lat/lng
+        const lat = parseFloat(row.dataset.lat);
+        const lng = parseFloat(row.dataset.lng);
+        if (!isNaN(lat) && !isNaN(lng)) liveLatLngs.push([lat, lng]);
+
+        // FORMAT ULANG WAKTU HISTORY
+        const rawTime = row.dataset.time;
+        if (rawTime) {
+          const formattedTime = formatDateJS(rawTime);
+          // Update kolom ke-2 (Index 1)
+          if (row.cells[1]) {
+            row.cells[1].innerHTML = `<i class="ri-time-line me-1"></i>${formattedTime}`;
+          }
         }
       });
-      liveLatLngs = tempCoords;
 
-      // Render Map Awal
+      // Render Jalur
+      liveLatLngs.reverse();
       if (liveLatLngs.length > 0) {
+        startMarker = L.marker(liveLatLngs[0], {
+          icon: createCustomIcon('start')
+        }).addTo(map).bindPopup("Titik Awal");
+        truckMarker = L.marker(liveLatLngs[liveLatLngs.length - 1], {
+          icon: createCustomIcon('end'),
+          zIndexOffset: 1000
+        }).addTo(map).bindPopup("Lokasi Terkini");
         polyline = L.polyline(liveLatLngs, {
           color: '#be1e2d',
           weight: 4,
-          opacity: 0.8,
           dashArray: '5, 5'
         }).addTo(map);
-
-        startMarker = L.marker(liveLatLngs[0], {
-            icon: createCustomIcon('start')
-          })
-          .bindPopup('<strong>Titik Awal</strong>').addTo(map);
-
-        endMarker = L.marker(liveLatLngs[liveLatLngs.length - 1], {
-            icon: createCustomIcon('end')
-          })
-          .bindPopup('<strong>Lokasi Terkini</strong><br>Tracking Aktif').addTo(map);
-
-        map.fitBounds(L.latLngBounds(liveLatLngs), {
+        map.fitBounds(polyline.getBounds(), {
           padding: [50, 50]
         });
-      } else {
-        map.setView([-2.548926, 118.0148634], 5); // Default Indonesia
       }
 
-      // ==========================================
-      // EVENT: KLIK BARIS TABEL (STOP AUTO FOLLOW)
-      // ==========================================
-      const tableWrapper = document.getElementById('table-wrapper');
-      tableWrapper.addEventListener('click', function(e) {
-        const row = e.target.closest('tr');
-
-        if (row && row.dataset.lat && row.dataset.lng) {
-          // STOP FOLLOW
+      // C. KLIK TABEL
+      document.querySelector('#history-table').addEventListener('click', (e) => {
+        const row = e.target.closest('tr.clickable-row');
+        if (row) {
           isAutoPan = false;
-
           const lat = parseFloat(row.dataset.lat);
           const lng = parseFloat(row.dataset.lng);
-          const time = row.dataset.time || '-';
-          const speed = row.dataset.speed || '0';
+          const timeRaw = row.dataset.time;
+          const timeDisplay = formatDateJS(timeRaw); // Format ulang di popup juga
+          const speed = row.dataset.speed;
 
-          // Highlight Tabel
-          document.querySelectorAll('#history-table tbody tr').forEach(r => r.classList.remove(
-            'table-active-row'));
+          document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
           row.classList.add('table-active-row');
 
-          // Marker Seleksi (Biru)
           if (selectedMarker) map.removeLayer(selectedMarker);
-
           selectedMarker = L.circleMarker([lat, lng], {
             radius: 8,
             fillColor: "#0ea5e9",
             color: "#fff",
             weight: 2,
-            opacity: 1,
-            fillOpacity: 0.8
+            fillOpacity: 1
           }).addTo(map);
 
           selectedMarker.bindPopup(`
-                <div style="text-align:center;">
-                    <strong>Riwayat</strong><br><small>${time}</small><br>
-                    <span style="color:#10b981; font-weight:bold">${speed} km/h</span><br>
-                    <em style="font-size:10px; color:#999;">Klik peta untuk kembali ke live</em>
+                <div class="text-center">
+                    <strong>Riwayat</strong><br>${timeDisplay}<br>
+                    <span style="color: #10b981;">${speed} km/h</span>
                 </div>
             `).openPopup();
+          map.panTo([lat, lng]);
 
-          map.panTo([lat, lng], {
-            animate: true,
-            duration: 1.0
+          selectedMarker.on('popupclose', function() {
+            if (selectedMarker) {
+              map.removeLayer(selectedMarker);
+              selectedMarker = null;
+            }
+            document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove(
+              'table-active-row'));
           });
         }
       });
 
-      // ==========================================
-      // REALTIME LISTENER
-      // ==========================================
-      const channelName = `tracking.sesi.${window.SESI_ALAT_ID}`;
+      // D. REALTIME UPDATE
+      window.Echo.channel(`tracking.sesi.${window.SESI_ALAT_ID}`)
+        .listen('.LokasiBaru', (e) => {
+          console.log("Realtime:", e);
+          const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
 
-      window.Echo.channel(channelName)
-        .listen('.LokasiBaru', (e) => { // Pastikan event name pakai titik (.)
-          console.log("Data Masuk:", e);
-
-          // Data Mapping (Sesuaikan dengan payload event Anda)
-          const lat = parseFloat(e.lat);
-          const lng = parseFloat(e.lng);
-          const latLng = [lat, lng];
-
-          const formattedDate = formatDateJS(e.created_at || new Date());
-          const timeStr = formatTimeJS(e.created_at || new Date());
-
-          // 1. UPDATE PETA (Background Process)
+          if (liveLatLngs.length === 0) {
+            startMarker = L.marker(latLng, {
+              icon: createCustomIcon('start')
+            }).addTo(map);
+            truckMarker = L.marker(latLng, {
+              icon: createCustomIcon('end')
+            }).addTo(map);
+            polyline = L.polyline([latLng], {
+              color: '#be1e2d',
+              weight: 4
+            }).addTo(map);
+          } else {
+            if (truckMarker) truckMarker.setLatLng(latLng);
+            if (polyline) polyline.addLatLng(latLng);
+          }
           liveLatLngs.push(latLng);
 
-          if (polyline) polyline.setLatLngs(liveLatLngs);
-          else polyline = L.polyline(liveLatLngs, {
-            color: '#be1e2d',
-            weight: 4,
-            opacity: 0.8,
-            dashArray: '5, 5'
-          }).addTo(map);
+          if (isAutoPan) map.panTo(latLng);
 
-          if (!startMarker) startMarker = L.marker(latLng, {
-            icon: createCustomIcon('start')
-          }).bindPopup('<strong>Titik Awal</strong>').addTo(map);
-
-          if (endMarker) endMarker.setLatLng(latLng);
-          else endMarker = L.marker(latLng, {
-            icon: createCustomIcon('end')
-          }).bindPopup('<strong>Lokasi Terkini</strong>').addTo(map);
-
-          // 2. AUTO PAN LOGIC (Kunci Perubahan Disini)
-          if (isAutoPan) {
-            map.panTo(latLng);
-          }
-
-          // 3. UPDATE TABEL
+          // Update Tabel
+          const tbody = document.querySelector('#history-table tbody');
           const emptyRow = document.getElementById('empty-row');
           if (emptyRow) emptyRow.remove();
 
-          const tbody = document.querySelector('#history-table tbody');
-          // Hitung nomor baru (karena append di bawah, nomor lanjut terus)
-          const newIndex = tbody.querySelectorAll('tr').length + 1;
+          const newIndex = tbody.querySelectorAll('tr.clickable-row').length + 1;
 
-          const altDisplay = e.alt ? `${e.alt} m` : '-';
-          const satDisplay = e.sat ? `<span class="badge bg-primary">${e.sat}</span>` : '-';
-          const speedDisplay = e.speed ? `<span style="color: #10b981; font-weight: 600;">${e.speed} km/h</span>` :
-            '-';
+          const rawDate = e.created_at ? e.created_at : new Date();
+          const dateStr = formatDateJS(rawDate); // SUDAH ADA WIB/WITA
 
-          const newRowHTML = `
-              <tr class="clickable-row"
-                  data-lat="${e.lat}"
-                  data-lng="${e.lng}"
-                  data-time="${timeStr}"
-                  data-speed="${e.speed || 0}">
-                <td style="font-size: 12px; font-weight: 600; text-align: center;">
-                  <span class="rounded-circle py-1 px-2 bg-primary text-white">${newIndex}</span>
-                </td>
-                <td style="font-size: 12px;"><i class="ri-time-line me-1"></i>${formattedDate}</td>
-                <td style="font-size: 12px;">${e.lat}</td>
-                <td style="font-size: 12px;">${e.lng}</td>
-                <td style="font-size: 12px;">${altDisplay}</td>
-                <td style="font-size: 12px;">${satDisplay}</td>
-                <td style="font-size: 12px;">${speedDisplay}</td>
-              </tr>
-            `;
+          const rowHtml = `
+            <tr class="clickable-row" data-lat="${e.lat}" data-lng="${e.lng}" data-time="${rawDate}" data-speed="${e.speed}">
+              <td style="font-size: 12px; font-weight: 600;">
+                  <span class="rounded-circle py-1 px-2 bg-primary text-white number-badge">${newIndex}</span>
+              </td>
+              <td style="font-size: 12px;"><i class="ri-time-line me-1"></i>${dateStr}</td>
+              <td style="font-size: 12px;">${e.lat}</td>
+              <td style="font-size: 12px;">${e.lng}</td>
+              <td style="font-size: 12px;">${e.alt ? e.alt+' m' : '-'}</td>
+              <td style="font-size: 12px;">${e.sat ? '<span class="badge bg-primary">'+e.sat+'</span>' : '-'}</td>
+              <td style="font-size: 12px;">${e.speed ? '<span style="color: #10b981; font-weight: 600;">'+e.speed+' km/h</span>' : '-'}</td>
+            </tr>
+          `;
 
-          // Tambahkan ke bawah
-          tbody.insertAdjacentHTML('beforeend', newRowHTML);
+          tbody.insertAdjacentHTML('afterbegin', rowHtml);
         });
     });
   </script>
