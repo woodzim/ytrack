@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Alat;
 use App\Models\Perusahaan;
+use App\Models\ActivityLog; // <-- TAMBAHAN 1: Import Model Log
+use Illuminate\Support\Facades\Auth; // <-- TAMBAHAN 2: Import Auth
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -40,8 +42,6 @@ class AlatController extends Controller
     public function create()
     {
         $listPerusahaan = Perusahaan::all();
-        
-        // Tidak perlu generate kode lagi, langsung return view
         return view('pages.admin.alat.create', compact('listPerusahaan'));
     }
 
@@ -51,19 +51,41 @@ class AlatController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id' => 'required|string|max:255|unique:alat,id',
+            'id'            => 'required|string|max:255|unique:alat,id',
             'id_perusahaan' => 'nullable|exists:perusahaan,id',        
         ], [
-            'id.required' => 'ID Perangkat harus diisi',
-            'id.string' => 'ID harus berupa teks',
-            'id.unique' => 'ID Perangkat ini sudah terdaftar',
-            'perusahaan_id.exists' => 'Data perusahaan tidak valid',
+            'id.required'          => 'ID Perangkat harus diisi',
+            'id.unique'            => 'ID Perangkat ini sudah terdaftar',
+            'id_perusahaan.exists' => 'Data perusahaan tidak valid',
         ]);
 
-        // Hapus baris generate kode, langsung create
-        Alat::create($validated);
+        // Simpan Data Alat
+        $alat = Alat::create($validated);
 
-        return redirect()->route('alat.index')->with('success', 'Alat berhasil ditambahkan: ' . $validated['id']);    
+        // --- LOGIC PENYUSUNAN DESKRIPSI ---
+        $deskripsiLog = "Admin menambahkan alat baru (SN: " . $validated['id'] . ")";
+
+        // Cek apakah user memilih perusahaan
+        if (!empty($validated['id_perusahaan'])) {
+            // Ambil nama perusahaan untuk log agar mudah dibaca
+            $namaPerusahaan = \App\Models\Perusahaan::find($validated['id_perusahaan'])->nama;
+            $deskripsiLog .= " dan ditempatkan di " . $namaPerusahaan;
+        } else {
+            $deskripsiLog .= " (Belum ditempatkan di perusahaan)";
+        }
+
+        // --- SIMPAN LOG ---
+        ActivityLog::create([
+            'user_id'      => \Illuminate\Support\Facades\Auth::id(),
+            'action'       => 'CREATE',
+            'subject_type' => Alat::class,
+            'subject_id'   => null, // Biarkan null karena ID Alat adalah String (kecuali Anda ubah struktur tabel log)
+            'description'  => $deskripsiLog,
+            'ip_address'   => $request->ip(),
+        ]);
+        // -----------------------------
+
+        return redirect()->route('alat.index')->with('success', 'Alat berhasil ditambahkan.');    
     }
 
     /**
@@ -94,15 +116,58 @@ class AlatController extends Controller
                 'required', 
                 'string', 
                 'max:255', 
-                'unique:alat,id,' . $alat->id // Cara penulisan short syntax untuk ignore ID saat ini
+                'unique:alat,id,' . $alat->id
             ],
             'id_perusahaan' => 'nullable|exists:perusahaan,id',
         ], [
             'id.required' => 'Serial Number / ID Alat harus diisi',
-            'id.unique' => 'Serial Number ini sudah digunakan oleh alat lain',
+            'id.unique'   => 'Serial Number ini sudah digunakan oleh alat lain',
         ]);
 
+        // --- 1. SIMPAN DATA LAMA (BEFORE) ---
+        $oldId = $alat->id;
+        $oldPerusahaanId = $alat->id_perusahaan;
+        // Ambil nama perusahaan lama (jika ada)
+        $oldPerusahaanNama = $alat->perusahaan ? $alat->perusahaan->nama : 'Belum ditempatkan';
+
+        // --- 2. LAKUKAN UPDATE ---
         $alat->update($validated);
+
+        // --- 3. LOGIC PENYUSUNAN DESKRIPSI LOG ---
+        // Refresh relasi untuk mendapatkan data perusahaan baru setelah update
+        $alat->load('perusahaan'); 
+        
+        $changes = [];
+
+        // Cek apakah SN berubah
+        if ($oldId !== $validated['id']) {
+            $changes[] = "SN berubah dari [$oldId] menjadi [" . $validated['id'] . "]";
+        }
+
+        // Cek apakah Perusahaan berubah
+        if ($oldPerusahaanId != $validated['id_perusahaan']) {
+            $newPerusahaanNama = $alat->perusahaan ? $alat->perusahaan->nama : 'Belum ditempatkan';
+            $changes[] = "Lokasi dipindahkan dari [$oldPerusahaanNama] ke [$newPerusahaanNama]";
+        }
+
+        // Jika tidak ada perubahan sama sekali (jarang terjadi karena tombol submit biasanya disable jika dirty, tapi buat jaga-jaga)
+        if (empty($changes)) {
+            $desc = "Admin memperbarui data alat (Tidak ada perubahan signifikan). ID: $oldId";
+        } else {
+            // Gabungkan array perubahan menjadi kalimat
+            $desc = "Admin memperbarui alat ($oldId). Detail: " . implode(', ', $changes) . ".";
+        }
+
+        // --- 4. SIMPAN LOG ---
+        ActivityLog::create([
+            'user_id'      => Auth::id(),
+            'action'       => 'UPDATE',
+            'subject_type' => Alat::class,
+            'subject_id'   => null, // Null karena ID Alat adalah String
+            'description'  => $desc,
+            'ip_address'   => $request->ip(),
+        ]);
+        // -----------------------------
 
         return redirect()->route('alat.index')->with('success', 'Data alat berhasil diperbarui');
     }
@@ -113,9 +178,23 @@ class AlatController extends Controller
     public function destroy(Alat $alat)
     {
         try {
-            $alatId = $alat->id;
+            $alatId = $alat->id; // Simpan ID sebelum dihapus
+            
             $alat->delete();
+
+            // --- TAMBAHAN LOG: DELETE ---
+            ActivityLog::create([
+                'user_id'      => Auth::id(),
+                'action'       => 'DELETE',
+                'subject_type' => Alat::class,
+                'subject_id'   => null,
+                'description'  => "Admin menghapus alat dengan ID: $alatId",
+                'ip_address'   => request()->ip(),
+            ]);
+            // -----------------------------
+
             return redirect()->route('alat.index')->with('success', "Alat '$alatId' berhasil dihapus");
+            
         } catch (\Exception $e) {
             return redirect()->route('alat.index')->with('error', 'Gagal menghapus alat. Kemungkinan alat ini masih terhubung dengan Sesi Aktif atau riwayat perjalanan.');
         }
