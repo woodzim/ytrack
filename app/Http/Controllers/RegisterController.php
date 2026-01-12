@@ -9,6 +9,7 @@ use App\Mail\AdminNewRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
@@ -68,11 +69,19 @@ class RegisterController extends Controller
         $user->assignRole('perusahaan');
 
         // Send email to perusahaan
-        Mail::to($user->email)->send(new NewCompanyRegistration($user));
+        try {
+            Mail::to($user->email)->send(new NewCompanyRegistration($user));
+        } catch (\Exception $e) {
+            Log::error('Failed to send registration email to company: ' . $e->getMessage());
+        }
 
         // Send email to admin
-        $adminEmail = config('app.admin_email');
-        Mail::to($adminEmail)->send(new AdminNewRegistration($user));
+        try {
+            $adminEmail = config('app.admin_email');
+            Mail::to($adminEmail)->send(new AdminNewRegistration($user));
+        } catch (\Exception $e) {
+            Log::error('Failed to send registration notification to admin: ' . $e->getMessage());
+        }
 
         return redirect()
             ->route('login')
