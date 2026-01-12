@@ -109,7 +109,7 @@
                       </td>
 
                       <td data-label="Status">
-                        @if ($item->sedang_digunakan)
+                        @if ($item->is_aktif)
                           <span class="badge bg-success-transparent text-success">
                             <i class="ri-broadcast-line me-1"></i> Sedang Digunakan
                           </span>

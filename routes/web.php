@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\RiwayatPerjalananController;
 use App\Http\Controllers\Admin\TrackingTidakLengkapController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\LogActivityController;
 // Perusahaan Controllers
 use App\Http\Controllers\Perusahaan\KendaraanController as PerusahaanKendaraanController;
 use App\Http\Controllers\Perusahaan\SesiAlatController as PerusahaanSesiAlatController;
@@ -113,5 +114,7 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('tracking-tidak-lengkap', TrackingTidakLengkapController::class, [
             'only' => ['index', 'edit', 'update', 'destroy']
         ]);
+
+        Route::get('/logs', [LogActivityController::class, 'index'])->name('logs.index');
     });
 });

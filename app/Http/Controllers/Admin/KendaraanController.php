@@ -7,20 +7,16 @@ use App\Models\Perusahaan;
 use App\Models\Kendaraan;
 use App\Models\JenisKendaraan;
 use App\Models\SesiAlat;
+use App\Models\ActivityLog; // <-- TAMBAHAN 1: Import Model Log
+use Illuminate\Support\Facades\Auth; // <-- TAMBAHAN 2: Import Auth
 use Illuminate\Http\Request;
 
 class KendaraanController extends Controller
 {
-    /**
-     * Store a newly created resource in storage.
-     */
-
     public function index(Request $request)
     {
         $search = $request->input('search');
 
-        // 1. Eager Load Relasi
-        // 2. Cek Status 'sedang_digunakan' secara efisien via query (bukan looping manual)
         $query = Kendaraan::with(['perusahaan', 'jenisKendaraan'])
             ->withExists(['sesiAlat as sedang_digunakan' => function ($q) {
                 $q->where('aktif', true);
@@ -28,8 +24,6 @@ class KendaraanController extends Controller
 
         if ($search) {
             $query->where(function($q) use ($search) {
-                // PENTING: Gunakan 'kendaraan.nama' bukan hanya 'nama'
-                // untuk menghindari error "Ambiguous column" jika tabel relasi juga punya kolom 'nama'
                 $q->where('kendaraan.nama', 'like', '%' . $search . '%')
                     ->orWhere('kendaraan.plat', 'like', '%' . $search . '%')
                     ->orWhereHas('perusahaan', function($subQuery) use ($search) {
@@ -71,9 +65,20 @@ class KendaraanController extends Controller
             'plat.unique'                 => 'Nomor plat ini sudah terdaftar',
         ]);
 
-        Kendaraan::create($validated);
+        // UBAH DISINI: Tampung hasil create ke variabel $kendaraan
+        $kendaraan = Kendaraan::create($validated);
 
-        // 3. Redirect
+        // --- TAMBAHAN LOG: CREATE ---
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'CREATE',
+            'subject_type' => Kendaraan::class,
+            'subject_id' => $kendaraan->id,
+            'description' => "Menambahkan kendaraan baru: {$kendaraan->nama} ({$kendaraan->plat})",
+            'ip_address' => $request->ip(),
+        ]);
+        // -----------------------------
+
         return redirect()->route('kendaraan.index')
             ->with('success', 'Kendaraan berhasil ditambahkan');
     }
@@ -86,7 +91,7 @@ class KendaraanController extends Controller
         return view('pages.admin.kendaraan.edit', compact('kendaraan', 'perusahaan', 'jenisKendaraan'));
     }
 
-    public function update(Request $request, \App\Models\Kendaraan $kendaraan)
+    public function update(Request $request, Kendaraan $kendaraan)
     {
         $validated = $request->validate([
             'id_perusahaan'      => 'required|exists:perusahaan,id',
@@ -94,37 +99,59 @@ class KendaraanController extends Controller
             'nama'               => 'required|string|max:255',
             'plat'               => 'required|string|max:20|unique:kendaraan,plat,' . $kendaraan->id,
         ], [
-            'id_perusahaan.required'        => 'Perusahaan harus dipilih',
-            'id_jenis_kendaraan.required'   => 'Jenis kendaraan harus dipilih',
-            'plat.unique'                   => 'Nomor plat ini sudah digunakan kendaraan lain',
+            'id_perusahaan.required'      => 'Perusahaan harus dipilih',
+            'id_jenis_kendaraan.required' => 'Jenis kendaraan harus dipilih',
+            'plat.unique'                 => 'Nomor plat ini sudah digunakan kendaraan lain',
         ]);
 
-        // 2. Update (Mutator akan otomatis mengubah plat jadi HURUF BESAR)
+        // Simpan nama lama untuk log
+        $oldInfo = "{$kendaraan->nama} ({$kendaraan->plat})";
+
         $kendaraan->update($validated);
 
-        // 3. Redirect
+        // --- TAMBAHAN LOG: UPDATE ---
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'UPDATE',
+            'subject_type' => Kendaraan::class,
+            'subject_id' => $kendaraan->id,
+            'description' => "Memperbarui data kendaraan. Dari [$oldInfo] menjadi [{$kendaraan->nama} ({$kendaraan->plat})]",
+            'ip_address' => $request->ip(),
+        ]);
+        // -----------------------------
+
         return redirect()->route('kendaraan.index')
             ->with('success', 'Data kendaraan berhasil diperbarui');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Kendaraan $kendaraan)
     {
         $sedangDigunakan = SesiAlat::where('id_kendaraan', $kendaraan->id)
-                            ->where('aktif', true)
-                            ->exists(); // Mengembalikan true jika data ditemukan
+                                    ->where('aktif', true)
+                                    ->exists();
 
         if ($sedangDigunakan) {
             return redirect()->route('kendaraan.index')
-                ->with('error', "Gagal menghapus! Kendaraan '{$kendaraan->nama}' sedang digunakan dalam sesi aktif. Harap nonaktifkan sesi terlebih dahulu.");
+                ->with('error', "Gagal menghapus! Kendaraan '{$kendaraan->nama}' sedang digunakan dalam sesi aktif.");
         }
 
         try {
             $info = $kendaraan->nama . ' (' . $kendaraan->plat . ')';
+            $id = $kendaraan->id; // Simpan ID sebelum dihapus
             
             $kendaraan->delete();
+
+            // --- TAMBAHAN LOG: DELETE ---
+            // Kita log setelah delete berhasil (di dalam try)
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'DELETE',
+                'subject_type' => Kendaraan::class,
+                'subject_id' => $id,
+                'description' => "Menghapus kendaraan: {$info}",
+                'ip_address' => request()->ip(),
+            ]);
+            // -----------------------------
 
             return redirect()->route('kendaraan.index')
                 ->with('success', "Kendaraan $info berhasil dihapus.");
@@ -132,7 +159,7 @@ class KendaraanController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() == "23000") {
                 return redirect()->route('kendaraan.index')
-                    ->with('error', "Data tidak bisa dihapus karena memiliki riwayat perjalanan (terikat data lain).");
+                    ->with('error', "Data tidak bisa dihapus karena memiliki riwayat perjalanan.");
             }
 
             return redirect()->route('kendaraan.index')

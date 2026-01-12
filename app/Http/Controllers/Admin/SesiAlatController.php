@@ -7,6 +7,8 @@ use App\Models\SesiAlat;
 use App\Models\Alat;
 use App\Models\Kendaraan;
 use App\Models\Perusahaan;
+use App\Models\ActivityLog; // <-- TAMBAHAN 1: Import Model Log
+use Illuminate\Support\Facades\Auth; // <-- TAMBAHAN 2: Import Auth
 use Illuminate\Http\Request;
 
 class SesiAlatController extends Controller
@@ -66,11 +68,11 @@ class SesiAlatController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'nullable|string|max:255',
-            'id_alat' => 'required|exists:alat,id',
-            'id_kendaraan' => 'required|exists:kendaraan,id',
+            'nama'          => 'nullable|string|max:255',
+            'id_alat'       => 'required|exists:alat,id',
+            'id_kendaraan'  => 'required|exists:kendaraan,id',
             'id_perusahaan' => 'required|exists:perusahaan,id',
-            'aktif' => 'boolean',
+            'aktif'         => 'boolean',
         ]);
 
         // Cek apakah alat sedang aktif di sesi lain
@@ -91,7 +93,22 @@ class SesiAlatController extends Controller
             return back()->withInput()->with('error', 'Kendaraan ini sudah digunakan oleh sesi lain yang aktif. Hentikan sesi sebelumnya terlebih dahulu.');
         }
 
-        SesiAlat::create($validated);
+        // Simpan
+        $sesiAlat = SesiAlat::create($validated);
+
+        // --- TAMBAHAN LOG: CREATE ---
+        // Kita load relasi sebentar untuk mendapatkan nama Kendaraan agar log lebih informatif
+        $sesiAlat->load(['kendaraan', 'alat']);
+        
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'CREATE',
+            'subject_type' => SesiAlat::class,
+            'subject_id' => $sesiAlat->id,
+            'description' => "Admin membuat sesi alat baru. Alat: {$sesiAlat->alat->id}, Kendaraan: {$sesiAlat->kendaraan->nama} ({$sesiAlat->kendaraan->plat})",
+            'ip_address' => $request->ip(),
+        ]);
+        // -----------------------------
 
         return redirect()->route('sesi-alat.index')->with('success', 'Sesi Alat berhasil dibuat');
     }
@@ -124,11 +141,11 @@ class SesiAlatController extends Controller
     public function update(Request $request, SesiAlat $sesiAlat)
     {
         $validated = $request->validate([
-            'nama' => 'nullable|string|max:255',
-            'id_alat' => 'required|exists:alat,id',
-            'id_kendaraan' => 'required|exists:kendaraan,id',
+            'nama'          => 'nullable|string|max:255',
+            'id_alat'       => 'required|exists:alat,id',
+            'id_kendaraan'  => 'required|exists:kendaraan,id',
             'id_perusahaan' => 'required|exists:perusahaan,id',
-            'aktif' => 'boolean',
+            'aktif'         => 'boolean',
         ]);
 
         // Validasi jika alat berubah dan alat baru sedang aktif
@@ -155,7 +172,46 @@ class SesiAlatController extends Controller
             }
         }
 
+        // --- 1. SIMPAN INFO LAMA (Termasuk Nama) ---
+        $oldAlat      = $sesiAlat->id_alat;
+        $oldKendaraan = $sesiAlat->id_kendaraan;
+        $oldNama      = $sesiAlat->nama; // <--- Tambahan: Simpan nama lama
+
+        // Lakukan Update
         $sesiAlat->update($validated);
+
+        // --- 2. LOGGING ---
+        $desc = "Admin memperbarui Sesi Alat ID #{$sesiAlat->id}.";
+        
+        // Cek perubahan Alat
+        if ($oldAlat !== $validated['id_alat']) {
+            $desc .= " Alat berubah dari [$oldAlat] ke [{$validated['id_alat']}].";
+        }
+
+        // Cek perubahan Kendaraan
+        if ($oldKendaraan != $validated['id_kendaraan']) {
+            $newKendaraan = Kendaraan::find($validated['id_kendaraan']);
+            $desc .= " Kendaraan berubah ke [{$newKendaraan->nama}].";
+        }
+
+        // --- TAMBAHAN: Cek perubahan Nama ---
+        if ($oldNama !== $validated['nama']) {
+            // Kita pakai operator ?? '-' untuk berjaga-jaga jika datanya null (kosong)
+            $valOld = $oldNama ?? '-'; 
+            $valNew = $validated['nama'] ?? '-';
+            
+            $desc .= " Nama Sesi berubah dari [$valOld] ke [$valNew].";
+        }
+
+        ActivityLog::create([
+            'user_id'      => Auth::id(),
+            'action'       => 'UPDATE',
+            'subject_type' => SesiAlat::class,
+            'subject_id'   => $sesiAlat->id,
+            'description'  => $desc,
+            'ip_address'   => $request->ip(),
+        ]);
+        // ------------------------------------
 
         return redirect()->route('sesi-alat.index')->with('success', 'Sesi Alat berhasil diperbarui');
     }
@@ -184,7 +240,20 @@ class SesiAlatController extends Controller
             }
         }
 
-        $sesiAlat->update(['aktif' => !$sesiAlat->aktif]);
+        $newState = !$sesiAlat->aktif;
+        $sesiAlat->update(['aktif' => $newState]);
+
+        // --- TAMBAHAN LOG: TOGGLE ---
+        $statusText = $newState ? 'MENGAKTIFKAN' : 'MENONAKTIFKAN';
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'UPDATE', // Bisa dianggap update status
+            'subject_type' => SesiAlat::class,
+            'subject_id' => $sesiAlat->id,
+            'description' => "Admin $statusText sesi alat (ID: {$sesiAlat->id_alat}) pada kendaraan (ID: {$sesiAlat->id_kendaraan})",
+            'ip_address' => request()->ip(),
+        ]);
+        // -----------------------------
 
         $status = $sesiAlat->aktif ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', 'Sesi Alat berhasil ' . $status);
@@ -257,7 +326,21 @@ class SesiAlatController extends Controller
      */
     public function destroy(SesiAlat $sesiAlat)
     {
+        $id = $sesiAlat->id;
+        $info = "Alat: {$sesiAlat->id_alat} | Kendaraan ID: {$sesiAlat->id_kendaraan}";
+
         $sesiAlat->delete();
+
+        // --- TAMBAHAN LOG: DELETE ---
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'DELETE',
+            'subject_type' => SesiAlat::class,
+            'subject_id' => $id,
+            'description' => "Admin menghapus sesi alat. Detail: [$info]",
+            'ip_address' => request()->ip(),
+        ]);
+        // -----------------------------
 
         return redirect()->route('sesi-alat.index')->with('success', 'Sesi Alat berhasil dihapus');
     }
