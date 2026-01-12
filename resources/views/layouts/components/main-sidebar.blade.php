@@ -134,7 +134,6 @@
           </li>
 
           <li class="slide">
-            {{-- Pastikan route ini sesuai dengan yang kita buat di web.php (admin.logs.index) --}}
             <a href="{{ route('logs.index') }}" class="side-menu__item">
               <i class="ri-file-list-3-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
               <span class="side-menu__label">Log Aktivitas</span>
@@ -162,6 +161,15 @@
               <span class="side-menu__label">Kendaraan</span>
             </a>
           </li>
+
+          {{-- TAMBAHAN MENU ALAT DISINI --}}
+          <li class="slide">
+            <a href="{{ route('perusahaan.alat.index') }}" class="side-menu__item">
+              <i class="ri-rfid-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+              <span class="side-menu__label">Alat GPS</span>
+            </a>
+          </li>
+          {{-- END TAMBAHAN --}}
 
           <li class="slide">
             <a href="{{ route('perusahaan.sesi-alat.index') }}" class="side-menu__item">

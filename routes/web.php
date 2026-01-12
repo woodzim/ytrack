@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\LogActivityController;
 use App\Http\Controllers\Perusahaan\KendaraanController as PerusahaanKendaraanController;
 use App\Http\Controllers\Perusahaan\SesiAlatController as PerusahaanSesiAlatController;
 use App\Http\Controllers\Perusahaan\DashboardController as PerusahaanDashboardController;
+use App\Http\Controllers\Perusahaan\AlatController as PerusahaanAlatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,8 +55,6 @@ Route::middleware(['auth'])->group(function () {
         ->prefix('perusahaan')          // URL akan diawali /perusahaan/..
         ->name('perusahaan.')           // Nama route diawali perusahaan... (cth: perusahaan.kendaraan.index)
         ->group(function () {
-
-            // Dashboard
             Route::get('dashboard', [PerusahaanDashboardController::class, 'index'])->name('dashboard.index');
             Route::put('dashboard', [PerusahaanDashboardController::class, 'update'])->name('dashboard.update');
 
@@ -65,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('kendaraan', PerusahaanKendaraanController::class);
                 
             Route::resource('sesi-alat', PerusahaanSesiAlatController::class);
+            Route::get('/alat', [PerusahaanAlatController::class, 'index'])->name('alat.index');
         });
 
     // =================================================================
