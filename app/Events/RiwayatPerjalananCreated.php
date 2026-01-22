@@ -20,8 +20,8 @@ class RiwayatPerjalananCreated implements ShouldBroadcast, ShouldQueue
         public string $waktu,
         public ?int $speed,
         public string $alt,
-        public string $sat
-        
+        public string $sat,
+        public ?string $battery = null
     ) {}
 
     public function broadcastOn()

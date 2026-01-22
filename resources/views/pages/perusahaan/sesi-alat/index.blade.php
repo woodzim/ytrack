@@ -75,6 +75,7 @@
                     <th scope="col">Kendaraan</th>
                     <th scope="col">Alat GPS (SN)</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Battery</th>
                     <th scope="col">Update Terakhir</th>
                     <th scope="col" class="text-center" style="width: 150px;">Aksi</th>
                   </tr>
@@ -119,6 +120,31 @@
                           <span class="badge bg-success-transparent">Aktif</span>
                         @else
                           <span class="badge bg-secondary-transparent">Nonaktif</span>
+                        @endif
+                      </td>
+
+                      <td>
+                        @php
+                          $lastRiwayat = $item->riwayatPerjalanan?->sortByDesc('created_at')->first();
+                          $batLevel = (int) ($lastRiwayat?->battery ?? 0);
+                          $batColor = 'bg-danger';
+                          if ($batLevel > 70) {
+                              $batColor = 'bg-success';
+                          } elseif ($batLevel >= 30) {
+                              $batColor = 'bg-warning';
+                          }
+                        @endphp
+                        @if($lastRiwayat && $lastRiwayat->battery !== null)
+                          <div class="d-flex align-items-center" style="min-width: 80px;">
+                            <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
+                              <div class="progress-bar {{ $batColor }}" role="progressbar"
+                                style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="ms-2" style="font-size: 11px; font-weight: 600;">{{ $batLevel }}%</span>
+                          </div>
+                        @else
+                          <small class="text-muted">-</small>
                         @endif
                       </td>
 
