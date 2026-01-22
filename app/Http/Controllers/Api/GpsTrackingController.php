@@ -45,6 +45,7 @@ class GpsTrackingController extends Controller
                 'alt'      => 'nullable|string',
                 'sat'      => 'nullable|integer',
                 'speed'    => 'nullable|integer',
+                'battery'  => 'nullable|string',
                 'datetime' => 'nullable|date_format:Y-m-d H:i:s',
             ]);
 
@@ -94,6 +95,7 @@ class GpsTrackingController extends Controller
                 'alt'           => $validated['alt'] ?? "0",
                 'sat'           => $validated['sat'] ?? 0,
                 'speed'         => $validated['speed'] ?? 0,
+                'battery'       => $validated['battery'] ?? null,
                 'waktu_rekam'   => $validated['datetime'] ?? Carbon::now(), // Gunakan waktu server jika kosong
             ]);
 
@@ -106,7 +108,8 @@ class GpsTrackingController extends Controller
                 $riwayat->created_at->toDateTimeString(),
                 (int) $riwayat->speed,
                 (string) $riwayat->alt,
-                (string) $riwayat->sat
+                (string) $riwayat->sat,
+                (string) $riwayat->battery
             ));
 
             return response()->json([

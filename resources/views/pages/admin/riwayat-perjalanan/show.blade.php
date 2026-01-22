@@ -56,6 +56,7 @@
                                         <th>Ketinggian</th>
                                         <th>Satelit</th>
                                         <th>Kecepatan</th>
+                                        <th>Battery</th>
                                         <th style="width: 120px;">Aksi</th>
                                     </tr>
                                 </thead>
@@ -88,6 +89,28 @@
                                                 @else
                                                     <span class="text-muted">-</span>
                                                 @endif
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $batLevel = (int) ($item->battery ?? 0);
+                                                    $batColor = 'bg-danger';
+                                                    if ($batLevel > 70) {
+                                                        $batColor = 'bg-success';
+                                                    } elseif ($batLevel >= 30) {
+                                                        $batColor = 'bg-warning';
+                                                    }
+                                                @endphp
+                                                <div class="d-flex align-items-center" style="min-width: 100px;">
+                                                    <div class="progress flex-grow-1"
+                                                        style="height: 6px; background-color: #e9ecef;">
+                                                        <div class="progress-bar {{ $batColor }}" role="progressbar"
+                                                            style="width: {{ $batLevel }}%"
+                                                            aria-valuenow="{{ $batLevel }}" aria-valuemin="0"
+                                                            aria-valuemax="100"></div>
+                                                    </div>
+                                                    <span class="ms-2"
+                                                        style="font-size: 11px; font-weight: 600;">{{ $batLevel }}%</span>
+                                                </div>
                                             </td>
                                             <td>
                                                 <div class="action-buttons">

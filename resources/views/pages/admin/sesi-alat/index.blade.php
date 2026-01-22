@@ -59,7 +59,7 @@
                     <th style="width: 12%;">Alat</th>
                     <th style="width: 15%;">Nama Sesi</th>
                     <th style="width: 12%;">Status</th>
-                    <th style="width: 12%;">Jumlah Track</th>
+                    <th style="width: 12%;">Status Battery</th>
                     <th style="width: 16%;">Waktu Track Terakhir</th>
                     <th style="width: 15%;" class="text-center">Aksi</th>
                   </tr>
@@ -87,8 +87,29 @@
                           {{ $item->aktif ? 'Aktif' : 'Nonaktif' }}
                         </span>
                       </td>
-                      <td data-label="Jumlah Track">
-                        <small class="text-muted">{{ $item->riwayatPerjalanan?->count() ?? '0' }}</small>
+                      <td data-label="Status Battery">
+                        @php
+                          $lastRiwayat = $item->riwayatPerjalanan?->sortByDesc('created_at')->first();
+                          $batLevel = (int) ($lastRiwayat?->battery ?? 0);
+                          $batColor = 'bg-danger';
+                          if ($batLevel > 70) {
+                              $batColor = 'bg-success';
+                          } elseif ($batLevel >= 30) {
+                              $batColor = 'bg-warning';
+                          }
+                        @endphp
+                        @if($lastRiwayat && $lastRiwayat->battery !== null)
+                          <div class="d-flex align-items-center" style="min-width: 80px;">
+                            <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
+                              <div class="progress-bar {{ $batColor }}" role="progressbar"
+                                style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="ms-2" style="font-size: 11px; font-weight: 600;">{{ $batLevel }}%</span>
+                          </div>
+                        @else
+                          <small class="text-muted">-</small>
+                        @endif
                       </td>
 
                       {{-- Bagian Tanggal Diubah Disini --}}

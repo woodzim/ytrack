@@ -18,6 +18,7 @@ class RiwayatPerjalanan extends Model
         'alt',
         'sat',
         'speed',
+        'battery',
     ];
 
     protected $casts = [
@@ -26,6 +27,7 @@ class RiwayatPerjalanan extends Model
         'alt' => 'string',
         'sat' => 'integer',
         'speed' => 'integer',
+        'battery' => 'string',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

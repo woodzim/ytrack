@@ -140,6 +140,34 @@
             </div>
 
             <div class="detail-group">
+              <div class="detail-label" style="margin-bottom: 10px;">Status Baterai Alat</div>
+              @php
+                $lastRiwayat = $riwayatPerjalanan->sortByDesc('created_at')->first();
+                $batLevel = (int) ($lastRiwayat?->battery ?? 0);
+                $batColor = 'bg-danger';
+                if ($batLevel > 70) {
+                    $batColor = 'bg-success';
+                } elseif ($batLevel >= 30) {
+                    $batColor = 'bg-warning';
+                }
+              @endphp
+              <div class="detail-value">
+                @if($lastRiwayat && $lastRiwayat->battery !== null)
+                  <div class="d-flex align-items-center" style="max-width: 200px;">
+                    <div class="progress flex-grow-1" style="height: 8px; background-color: #e9ecef;">
+                      <div class="progress-bar {{ $batColor }}" role="progressbar"
+                        style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
+                        aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <span class="ms-2" style="font-size: 13px; font-weight: 700;">{{ $batLevel }}%</span>
+                  </div>
+                @else
+                  <span class="text-muted">-</span>
+                @endif
+              </div>
+            </div>
+
+            <div class="detail-group">
               <div class="detail-label" style="margin-bottom: 10px;">Perusahaan</div>
               <div class="detail-value">
                 {{ $sesiAlat->perusahaan ? $sesiAlat->perusahaan->nama : '-' }}
@@ -251,6 +279,7 @@
                       <th style="font-size: 12px; font-weight: 600; color: #666;">Ketinggian</th>
                       <th style="font-size: 12px; font-weight: 600; color: #666;">Satelit</th>
                       <th style="font-size: 12px; font-weight: 600; color: #666;">Kecepatan</th>
+                      <th style="font-size: 12px; font-weight: 600; color: #666;">Battery</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -293,6 +322,26 @@
                           @else
                             -
                           @endif
+                        </td>
+
+                        <td style="font-size: 12px;">
+                          @php
+                            $batLevel = (int) ($riwayat->battery ?? 0);
+                            $batColor = 'bg-danger';
+                            if ($batLevel > 70) {
+                                $batColor = 'bg-success';
+                            } elseif ($batLevel >= 30) {
+                                $batColor = 'bg-warning';
+                            }
+                          @endphp
+                          <div class="d-flex align-items-center" style="min-width: 100px;">
+                            <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
+                              <div class="progress-bar {{ $batColor }}" role="progressbar"
+                                style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
+                                aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="ms-2" style="font-size: 11px; font-weight: 600;">{{ $batLevel }}%</span>
+                          </div>
                         </td>
                       </tr>
                     @endforeach
@@ -603,6 +652,21 @@
                   <td style="font-size: 12px;">${e.alt ? e.alt+' m' : '-'}</td>
                   <td style="font-size: 12px;">${e.sat ? '<span class="badge bg-primary">'+e.sat+'</span>' : '-'}</td>
                   <td style="font-size: 12px;">${e.speed ? '<span style="color:#10b981;font-weight:600">'+e.speed+' km/h</span>' : '-'}</td>
+                  <td style="font-size: 12px;">
+                    ${(() => {
+                        let bat = parseInt(e.battery || 0);
+                        let color = 'bg-danger';
+                        if(bat > 70) color = 'bg-success';
+                        else if(bat >= 30) color = 'bg-warning';
+                        return `
+                        <div class="d-flex align-items-center" style="min-width: 100px;">
+                            <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
+                              <div class="progress-bar ${color}" role="progressbar" style="width: ${bat}%"></div>
+                            </div>
+                            <span class="ms-2" style="font-size: 11px; font-weight: 600;">${bat}%</span>
+                        </div>`;
+                    })()}
+                  </td>
               </tr>
             `;
 
