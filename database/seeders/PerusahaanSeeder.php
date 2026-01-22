@@ -107,7 +107,7 @@ class PerusahaanSeeder extends Seeder
             if ($perusahaan) {
                 $email = strtolower(str_replace(' ', '', $perusahaan->nama)) . '@gmail.com';
                 
-                User::firstOrCreate(
+                $user = User::firstOrCreate(
                     ['email' => $email],
                     [
                         'name' => $perusahaan->nama,
@@ -118,6 +118,8 @@ class PerusahaanSeeder extends Seeder
                         'updated_at' => $now,
                     ]
                 );
+
+                $user->assignRole('perusahaan');
             }
         }
     }
