@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Kendaraan;
 use App\Models\JenisKendaraan;
 use App\Models\SesiAlat;
+use App\Models\ActivityLog; // <-- TAMBAHAN 1: Import Model Log
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,7 +20,6 @@ class KendaraanController extends Controller
         $idPerusahaan = Auth::user()->id_perusahaan;
         $search = $request->input('search');
 
-        // Update: Tambahkan withExists agar pengecekan status di view jauh lebih cepat
         $query = Kendaraan::where('id_perusahaan', $idPerusahaan)
             ->with('jenisKendaraan')
             ->withExists(['sesiAlat as sedang_digunakan' => function ($q) {
@@ -52,28 +52,38 @@ class KendaraanController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validasi Input
         $validated = $request->validate([
             'id_jenis_kendaraan' => 'required|exists:jenis_kendaraan,id',
             'nama'               => 'required|string|max:255',
             'plat'               => 'required|string|max:20|unique:kendaraan,plat',
         ],[
-            'nama.required'               => 'Nama kendaraan harus diisi',
-            'plat.required'               => 'Nomor plat harus diisi',
-            'plat.unique'                 => 'Nomor plat ini sudah terdaftar',
+            'nama.required'      => 'Nama kendaraan harus diisi',
+            'plat.required'      => 'Nomor plat harus diisi',
+            'plat.unique'        => 'Nomor plat ini sudah terdaftar',
 
         ]);
 
-        // 2. Simpan ke Database
-        Kendaraan::create([
+        // UBAH DISINI: Tampung hasil create ke variabel $kendaraan agar bisa ambil ID-nya
+        $kendaraan = Kendaraan::create([
             'id_perusahaan'      => Auth::user()->id_perusahaan,
             'id_jenis_kendaraan' => $validated['id_jenis_kendaraan'],
             'nama'               => $validated['nama'],
             'plat'               => $validated['plat'],
         ]);
 
+        // --- TAMBAHAN LOG: CREATE ---
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'CREATE',
+            'subject_type' => Kendaraan::class,
+            'subject_id' => $kendaraan->id,
+            'description' => "Perusahaan menambahkan kendaraan: {$kendaraan->nama} ({$kendaraan->plat})",
+            'ip_address' => $request->ip(),
+        ]);
+        // -----------------------------
+
         return redirect()->route('perusahaan.kendaraan.index')
-                            ->with('success', 'Kendaraan berhasil ditambahkan.');
+            ->with('success', 'Kendaraan berhasil ditambahkan.');
     }
 
     /**
@@ -81,7 +91,6 @@ class KendaraanController extends Controller
      */
     public function edit($id)
     {
-        // Pastikan hanya bisa edit kendaraan milik perusahaan sendiri
         $kendaraan = Kendaraan::where('id', $id)
             ->where('id_perusahaan', Auth::user()->id_perusahaan)
             ->firstOrFail();
@@ -103,14 +112,15 @@ class KendaraanController extends Controller
         $validated = $request->validate([
             'id_jenis_kendaraan' => 'required|exists:jenis_kendaraan,id',
             'nama'               => 'required|string|max:255',
-            // VALIDASI UNIQUE UPDATE: Abaikan ID kendaraan ini saat pengecekan
             'plat'               => 'required|string|max:20|unique:kendaraan,plat,' . $kendaraan->id,
         ],[
-            'nama.required'               => 'Nama kendaraan harus diisi',
-            'plat.required'               => 'Nomor plat harus diisi',
-            'plat.unique'                 => 'Nomor plat ini sudah terdaftar',
-
+            'nama.required'      => 'Nama kendaraan harus diisi',
+            'plat.required'      => 'Nomor plat harus diisi',
+            'plat.unique'        => 'Nomor plat ini sudah terdaftar',
         ]);
+
+        // Simpan info lama untuk log
+        $oldInfo = "{$kendaraan->nama} ({$kendaraan->plat})";
 
         $kendaraan->update([
             'id_jenis_kendaraan' => $validated['id_jenis_kendaraan'],
@@ -118,8 +128,19 @@ class KendaraanController extends Controller
             'plat'               => $validated['plat'],
         ]);
 
+        // --- TAMBAHAN LOG: UPDATE ---
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'UPDATE',
+            'subject_type' => Kendaraan::class,
+            'subject_id' => $kendaraan->id,
+            'description' => "Perusahaan memperbarui kendaraan. Dari [$oldInfo] menjadi [{$validated['nama']} ({$validated['plat']})]",
+            'ip_address' => $request->ip(),
+        ]);
+        // -----------------------------
+
         return redirect()->route('perusahaan.kendaraan.index')
-                            ->with('success', 'Data kendaraan berhasil diperbarui.');
+            ->with('success', 'Data kendaraan berhasil diperbarui.');
     }
 
     /**
@@ -129,30 +150,41 @@ class KendaraanController extends Controller
     {
         $idPerusahaan = Auth::user()->id_perusahaan;
 
-        // 1. Cek apakah kendaraan ini sedang dipakai (Aktif)
         $sedangDigunakan = SesiAlat::where('id_kendaraan', $id)
             ->where('aktif', true)
             ->exists();
 
         if ($sedangDigunakan) {
-            // Jika aktif, kembalikan dengan pesan error
             return redirect()->route('perusahaan.kendaraan.index')
                 ->with('error', 'Gagal menghapus! Kendaraan sedang beroperasi (Status: Jalan). Harap selesaikan sesi terlebih dahulu.');
         }
 
-        // 2. Cari dan Hapus
         $kendaraan = Kendaraan::where('id', $id)
             ->where('id_perusahaan', $idPerusahaan)
             ->firstOrFail();
 
         try {
+            // Simpan info sebelum hapus
+            $info = $kendaraan->nama . ' (' . $kendaraan->plat . ')';
+            $deletedId = $kendaraan->id;
+
             $kendaraan->delete();
             
+            // --- TAMBAHAN LOG: DELETE ---
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'DELETE',
+                'subject_type' => Kendaraan::class,
+                'subject_id' => $deletedId,
+                'description' => "Perusahaan menghapus kendaraan: $info",
+                'ip_address' => request()->ip(),
+            ]);
+            // -----------------------------
+
             return redirect()->route('perusahaan.kendaraan.index')
                 ->with('success', 'Kendaraan berhasil dihapus.');
                 
         } catch (\Exception $e) {
-            // Antisipasi jika database menolak (constraint)
             return redirect()->route('perusahaan.kendaraan.index')
                 ->with('error', 'Kendaraan tidak bisa dihapus karena memiliki riwayat penggunaan.');
         }

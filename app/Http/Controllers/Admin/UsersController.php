@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\ActivityLog; // <-- TAMBAHAN 1: Import Model Log
 use App\Mail\CompanyValidationMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth; // <-- TAMBAHAN 2: Import Auth
 
 class UsersController extends Controller
 {
@@ -72,6 +74,17 @@ class UsersController extends Controller
             'password' => $validated['password'],
         ]);
 
+        // --- TAMBAHAN LOG: UPDATE PASSWORD ---
+        ActivityLog::create([
+            'user_id'      => Auth::id(),
+            'action'       => 'UPDATE',
+            'subject_type' => User::class,
+            'subject_id'   => $user->id,
+            'description'  => "Admin mereset password untuk akun perusahaan: {$user->name} ({$user->email})",
+            'ip_address'   => $request->ip(),
+        ]);
+        // -------------------------------------
+
         return redirect()->back()->with('success', 'Password untuk ' . $user->name . ' berhasil diatur ulang');
     }
 
@@ -92,6 +105,17 @@ class UsersController extends Controller
         $user->update([
             'is_validated' => true,
         ]);
+
+        // --- TAMBAHAN LOG: VALIDASI ---
+        ActivityLog::create([
+            'user_id'      => Auth::id(),
+            'action'       => 'UPDATE', // Bisa juga dianggap sebagai APPROVE
+            'subject_type' => User::class,
+            'subject_id'   => $user->id,
+            'description'  => "Admin menyetujui (validasi) akun perusahaan: {$user->name}",
+            'ip_address'   => request()->ip(),
+        ]);
+        // ------------------------------
 
         // Send validation email
         try {
@@ -121,6 +145,17 @@ class UsersController extends Controller
             'is_validated' => false,
         ]);
 
+        // --- TAMBAHAN LOG: REJECT ---
+        ActivityLog::create([
+            'user_id'      => Auth::id(),
+            'action'       => 'UPDATE', // Bisa juga dianggap sebagai REJECT
+            'subject_type' => User::class,
+            'subject_id'   => $user->id,
+            'description'  => "Admin menolak/membatalkan validasi akun perusahaan: {$user->name}",
+            'ip_address'   => request()->ip(),
+        ]);
+        // ----------------------------
+
         // Send rejection email
         try {
             Mail::to($user->email)->send(new CompanyValidationMail($user, false));
@@ -131,4 +166,3 @@ class UsersController extends Controller
         return redirect()->back()->with('success', 'Akun ' . $user->name . ' status validasi berhasil diperbarui');
     }
 }
-

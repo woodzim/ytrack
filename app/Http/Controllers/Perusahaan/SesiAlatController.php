@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Kendaraan;
 use App\Models\Alat;
 use App\Models\SesiAlat;
+use App\Models\ActivityLog; // <-- TAMBAHAN 1: Import Model Log
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -92,7 +93,7 @@ class SesiAlatController extends Controller
                 'required',
                 // Custom rule: Pastikan alat ini belum punya sesi aktif
                 function ($attribute, $value, $fail) {
-                    $exists = SesiAlat::where('id_alat', $value) // Disini id_alat adalah string ID/SN
+                    $exists = SesiAlat::where('id_alat', $value) 
                         ->where('aktif', true)
                         ->exists();
                     if ($exists) {
@@ -103,19 +104,36 @@ class SesiAlatController extends Controller
             'aktif' => 'boolean'
         ]);
 
+        // Logika otomatis mematikan sesi lain jika user memaksa aktif (walaupun validasi di atas sudah mencegah,
+        // kode ini tetap aman jika validasi diubah di masa depan)
         if ($request->has('aktif') && $request->aktif == 1) {
             SesiAlat::where('id_alat', $request->id_alat)
                     ->where('aktif', 1)
                     ->update(['aktif' => 0]);
         }
 
-        SesiAlat::create([
+        $sesiAlat = SesiAlat::create([
             'id_perusahaan' => Auth::user()->id_perusahaan,
             'id_kendaraan'  => $request->id_kendaraan,
             'id_alat'       => $request->id_alat,
             'nama'          => $request->nama,
             'aktif'         => $request->has('aktif') ? 1 : 0,
         ]);
+
+        // --- TAMBAHAN LOG: CREATE ---
+        // Load kendaraan untuk mendapatkan Plat Nomor agar log informatif
+        $kendaraanInfo = Kendaraan::find($request->id_kendaraan);
+        $plat = $kendaraanInfo ? $kendaraanInfo->plat : 'Unknown';
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'CREATE',
+            'subject_type' => SesiAlat::class,
+            'subject_id' => $sesiAlat->id,
+            'description' => "Perusahaan memulai sesi alat baru. Alat: {$request->id_alat}, Kendaraan: {$plat}",
+            'ip_address' => $request->ip(),
+        ]);
+        // -----------------------------
 
         return redirect()->route('perusahaan.sesi-alat.index')
                         ->with('success', 'Sesi alat berhasil dibuat.');
@@ -139,7 +157,6 @@ class SesiAlatController extends Controller
 
     /**
      * Toggle Status (Aktif/Nonaktif).
-     * Method ini dipanggil tombol di Index
      */
     public function toggle($id)
     {
@@ -148,7 +165,7 @@ class SesiAlatController extends Controller
             ->firstOrFail();
 
         if (!$sesi->aktif) { 
-            
+            // Jika mau diaktifkan, matikan sesi lain yang bentrok
             SesiAlat::where('id_alat', $sesi->id_alat)
                 ->where('id', '!=', $id)
                 ->where('aktif', 1)
@@ -163,6 +180,18 @@ class SesiAlatController extends Controller
         $sesi->aktif = !$sesi->aktif;
         $sesi->save();
 
+        // --- TAMBAHAN LOG: TOGGLE ---
+        $statusText = $sesi->aktif ? 'MENGAKTIFKAN' : 'MENONAKTIFKAN';
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'UPDATE',
+            'subject_type' => SesiAlat::class,
+            'subject_id' => $sesi->id,
+            'description' => "Perusahaan $statusText sesi alat (ID Alat: {$sesi->id_alat})",
+            'ip_address' => request()->ip(),
+        ]);
+        // -----------------------------
+
         $statusMsg = $sesi->aktif ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', 'Sesi berhasil ' . $statusMsg . '.');
     }
@@ -176,7 +205,22 @@ class SesiAlatController extends Controller
             ->where('id_perusahaan', Auth::user()->id_perusahaan)
             ->firstOrFail();
 
+        // Simpan info sebelum hapus
+        $info = "Alat: {$sesi->id_alat} | Kendaraan ID: {$sesi->id_kendaraan}";
+        $deletedId = $sesi->id;
+
         $sesi->delete();
+
+        // --- TAMBAHAN LOG: DELETE ---
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'DELETE',
+            'subject_type' => SesiAlat::class,
+            'subject_id' => $deletedId,
+            'description' => "Perusahaan menghapus sesi alat. Detail: [$info]",
+            'ip_address' => request()->ip(),
+        ]);
+        // -----------------------------
 
         return redirect()->route('perusahaan.sesi-alat.index')
                             ->with('success', 'Sesi berhasil dihapus.');
