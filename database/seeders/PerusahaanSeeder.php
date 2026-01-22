@@ -5,6 +5,9 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\Perusahaan;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class PerusahaanSeeder extends Seeder
 {
@@ -93,6 +96,29 @@ class PerusahaanSeeder extends Seeder
         // Hapus data lama jika perlu, atau langsung insert
         // DB::table('perusahaan')->truncate(); // Hati-hati, ini menghapus semua data
         
-        DB::table('perusahaan')->insert($data);
+        if (DB::table('perusahaan')->count() == 0) {
+            DB::table('perusahaan')->insert($data);
+        }
+
+        // Buat User untuk setiap Perusahaan menggunakan firstOrCreate
+        foreach ($data as $perusahaanData) {
+            $perusahaan = Perusahaan::where('nama', $perusahaanData['nama'])->first();
+            
+            if ($perusahaan) {
+                $email = strtolower(str_replace(' ', '', $perusahaan->nama)) . '@gmail.com';
+                
+                User::firstOrCreate(
+                    ['email' => $email],
+                    [
+                        'name' => $perusahaan->nama,
+                        'password' => Hash::make('password'),
+                        'id_perusahaan' => $perusahaan->id,
+                        'is_validated' => true,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ]
+                );
+            }
+        }
     }
 }
