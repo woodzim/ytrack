@@ -14,17 +14,21 @@
   const tooltipTriggerList = document.querySelectorAll(
     '[data-bs-toggle="tooltip"]'
   );
-  const tooltipList = [...tooltipTriggerList].map(
-    (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
-  );
+  if (typeof bootstrap !== 'undefined') {
+    const tooltipList = [...tooltipTriggerList].map(
+      (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+    );
+  }
 
   /* popover  */
   const popoverTriggerList = document.querySelectorAll(
     '[data-bs-toggle="popover"]'
   );
-  const popoverList = [...popoverTriggerList].map(
-    (popoverTriggerEl) => new bootstrap.Popover(popoverTriggerEl)
-  );
+  if (typeof bootstrap !== 'undefined') {
+    const popoverList = [...popoverTriggerList].map(
+      (popoverTriggerEl) => new bootstrap.Popover(popoverTriggerEl)
+    );
+  }
 
   /* breadcrumb date range picker */
   // Get today's date
@@ -36,17 +40,19 @@
   endDate.setDate(today.getDate() + 30); // Add 30 days
   const endDateFormatted = endDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
 
-  flatpickr("#daterange", {
-    mode: "range",
-    dateFormat: "Y-m-d",
-    defaultDate: [startDate, endDateFormatted],
-    onReady: function (selectedDates, dateStr, instance) {
-      updateInputDisplay([startDate, endDateFormatted], instance);
-    },
-    onChange: function (selectedDates, dateStr, instance) {
-      updateInputDisplay(selectedDates, instance);
-    }
-  });
+  if (document.querySelector("#daterange")) {
+    flatpickr("#daterange", {
+      mode: "range",
+      dateFormat: "Y-m-d",
+      defaultDate: [startDate, endDateFormatted],
+      onReady: function (selectedDates, dateStr, instance) {
+        updateInputDisplay([startDate, endDateFormatted], instance);
+      },
+      onChange: function (selectedDates, dateStr, instance) {
+        updateInputDisplay(selectedDates, instance);
+      }
+    });
+  }
 
   // Function to update the input display with formatted date range
   function updateInputDisplay(dates, instance) {
@@ -436,11 +442,13 @@
     var genericExamples = document.querySelectorAll("[data-trigger]");
     for (let i = 0; i < genericExamples.length; ++i) {
       var element = genericExamples[i];
-      new Choices(element, {
-        allowHTML: true,
-        placeholderValue: "This is a placeholder set in the config",
-        searchPlaceholderValue: "Search",
-      });
+      if (typeof Choices !== 'undefined' && element.nodeName !== 'DIV' && !element.classList.contains('choices__input')) {
+        new Choices(element, {
+          allowHTML: true,
+          placeholderValue: "This is a placeholder set in the config",
+          searchPlaceholderValue: "Search",
+        });
+      }
     }
   });
   /* Choices JS */
@@ -537,35 +545,37 @@
   }
   /* header dropdowns scroll */
 
-  const autoCompleteJS = new autoComplete({
-    selector: "#header-search",
-    data: {
-      src: [
-        "How do plants adapt to different environments?",
-        "What makes the ocean's tides rise and fall?",
-        "How do our brains process emotions?",
-        "What factors contribute to the creation of a rainbow?",
-        "Who invented the telephone?",
-        "What role does the moon play in Earth's ecosystem?",
-        "How do animals communicate with each other?",
-        "What causes earthquakes to happen?",
-        "What is the significance of the Great Barrier Reef?",
-        "How do human bones regenerate after an injury?"
-      ],
-      cache: true,
-    },
-    resultItem: {
-      highlight: true
-    },
-    events: {
-      input: {
-        selection: (event) => {
-          const selection = event.detail.selection.value;
-          autoCompleteJS.input.value = selection;
+  if (document.querySelector("#header-search")) {
+    const autoCompleteJS = new autoComplete({
+      selector: "#header-search",
+      data: {
+        src: [
+          "How do plants adapt to different environments?",
+          "What makes the ocean's tides rise and fall?",
+          "How do our brains process emotions?",
+          "What factors contribute to the creation of a rainbow?",
+          "Who invented the telephone?",
+          "What role does the moon play in Earth's ecosystem?",
+          "How do animals communicate with each other?",
+          "What causes earthquakes to happen?",
+          "What is the significance of the Great Barrier Reef?",
+          "How do human bones regenerate after an injury?"
+        ],
+        cache: true,
+      },
+      resultItem: {
+        highlight: true
+      },
+      events: {
+        input: {
+          selection: (event) => {
+            const selection = event.detail.selection.value;
+            autoCompleteJS.input.value = selection;
+          }
         }
       }
-    }
-  });
+    });
+  }
 })();
 
 /* full screen */
