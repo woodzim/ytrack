@@ -275,18 +275,12 @@
 @section('scripts')
   {{-- 1. LOAD LIBRARY --}}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.16.1/dist/echo.iife.js"></script>
 
   <script>
-    // --- 2. KONFIGURASI PUSHER ---
-    window.Pusher = Pusher;
-    window.Echo = new Echo({
-      broadcaster: 'pusher',
-      key: '{{ config('broadcasting.connections.pusher.key') }}',
-      cluster: '{{ config('broadcasting.connections.pusher.options.cluster') }}',
-      forceTLS: true
-    });
+    // --- 2. CHECK ECHO ---
+    if (typeof window.Echo === 'undefined') {
+      console.warn('Echo is not defined. Realtime updates might not work.');
+    }
 
     window.SESI_ALAT_ID = {{ $sesiAlat->id }};
 

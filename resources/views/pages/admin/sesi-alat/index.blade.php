@@ -98,9 +98,9 @@
                               $batColor = 'bg-warning';
                           }
                         @endphp
-                        @if($lastRiwayat && $lastRiwayat->battery !== null)
+                        @if ($lastRiwayat && $lastRiwayat->battery !== null)
                           <div class="d-flex align-items-center" style="min-width: 80px;">
-                            <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
+                            <div class="progress grow" style="height: 6px; background-color: #e9ecef;">
                               <div class="progress-bar {{ $batColor }}" role="progressbar"
                                 style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
                                 aria-valuemin="0" aria-valuemax="100"></div>
