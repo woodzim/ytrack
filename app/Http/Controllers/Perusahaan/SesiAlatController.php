@@ -9,6 +9,7 @@ use App\Models\SesiAlat;
 use App\Models\ActivityLog; // <-- TAMBAHAN 1: Import Model Log
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class SesiAlatController extends Controller
 {
@@ -150,7 +151,12 @@ class SesiAlatController extends Controller
 
         $sesiAlat->load('alat', 'kendaraan', 'perusahaan');
 
-        $riwayatPerjalanan = $sesiAlat->riwayatPerjalanan()->orderBy('created_at', 'desc')->get();
+        $cacheKey = "sesi_alat_tracking_{$sesiAlat->id}_perusahaan";
+
+        // Cache history for 30 seconds
+        $riwayatPerjalanan = Cache::remember($cacheKey, 10, function () use ($sesiAlat) {
+            return $sesiAlat->riwayatPerjalanan()->orderBy('created_at', 'desc')->get();
+        });
 
         return view('pages.perusahaan.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));
     }

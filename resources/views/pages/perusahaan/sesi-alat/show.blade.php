@@ -528,6 +528,11 @@
 
           tbody.insertAdjacentHTML('afterbegin', rowHtml);
         });
+
+      // Fix map rendering issues (cut off)
+      setTimeout(function() {
+        map.invalidateSize();
+      }, 500);
     });
   </script>
 @endsection

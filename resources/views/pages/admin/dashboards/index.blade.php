@@ -1,19 +1,54 @@
 @extends('layouts.master')
 
+@section('styles')
+    <style>
+        @media (max-width: 575.98px) {
+            .stats-card .card-body {
+                padding: 0.8rem;
+            }
+
+            .stats-card .card-title {
+                font-size: 0.7rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+
+            .stats-card h3 {
+                font-size: 1.1rem !important;
+            }
+
+            .stats-icon {
+                width: 35px;
+                height: 35px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .stats-icon i {
+                font-size: 1.25rem !important;
+            }
+
+            .page-header-breadcrumb {
+                margin-bottom: 0.75rem !important;
+            }
+        }
+    </style>
+@endsection
+
 @section('content')
     <!-- Start::page-header -->
-    <div class="d-flex align-items-center justify-content-between mb-4 page-header-breadcrumb flex-wrap gap-2">
+    <div class="d-flex align-items-center justify-content-between mb-3 page-header-breadcrumb flex-wrap gap-2">
         <div>
-            <h1 class="page-title fw-medium fs-20 mb-0">Selamat datang, {{  auth()->user()->name }}.</h1>
+            <h1 class="page-title fw-medium fs-20 mb-0">Selamat datang, {{ auth()->user()->name }}.</h1>
             <p class="text-muted mb-0">Dashboard YA-Track</p>
         </div>
     </div>
     <!-- End::page-header -->
 
     <!-- Start::app-content -->
-    <div class="row g-3">
+    <div class="row g-2">
         <!-- Statistics Cards -->
-        <div class="col-md-6 col-lg-3">
+        <div class="col-6 col-md-6 col-lg-3">
             <div class="card stats-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -29,7 +64,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-3">
+        <div class="col-6 col-md-6 col-lg-3">
             <div class="card stats-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -45,7 +80,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-3">
+        <div class="col-6 col-md-6 col-lg-3">
             <div class="card stats-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -61,7 +96,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-lg-3">
+        <div class="col-6 col-md-6 col-lg-3">
             <div class="card stats-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -78,7 +113,7 @@
         </div>
     </div>
 
-    <div class="row g-3 mt-2">
+    <div class="row g-2 mt-1">
         <!-- Active Sessions -->
         <div class="col-12">
             <div class="card">

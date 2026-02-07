@@ -2,6 +2,18 @@
 
 @section('styles')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <style>
+        #map-container {
+            height: 400px;
+            width: 100%;
+            border-radius: 8px;
+            position: relative;
+            z-index: 1;
+        }
+        .leaflet-top, .leaflet-bottom {
+            z-index: 400 !important;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -251,6 +263,11 @@
                 const bounds = L.latLngBounds(latlngs);
                 map.fitBounds(bounds, { padding: [150, 150] });
             }
+
+            // Fix map rendering issues (cut off)
+            setTimeout(function() {
+                if (map) map.invalidateSize();
+            }, 500);
         });
     </script>
 @endsection
