@@ -7,6 +7,7 @@ use App\Models\Perusahaan;
 use App\Models\SesiAlat;
 use App\Models\Kendaraan;
 use App\Models\RiwayatPerjalanan;
+use App\Models\Alat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -41,6 +42,42 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get();
+            
+        // Get all tools and their latest location
+        $lokasiAlat = Alat::where('id_perusahaan', $idPerusahaan)
+            ->with(['riwayatPerjalanan' => function ($query) {
+                $query->latest()->limit(1);
+            }, 'sesiAlat' => function ($query) {
+                $query->with('kendaraan')->latest()->limit(1);
+            }])
+            ->get()
+            ->map(function ($alat) {
+                $latestLocation = $alat->riwayatPerjalanan->first();
+                $lastSession = $alat->sesiAlat->first();
+                
+                if (!$latestLocation) return null;
+
+                $isActive = $lastSession && $lastSession->aktif;
+                $battery = (int) ($latestLocation->battery ?? 0);
+
+                return [
+                    'id_alat' => $alat->id,
+                    'serial_number' => $alat->id,
+                    'nama_alat' => $lastSession->nama ?? $alat->id,
+                    'kendaraan' => $lastSession ? ($lastSession->kendaraan->plat ?? '-') : '-',
+                    'lat' => $latestLocation->lat,
+                    'long' => $latestLocation->long,
+                    'battery' => $battery,
+                    'is_low_bat' => $battery <= 20,
+                    'last_update' => $latestLocation->created_at->diffForHumans(),
+                    'status' => $isActive ? 'Aktif' : 'Tidak Aktif',
+                    'id_sesi' => $lastSession ? $lastSession->id : null
+                ];
+            })
+            ->filter()
+            ->values();
+
+        $lowBatCount = $lokasiAlat->where('is_low_bat', true)->count();
         
         return view('pages.perusahaan.dashboard.index', [
             'perusahaan' => $perusahaan,
@@ -48,6 +85,8 @@ class DashboardController extends Controller
             'totalKendaraan' => $totalKendaraan,
             'kendaraanDalamPerjalanan' => $kendaraanDalamPerjalanan,
             'recentRiwayat' => $recentRiwayat,
+            'lokasiAlat' => $lokasiAlat,
+            'lowBatCount' => $lowBatCount,
         ]);
     }
 

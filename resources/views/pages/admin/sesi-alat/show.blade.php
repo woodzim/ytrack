@@ -152,12 +152,11 @@
                 }
               @endphp
               <div class="detail-value">
-                @if($lastRiwayat && $lastRiwayat->battery !== null)
+                @if ($lastRiwayat && $lastRiwayat->battery !== null)
                   <div class="d-flex align-items-center" style="max-width: 200px;">
                     <div class="progress flex-grow-1" style="height: 8px; background-color: #e9ecef;">
-                      <div class="progress-bar {{ $batColor }}" role="progressbar"
-                        style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
-                        aria-valuemin="0" aria-valuemax="100"></div>
+                      <div class="progress-bar {{ $batColor }}" role="progressbar" style="width: {{ $batLevel }}%"
+                        aria-valuenow="{{ $batLevel }}" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                     <span class="ms-2" style="font-size: 13px; font-weight: 700;">{{ $batLevel }}%</span>
                   </div>
@@ -335,7 +334,7 @@
                             }
                           @endphp
                           <div class="d-flex align-items-center" style="min-width: 100px;">
-                            <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
+                            <div class="progress grow" style="height: 6px; background-color: #e9ecef;">
                               <div class="progress-bar {{ $batColor }}" role="progressbar"
                                 style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
                                 aria-valuemin="0" aria-valuemax="100"></div>
@@ -370,7 +369,9 @@
   <script>
     // --- 2. CHECK ECHO ---
     if (typeof window.Echo === 'undefined') {
-      console.warn('Echo is not defined. Realtime updates might not work. Make sure Pusher keys are set in .env and VITE_PUSHER_APP_KEY is available.');
+      console.warn(
+        'Echo is not defined. Realtime updates might not work. Make sure Pusher keys are set in .env and VITE_PUSHER_APP_KEY is available.'
+        );
     }
   </script>
 
@@ -653,12 +654,12 @@
                         if(bat > 70) color = 'bg-success';
                         else if(bat >= 30) color = 'bg-warning';
                         return `
-                        <div class="d-flex align-items-center" style="min-width: 100px;">
-                            <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
-                              <div class="progress-bar ${color}" role="progressbar" style="width: ${bat}%"></div>
-                            </div>
-                            <span class="ms-2" style="font-size: 11px; font-weight: 600;">${bat}%</span>
-                        </div>`;
+                          <div class="d-flex align-items-center" style="min-width: 100px;">
+                              <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
+                                <div class="progress-bar ${color}" role="progressbar" style="width: ${bat}%"></div>
+                              </div>
+                              <span class="ms-2" style="font-size: 11px; font-weight: 600;">${bat}%</span>
+                          </div>`;
                     })()}
                   </td>
               </tr>
@@ -667,6 +668,11 @@
             tbody.insertAdjacentHTML('afterbegin', rowHtml);
           }
         });
+
+      // Fix map rendering issues (cut off)
+      setTimeout(function() {
+        if (map) map.invalidateSize();
+      }, 500);
     });
   </script>
 @endsection
