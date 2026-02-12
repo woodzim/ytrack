@@ -25,7 +25,7 @@
 @section('content')
   <div class="page-header-section d-flex align-items-center justify-content-between">
     <div>
-      <h1 class="fw-bold">Buat Sesi Alat</h1>
+      <h1 class="fw-bold">Buat Perjalanan</h1>
       <p class="">Tetapkan alat GPS untuk kendaraan berdasarkan perusahaan</p>
     </div>
   </div>

@@ -33,7 +33,7 @@ class RiwayatPerjalanan extends Model
     ];
 
     /**
-     * Get the sesi alat that owns this riwayat perjalanan
+     * Get the perjalanan that owns this riwayat perjalanan
      */
     public function sesiAlat()
     {

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('id_alat')->nullable();
             $table->unsignedBigInteger('id_kendaraan')->nullable();
             $table->unsignedBigInteger('id_perusahaan')->nullable();
+            $table->string('nama')->nullable();
             $table->boolean('aktif')->default(true);
             $table->timestamps();
 
@@ -23,12 +24,12 @@ return new class extends Migration
             $table->foreign('id_alat')
                     ->references('id')
                     ->on('alat')
-                    ->cascadeOnDelete();
+                    ->nullOnDelete();
 
             $table->foreign('id_kendaraan')
                     ->references('id')
                     ->on('kendaraan')
-                    ->cascadeOnDelete();
+                    ->nullOnDelete();
 
             $table->foreign('id_perusahaan')
                     ->references('id')

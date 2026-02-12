@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('alt')->nullable();
             $table->integer('sat')->nullable();
             $table->integer('speed')->nullable();
+            $table->string('battery')->nullable();
 
             $table->timestamps();
 
@@ -34,6 +35,10 @@ return new class extends Migration
             $table->foreign('id_perusahaan')->references('id')->on('perusahaan')->nullOnDelete();
             $table->foreign('id_kendaraan')->references('id')->on('kendaraan')->nullOnDelete();
             $table->foreign('id_alat')->references('id')->on('alat')->nullOnDelete();
+
+            // Indexes
+            $table->index('id_sesi_alat');
+            $table->index(['id_sesi_alat', 'created_at']);
         });
     }
 

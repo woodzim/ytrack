@@ -106,7 +106,7 @@
                 <div class="empty-state-card">
                     <div class="empty-state-icon">📍</div>
                     <h3 class="empty-state-title">Tidak ada data riwayat perjalanan</h3>
-                    <p class="empty-state-desc">Semua tracking data sudah memiliki sesi alat atau tidak memiliki ID alat</p>
+                    <p class="empty-state-desc">Semua tracking data sudah memiliki perjalanan atau tidak memiliki ID alat</p>
                 </div>
             @endif
         </div>

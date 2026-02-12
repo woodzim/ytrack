@@ -21,6 +21,7 @@ use App\Http\Controllers\Perusahaan\KendaraanController as PerusahaanKendaraanCo
 use App\Http\Controllers\Perusahaan\SesiAlatController as PerusahaanSesiAlatController;
 use App\Http\Controllers\Perusahaan\DashboardController as PerusahaanDashboardController;
 use App\Http\Controllers\Perusahaan\AlatController as PerusahaanAlatController;
+use App\Http\Controllers\Perusahaan\ProfileController as PerusahaanProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,7 +57,9 @@ Route::middleware(['auth'])->group(function () {
         ->name('perusahaan.')           // Nama route diawali perusahaan... (cth: perusahaan.kendaraan.index)
         ->group(function () {
             Route::get('dashboard', [PerusahaanDashboardController::class, 'index'])->name('dashboard.index');
-            Route::put('dashboard', [PerusahaanDashboardController::class, 'update'])->name('dashboard.update');
+            
+            Route::get('profile', [PerusahaanProfileController::class, 'index'])->name('profile.index');
+            Route::put('profile', [PerusahaanProfileController::class, 'update'])->name('profile.update');
 
             Route::put('/sesi-alat/{id}/toggle', [PerusahaanSesiAlatController::class, 'toggle'])
                 ->name('sesi-alat.toggle');
@@ -97,7 +100,7 @@ Route::middleware(['auth'])->group(function () {
         /******** Alat ********/
         Route::resource('alat', AlatController::class);
 
-        /******** Sesi Alat (Admin) ********/
+        /******** Perjalanan (Admin) ********/
         Route::resource('sesi-alat', SesiAlatController::class);
         Route::put('sesi-alat/{sesiAlat}/toggle', [SesiAlatController::class, 'toggle'])->name('sesi-alat.toggle');
         

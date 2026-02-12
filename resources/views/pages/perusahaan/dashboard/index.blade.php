@@ -10,177 +10,104 @@
   <link rel="stylesheet"
     href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
   <style>
+    /* --- Layout Refinements --- */
     #map-dashboard {
-      height: 70vh;
+      height: 55vh; /* Ditetapkan 55vh sesuai permintaan */
       width: 100%;
-      border-radius: 0 0 8px 8px;
+      border-radius: 8px;
       position: relative;
       z-index: 1;
+    }
+
+    /* Reset margin untuk elemen pertama agar sejajar sempurna */
+    .col-lg-9 > :first-child,
+    .aside-stats-container > :first-child {
+      margin-top: 0 !important;
     }
 
     .table-hover tbody tr {
       cursor: pointer;
     }
 
-    /* Prevent leaflet controls from overlapping navbar */
     .leaflet-top,
     .leaflet-bottom {
       z-index: 400 !important;
     }
 
-    /* Custom style for marker cluster to match project theme */
-    .marker-cluster-small {
-      background-color: rgba(190, 30, 45, 0.6);
+    /* --- Enhanced Card Styles --- */
+    .custom-card-enhanced {
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+      border-radius: 12px !important;
     }
 
-    .marker-cluster-small div {
-      background-color: rgba(190, 30, 45, 0.6);
-      color: white;
+    .stats-card-enhanced {
+      background: #fff;
+      border: 1px solid #e2e8f0 !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+      margin-bottom: 1.25rem;
+      border-radius: 12px;
+    }
+    
+    .stats-card-enhanced:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
     }
 
-    .marker-cluster-medium {
-      background-color: rgba(190, 30, 45, 0.8);
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
     }
 
-    .marker-cluster-medium div {
-      background-color: rgba(190, 30, 45, 0.8);
-      color: white;
+    .chart-container {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+      position: relative;
     }
 
-    .marker-cluster-large {
-      background-color: rgba(190, 30, 45, 1);
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 0.75rem;
     }
 
-    .marker-cluster-large div {
-      background-color: rgba(190, 30, 45, 1);
-      color: white;
+    .chart-title i {
+      margin-right: 0.75rem;
+      font-size: 1.25rem;
+      color: #be1e2d;
     }
 
-    @media (max-width: 575.98px) {
-      .card, 
-      .stats-card,
-      .card-header,
-      .card-body,
-      .card-footer {
-        background-color: transparent !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        border: none !important;
-      }
+    /* Pengaturan khusus Aktivitas Chart agar tidak overflow */
+    .activity-chart-container {
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+      overflow: hidden;
+    }
+    
+    .activity-chart-container .chart-title {
+      margin-left: 1rem;
+      margin-right: 1rem;
+    }
 
-      .stats-card .card-body {
-        padding: 0.8rem;
+    @media (max-width: 991.98px) {
+      .aside-stats-container {
+        margin-top: 2rem !important;
       }
-
-      .stats-card .card-title {
-        font-size: 0.7rem !important;
-        margin-bottom: 0.25rem !important;
-      }
-
-      .stats-card h3 {
-        font-size: 1.1rem !important;
-      }
-
-      .stats-icon i {
-        font-size: 1.25rem !important;
-      }
-
-      .page-header-breadcrumb {
-        margin-bottom: 0.75rem !important;
-      }
-
-      .alert {
-        padding: 0.75rem;
-        margin-bottom: 0.75rem !important;
-      }
-
-      .alert i {
-        font-size: 1.25rem !important;
-        margin-right: 0.5rem !important;
-      }
-
-                  #daftar-alat-table tr {
-                    display: flex;
-                    flex-wrap: wrap;
-                    border: 1px solid #e9e9e9 !important;
-                    margin-bottom: 0.75rem;
-                    border-radius: 0.75rem;
-                    padding: 0.85rem;
-                    background: transparent !important;
-                    box-shadow: none !important;
-                    position: relative;
-                    transition: all 0.2s ease;
-                  }
-      
-                  /* Aware Style for Low Battery - Removed as requested, using standard card style */
-                  #daftar-alat-table tr.table-danger,
-                  #daftar-alat-table tr.table-danger td {
-                    background-color: transparent !important;
-                    border-color: #e9e9e9 !important;
-                  }      
-                  #daftar-alat-table tr.table-danger {
-                    border-left: 1px solid #e9e9e9 !important;
-                  }
-      
-                  #daftar-alat-table tr.table-danger .name-cell {
-                    color: inherit !important;
-                  }
-      #daftar-alat-table td {
-        display: block;
-        border: none !important;
-        padding: 0.25rem 0 !important;
-        font-size: 0.85rem;
-        white-space: normal !important;
-      }
-
-      #daftar-alat-table td::before {
-        display: none;
-        /* Remove labels as requested */
-      }
-
-      #daftar-alat-table td.name-cell {
-        width: 100%;
-        border-bottom: 1px solid #f3f3f3 !important;
-        padding-bottom: 0.6rem !important;
-        margin-bottom: 0.5rem;
-        font-size: 1.05rem;
-        font-weight: 600;
-        text-align: left;
-      }
-
-      #row-alat-td-kendaraan {
-        width: 65%;
-        font-weight: 500;
-      }
-
-      #row-alat-td-status {
-        width: 35%;
-        text-align: right;
-      }
-
-      #daftar-alat-table td.battery-cell {
-        width: 100%;
-        margin-top: 0.5rem;
-        padding: 0.6rem 0.75rem !important;
-        border-radius: 0.5rem;
-      }
-
-      #daftar-alat-table td.update-cell {
-        width: 100%;
-        margin-top: 0.5rem;
-        font-size: 0.75rem;
-        color: #8c9097;
-      }
-
-      #daftar-alat-table td.action-cell {
-        width: 100%;
-        padding-top: 0.75rem !important;
-      }
-
-      #daftar-alat-table td.action-cell .btn {
-        width: 100%;
-        padding: 0.5rem;
-        font-weight: 500;
+      #map-dashboard {
+        height: 45vh;
       }
     }
   </style>
@@ -188,111 +115,117 @@
 
 @section('content')
   <!-- Start::page-header -->
-  <div class="d-flex align-items-center justify-content-between mb-3 page-header-breadcrumb flex-wrap gap-2">
+  <div class="d-flex align-items-center justify-content-between mb-4 page-header-breadcrumb flex-wrap gap-2">
     <div>
-      <h1 class="page-title fw-medium fs-20 mb-0">Selamat datang, {{ auth()->user()->name }}.</h1>
-      <p class="text-muted mb-0">Dashboard Perusahaan</p>
+      <h1 class="page-title fw-bold fs-24 mb-1">Dashboard YA-Track</h1>
+      <p class="text-muted mb-0">Pantau armada Anda secara real-time dengan data akurat.</p>
     </div>
   </div>
   <!-- End::page-header -->
 
-  <!-- Start::app-content -->
-  @if ($lowBatCount > 0)
-    <div class="alert alert-danger d-flex align-items-center mb-3 shadow-sm" role="alert" style="cursor: pointer;"
-      onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})"
-      title="Klik untuk melihat daftar alat">
-      <i class="ri-battery-low-line fs-24 me-3"></i>
-      <div>
-        <strong>Perhatian!</strong> Terdapat <b>{{ $lowBatCount }}</b> alat dengan baterai lemah (≤ 20%). Segera lakukan
-        pengisian daya agar pemantauan tidak terputus.
-      </div>
-    </div>
-  @endif
-
-  <!-- Map Section -->
-  <div class="row g-2 mt-1">
-    <div class="col-12">
-      <div class="card">
-        <div class="p-0">
-          <div id="map-dashboard" class="rounded"></div>
+  <!-- Alert Section -->
+  <div id="low-bat-alert-container">
+    @if ($lowBatCount > 0)
+      <div class="alert alert-danger d-flex align-items-center mb-4 shadow-sm border-0" role="alert" style="cursor: pointer; border-left: 5px solid #dc3545 !important;"
+        onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
+        <i class="ri-error-warning-fill fs-24 me-3"></i>
+        <div>
+          <strong class="d-block text-uppercase fs-12">Peringatan Baterai Lemah!</strong> 
+          Terdapat <b id="alert-low-bat-count">{{ $lowBatCount }}</b> perangkat yang memerlukan pengisian daya segera.
         </div>
       </div>
-    </div>
+    @endif
   </div>
 
-  <!-- Data Alat Table -->
-  <div class="row g-2 mt-1" id="daftar-alat-table">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header border-bottom">
-          <div class="card-title mb-0">Daftar Alat</div>
+  <!-- Start::app-content -->
+  <div class="row gx-4 dashboard-main-row">
+    <!-- Main Content (Left) -->
+    <div class="col-lg-9">
+      <!-- Map Section -->
+      <div class="card mb-4 border-0 shadow-sm custom-card-enhanced overflow-hidden">
+        <div class="card-body p-0">
+          <div id="map-dashboard"></div>
         </div>
-        <div class="card-body">
+      </div>
+
+      <!-- Data Alat Table -->
+      <div class="card border-0 shadow-sm mb-4 custom-card-enhanced" id="daftar-alat-table">
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+          <div class="card-title mb-0 fw-bold fs-16 text-uppercase ls-1">
+            <i class="ri-list-check-2 me-2 text-primary"></i>Daftar Alat & Status Terkini
+          </div>
+          <span class="badge bg-primary-transparent text-primary px-3 rounded-pill">{{ count($lokasiAlat) }} Alat Terdeteksi</span>
+        </div>
+        <div class="card-body p-0">
           <div class="table-responsive">
-            <table class="table table-bordered text-nowrap w-100 table-hover">
-              <thead>
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light text-uppercase fs-11 fw-bold text-muted">
                 <tr>
-                  <th>Nama Alat / Serial</th>
-                  <th>Kendaraan</th>
-                  <th>Baterai</th>
-                  <th>Status</th>
-                  <th>Terakhir Update</th>
-                  <th>Aksi</th>
+                  <th class="ps-3 border-0">Nama Alat / Serial</th>
+                  <th class="border-0">Kendaraan</th>
+                  <th class="border-0">Baterai</th>
+                  <th class="border-0">Status</th>
+                  <th class="border-0">Update</th>
+                  <th class="text-center border-0">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 @forelse($lokasiAlat as $alat)
                   <tr class="{{ $alat['is_low_bat'] ? 'table-danger' : '' }}" id="row-alat-{{ $alat['id_sesi'] }}"
                     @if ($alat['id_sesi']) onclick="focusMarker('{{ $alat['id_sesi'] }}')" @endif>
-                    <td class="{{ $alat['is_low_bat'] ? 'fw-bold text-danger' : '' }} name-cell" data-label="Nama Alat">
-                      @if ($alat['is_low_bat'])
-                        <i class="ri-error-warning-fill text-danger me-1"></i>
-                      @endif
-                      {{ $alat['nama_alat'] }}
+                    <td class="ps-3">
+                      <div class="fw-bold text-dark name-cell">
+                        @if($alat['is_low_bat']) <i class="ri-error-warning-fill text-danger me-1"></i> @endif
+                        {{ $alat['nama_alat'] }}
+                      </div>
+                      <code class="text-muted small">{{ $alat['serial_number'] }}</code>
                     </td>
-                    <td data-label="Kendaraan" id="row-alat-td-kendaraan">
-                      <i class="ri-taxi-line me-1 text-muted"></i>{{ $alat['kendaraan'] }}
+                    <td>
+                      <div class="d-flex align-items-center fw-medium text-dark">
+                        <i class="ri-truck-line me-2 text-primary fs-16"></i>
+                        {{ $alat['kendaraan'] }}
+                      </div>
                     </td>
-                    <td data-label="Status" id="row-alat-td-status">
-                      <span class="badge {{ $alat['status'] == 'Aktif' ? 'bg-success' : 'bg-danger' }}">
-                        {{ $alat['status'] }}
-                      </span>
-                    </td>
-                    <td class="battery-cell" data-label="Baterai">
+                    <td class="battery-cell">
                       @php
                         $bat = (int) $alat['battery'];
                         $batColor = 'bg-danger';
-                        if ($bat > 70) {
-                            $batColor = 'bg-success';
-                        } elseif ($bat >= 30) {
-                            $batColor = 'bg-warning';
-                        }
+                        if ($bat > 70) $batColor = 'bg-success';
+                        elseif ($bat >= 30) $batColor = 'bg-warning';
                       @endphp
-                      <div class="d-flex align-items-center">
-                        <i class="ri-battery-fill me-2 {{ str_replace('bg-', 'text-', $batColor) }}"></i>
-                        <div class="progress flex-grow-1" style="height: 8px;">
+                      <div class="d-flex align-items-center" style="width: 110px;">
+                        <div class="progress flex-grow-1 shadow-sm" style="height: 8px; border-radius: 10px;">
                           <div class="progress-bar {{ $batColor }}" role="progressbar"
                             style="width: {{ $bat }}%"></div>
                         </div>
-                        <span class="ms-2 small fw-bold">{{ $bat }}%</span>
+                        <span class="ms-2 small fw-bold text-dark">{{ $bat }}%</span>
                       </div>
                     </td>
-                    <td class="update-cell" data-label="Terakhir Update">
-                      <i class="ri-time-line me-1 text-muted"></i>{{ $alat['last_update'] }}
+                    <td>
+                      <span class="badge rounded-pill {{ $alat['status'] == 'Aktif' ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }}">
+                        <i class="ri-checkbox-blank-circle-fill fs-8 me-1"></i> {{ $alat['status'] }}
+                      </span>
                     </td>
-                                                                        <td class="action-cell">
-                                                                          @if ($alat['id_sesi'])
-                                                                            <a href="{{ route('perusahaan.sesi-alat.show', $alat['id_sesi']) }}"
-                                                                              class="btn btn-sm btn-primary">
-                                                                              <i class="ri-eye-line me-1"></i>Detail
-                                                                            </a>
-                                                                          @else
-                                                                            <span class="text-muted">-</span>
-                                                                          @endif
-                                                                        </td>                  </tr>
+                    <td class="update-cell">
+                      <span class="text-muted small"><i class="ri-time-line me-1"></i>{{ $alat['last_update'] }}</span>
+                    </td>
+                    <td class="text-center">
+                      @if ($alat['id_sesi'])
+                        <a href="{{ route('perusahaan.sesi-alat.show', $alat['id_sesi']) }}"
+                          class="btn btn-sm btn-icon btn-primary-transparent rounded-circle">
+                          <i class="ri-map-2-line"></i>
+                        </a>
+                      @else
+                        <span class="text-muted">-</span>
+                      @endif
+                    </td>
+                  </tr>
                 @empty
                   <tr>
-                    <td colspan="6" class="text-center">Tidak ada data alat.</td>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="ri-inbox-line fs-40 d-block mb-2"></i>
+                        Tidak ada data alat aktif saat ini.
+                    </td>
                   </tr>
                 @endforelse
               </tbody>
@@ -300,204 +233,178 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="row g-2 mt-1">
-    <!-- Statistics Cards -->
-    <div class="col-6 col-xl-3 col-md-6">
-      <div class="card stats-card">
-        <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="card-title text-muted mb-2">Perjalanan</h6>
-              <h3 class="mb-0">{{ $totalSesiAlat }}</h3>
-            </div>
-            <div class="stats-icon">
-              <i class="ri-route-line fs-24 text-info"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-xl-3 col-md-6">
-      <div class="card stats-card">
-        <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="card-title text-muted mb-2">Total Kendaraan</h6>
-              <h3 class="mb-0">{{ $totalKendaraan }}</h3>
-            </div>
-            <div class="stats-icon">
-              <i class="ri-taxi-line fs-24 text-warning"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-xl-3 col-md-6">
-      <div class="card stats-card">
-        <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="card-title text-muted mb-2">Dalam Perjalanan</h6>
-              <h3 class="mb-0">{{ $kendaraanDalamPerjalanan }}</h3>
-            </div>
-            <div class="stats-icon">
-              <i class="ri-map-pin-line fs-24 text-success"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-6 col-xl-3 col-md-6">
-      <div class="card stats-card {{ $lowBatCount > 0 ? 'border-danger' : '' }}" id="card-low-bat"
-        @if ($lowBatCount > 0) style="cursor: pointer;" onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})" 
-        title="Klik untuk melihat detail alat dengan baterai lemah" @endif>
-        <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between">
-            <div>
-              <h6 class="card-title text-muted mb-2">Baterai Lemah</h6>
-              <h3 class="mb-0 {{ $lowBatCount > 0 ? 'text-danger' : '' }}" id="count-low-bat">{{ $lowBatCount }}</h3>
-            </div>
-            <div class="stats-icon text-danger">
-              <i class="ri-battery-low-line fs-24"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row g-2 mt-1">
-    <!-- Profile Edit -->
-    <div class="col-lg-6">
-      <div class="card">
-        <div class="card-header border-bottom">
-          <div class="card-title mb-0">Edit Profil Perusahaan</div>
-        </div>
-        <div class="card-body">
-          @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-              <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                  <li>{{ $error }}</li>
-                @endforeach
-              </ul>
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          @endif
-
-          @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-              <i class="ri-check-line me-2"></i>{{ session('success') }}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-          @endif
-
-          <form action="{{ route('perusahaan.dashboard.update') }}" method="POST">
-            @csrf
-            @method('PUT')
-
-            <div class="mb-3">
-              <label for="name" class="form-label">Nama Pengguna</label>
-              <input type="text" class="form-control @error('name') is-invalid @enderror" id="name"
-                name="name" value="{{ old('name', auth()->user()->name) }}" required>
-              @error('name')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
-
-            <div class="mb-3">
-              <label for="email" class="form-label">Email</label>
-              <input type="email" class="form-control @error('email') is-invalid @enderror" id="email"
-                name="email" value="{{ old('email', auth()->user()->email) }}" required>
-              @error('email')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
-
-            <div class="mb-3">
-              <label for="nama" class="form-label">Nama Perusahaan</label>
-              <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama"
-                name="nama" value="{{ old('nama', $perusahaan->nama) }}" required>
-              @error('nama')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
-
-            <div class="mb-3">
-              <label for="alamat" class="form-label">Alamat Perusahaan</label>
-              <textarea class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="4"
-                required>{{ old('alamat', $perusahaan->alamat) }}</textarea>
-              @error('alamat')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
-
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary btn-wave">
-                <i class="ri-save-line me-2"></i>Simpan Perubahan
-              </button>
-              <a href="{{ route('perusahaan.dashboard.index') }}" class="btn btn-outline-secondary btn-wave">
-                <i class="ri-close-line me-2"></i>Batal
-              </a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <!-- Recent Activity -->
-    <div class="col-lg-6">
-      <div class="card">
-        <div class="card-header border-bottom">
-          <div class="card-title mb-0">Aktivitas Terbaru</div>
+      <!-- Aktivitas Terakhir -->
+      <div class="card border-0 shadow-sm mb-4 custom-card-enhanced">
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+          <h6 class="card-title mb-0 fw-bold fs-16 text-uppercase ls-1">
+            <i class="ri-history-line me-2 text-primary"></i>Aktivitas Terakhir Perjalanan
+          </h6>
+          <a href="{{ route('perusahaan.sesi-alat.index') }}" class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold">
+            LIHAT SEMUA
+          </a>
         </div>
         <div class="card-body p-0">
-          @if ($recentRiwayat->count() > 0)
-            <div class="table-responsive mb-0">
-              <table class="table table-sm table-hover mb-0">
-                <thead class="table-light">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <tbody>
+                @forelse($recentRiwayat as $item)
                   <tr>
-                    <th>Waktu</th>
-                    <th>Kendaraan</th>
-                    <th>Alat</th>
+                    <td class="ps-4" style="width: 60px;">
+                      <div class="avatar avatar-sm bg-primary-transparent text-primary rounded-circle">
+                        <i class="ri-history-line"></i>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="fw-bold text-dark">{{ $item->kendaraan?->nama ?? 'Unit Armada' }}</div>
+                      <div class="text-muted small">Alat: <span class="text-dark fw-medium">{{ $item->alat?->id ?? '-' }}</span></div>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-muted border fw-normal">
+                            <i class="ri-map-pin-line me-1"></i> {{ $item->lat }}, {{ $item->long }}
+                        </span>
+                    </td>
+                    <td class="text-end pe-4">
+                      <div class="text-dark fw-bold small">{{ $item->created_at?->translatedFormat('d M Y, H:i') }}</div>
+                      <div class="text-muted tiny">{{ $item->created_at?->diffForHumans() }}</div>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  @foreach ($recentRiwayat as $item)
-                    <tr>
-                      <td>
-                        <small class="text-muted">
-                          {{ $item->created_at?->format('d-m-Y H:i') ?? '-' }}
-                        </small>
-                      </td>
-                      <td>
-                        <span class="badge bg-light text-dark">
-                          {{ $item->kendaraan?->nama ?? '-' }}
-                        </span>
-                      </td>
-                      <td>
-                        <span class="badge bg-info">
-                          {{ $item->alat?->id ?? '-' }}
-                        </span>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-          @else
-            <div class="alert alert-info m-3">
-              <i class="ri-information-line me-2"></i>
-              Belum ada aktivitas perjalanan
-            </div>
-          @endif
+                @empty
+                  <tr>
+                    <td colspan="4" class="text-center py-5 text-muted fst-italic">Belum ada aktivitas perjalanan yang tercatat.</td>
+                  </tr>
+                @endforelse
+              </tbody>
+            </table>
+          </div>
         </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="row">
+        <div class="col-xl-8 mb-4">
+          <div class="chart-container custom-card-enhanced activity-chart-container h-100">
+            <div class="chart-title">
+              <i class="ri-pulse-line"></i> Tren Aktivitas Pelacakan (7 Hari Terakhir)
+            </div>
+            <div id="activity-chart"></div>
+          </div>
+        </div>
+        <div class="col-xl-4 mb-4">
+          <div class="chart-container custom-card-enhanced h-100">
+            <div class="chart-title">
+              <i class="ri-battery-2-charge-line"></i> Distribusi Baterai Alat
+            </div>
+            <div id="battery-chart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="row">
+        <div class="col-xl-6 mb-4">
+          <div class="chart-container custom-card-enhanced text-center">
+            <div class="chart-title d-flex justify-content-between align-items-center text-start">
+              <span><i class="ri-donut-chart-line"></i> Utilisasi Armada</span>
+              <span class="badge bg-light text-muted fw-normal">Berjalan vs Idle</span>
+            </div>
+            <div id="status-chart" class="d-flex justify-content-center"></div>
+          </div>
+        </div>
+        <div class="col-xl-6 mb-4">
+          <div class="chart-container custom-card-enhanced text-center">
+            <div class="chart-title d-flex justify-content-between align-items-center text-start">
+              <span><i class="ri-cpu-line"></i> Utilisasi Alat</span>
+              <span class="badge bg-light text-muted fw-normal">Berjalan vs Idle</span>
+            </div>
+            <div id="tool-status-chart" class="d-flex justify-content-center"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar Stats (Aside) -->
+    <div class="col-lg-3 aside-stats-container">
+      <!-- BATERAI LEMAH (Sekarang Paling Atas) -->
+      <div class="card stats-card-enhanced border-0 {{ $lowBatCount > 0 ? 'border-start border-danger border-4' : '' }}" 
+        id="card-low-bat" @if ($lowBatCount > 0) style="cursor: pointer;" onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})" @endif>
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="icon-box bg-danger-transparent text-danger">
+              <i class="ri-battery-low-line fs-24"></i>
+            </div>
+            <div class="ms-3">
+              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Baterai Lemah</h6>
+              <h3 class="fw-black mb-0 {{ $lowBatCount > 0 ? 'text-danger' : 'text-dark' }}" id="count-low-bat">{{ $lowBatCount }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card stats-card-enhanced border-0">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="icon-box bg-primary-transparent text-primary">
+              <i class="ri-route-line fs-24"></i>
+            </div>
+            <div class="ms-3">
+              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Perjalanan</h6>
+              <h3 class="fw-black mb-0 text-dark">{{ $totalSesiAlat }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card stats-card-enhanced border-0">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="icon-box bg-info-transparent text-info">
+              <i class="ri-car-fill fs-24"></i>
+            </div>
+            <div class="ms-3">
+              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Kendaraan</h6>
+              <h3 class="fw-black mb-0 text-dark">{{ $totalKendaraan }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card stats-card-enhanced border-0">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="icon-box bg-warning-transparent text-warning">
+              <i class="ri-cpu-line fs-24"></i>
+            </div>
+            <div class="ms-3">
+              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Alat</h6>
+              <h3 class="fw-black mb-0 text-dark">{{ $totalAlat }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card stats-card-enhanced border-0">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center">
+            <div class="icon-box bg-success-transparent text-success">
+              <i class="ri-map-pin-line fs-24"></i>
+            </div>
+            <div class="ms-3">
+              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Sedang Bergerak</h6>
+              <h3 class="fw-black mb-0 text-success" id="count-moving-vehicles">{{ $kendaraanDalamPerjalanan }}</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-0 shadow-sm mt-4 custom-card-enhanced bg-light">
+          <div class="card-body p-4 text-center">
+              <div class="mb-3">
+                  <i class="ri-information-fill text-primary fs-32"></i>
+              </div>
+              <h6 class="fw-bold mb-2 fs-14">Tips Pemantauan</h6>
+              <p class="text-muted small mb-0 fst-italic">Klik baris pada tabel armada untuk memfokuskan peta ke lokasi unit tersebut secara otomatis.</p>
+          </div>
       </div>
     </div>
   </div>
@@ -509,41 +416,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/leaflet-gesture-handling@1.2.2/dist/leaflet-gesture-handling.min.js"></script>
   <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  
   <script>
-    // Helper: Parse date safely
-    const parseDateSafe = (input) => {
-      if (!input) return new Date();
-      if (input instanceof Date) return input;
-      let safeString = input.toString().replace(' ', 'T');
-      if (!safeString.endsWith('Z') && !safeString.includes('+')) {
-        safeString += 'Z';
-      }
-      let d = new Date(safeString);
-      return isNaN(d.getTime()) ? new Date() : d;
-    };
-
-    // Formatter Date (Auto Timezone)
-    const formatDateJS = (d) => {
-      const dateObj = parseDateSafe(d);
-      const day = String(dateObj.getDate()).padStart(2, '0');
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const year = dateObj.getFullYear();
-      const hours = String(dateObj.getHours()).padStart(2, '0');
-      const minutes = String(dateObj.getMinutes()).padStart(2, '0');
-      const seconds = String(dateObj.getSeconds()).padStart(2, '0');
-      const offset = -dateObj.getTimezoneOffset();
-      let zona = '';
-      if (offset === 420) zona = 'WIB';
-      else if (offset === 480) zona = 'WITA';
-      else if (offset === 540) zona = 'WIT';
-      else {
-        const jamOffset = offset / 60;
-        const tanda = jamOffset >= 0 ? '+' : '';
-        zona = `(UTC${tanda}${jamOffset})`;
-      }
-      return `${day}-${month}-${year} ${hours}:${minutes}:${seconds} ${zona}`;
-    };
-
     let markers = {};
     let map;
     let markerCluster;
@@ -551,49 +426,55 @@
     let trackedSesiId = null;
     let fitTimeout;
 
-    const focusMarker = (id_sesi) => {
+    // Helper: Fit all markers into view
+    const fitAllMarkers = () => {
+      // Jika sedang fokus (isUserFocusing true) atau ada alat yang dilacak, JANGAN panggil fitBounds
+      if (isUserFocusing || trackedSesiId) return;
+      
+      var markerArray = Object.values(markers);
+      if (markerArray.length > 0) {
+        var group = new L.featureGroup(markerArray);
+        map.fitBounds(group.getBounds().pad(0.1), { animate: true });
+      }
+    };
+
+    const focusMarker = (id_sesi, skipScroll = false) => {
       if (markers[id_sesi]) {
-        trackedSesiId = id_sesi;
+        // Batalkan semua antrian fitAllMarkers yang mungkin masih berjalan
+        clearTimeout(fitTimeout);
+        fitTimeout = null;
+        
+        trackedSesiId = String(id_sesi); // Simpan sebagai string untuk perbandingan presisi
         isUserFocusing = true;
-
-        // Zoom in slightly less to keep popup in view
-        map.setView(markers[id_sesi].getLatLng(), 16);
-
-        // If marker is in a cluster, this will zoom to it
-        if (markerCluster.hasLayer(markers[id_sesi])) {
-          markerCluster.zoomToShowLayer(markers[id_sesi], () => {
-            markers[id_sesi].openPopup();
+        
+        const marker = markers[id_sesi];
+        map.stop(); // Hentikan animasi peta yang sedang berlangsung
+        map.setView(marker.getLatLng(), 17);
+        
+        if (markerCluster.hasLayer(marker)) {
+          markerCluster.zoomToShowLayer(marker, () => {
+            marker.openPopup();
           });
         } else {
-          markers[id_sesi].openPopup();
+          marker.openPopup();
         }
-
-        // Scroll with offset to account for navbar
-        const element = document.getElementById('map-dashboard');
-        const offset = 100;
-        const bodyRect = document.body.getBoundingClientRect().top;
-        const elementRect = element.getBoundingClientRect().top;
-        const elementPosition = elementRect - bodyRect;
-        const offsetPosition = elementPosition - offset;
-
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: 'smooth'
-        });
+        
+        if (!skipScroll) {
+          const element = document.getElementById('map-dashboard');
+          window.scrollTo({
+            top: element.getBoundingClientRect().top + window.scrollY - 100,
+            behavior: 'smooth'
+          });
+        }
       }
     };
 
     document.addEventListener('DOMContentLoaded', function() {
-      // Base Layers
+      // --- MAP SETUP ---
       const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        attribution: '&copy; CARTO',
         maxZoom: 19
       });
-
-      const satellite = L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-        });
 
       map = L.map('map-dashboard', {
         center: [-2.5489, 118.0149],
@@ -604,14 +485,6 @@
         preferCanvas: true
       });
 
-      const baseMaps = {
-        "Streets": streets,
-        "Satellite": satellite
-      };
-
-      L.control.layers(baseMaps).addTo(map);
-
-      // Initialize Marker Cluster
       markerCluster = L.markerClusterGroup({
         showCoverageOnHover: false,
         spiderfyOnMaxZoom: true,
@@ -620,14 +493,14 @@
       map.addLayer(markerCluster);
 
       var locations = @json($lokasiAlat);
-      var lowBatSessions = new Set(); // Track sessions currently in low battery state
+      var lowBatSessions = new Set();
 
-      // Helper: Create Marker Icon
       const getMarkerIcon = (isFilled = false) => {
-        const type = isFilled ? 'ti-map-pin-filled' : 'ti-map-pin';
+        const type = isFilled ? 'ri-map-pin-fill' : 'ri-map-pin-line';
         const color = '#be1e2d';
-        const html =
-          `<i class="ti ${type}" style="color: ${color}; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);"></i>`;
+        const html = `<div style="background: white; border-radius: 50%; padding: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 2px solid ${color}; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;">
+                        <i class="${type}" style="color: ${color}; font-size: 20px;"></i>
+                      </div>`;
         return L.divIcon({
           html: html,
           className: '',
@@ -637,114 +510,45 @@
         });
       };
 
-      // Function to auto-fit map to all markers (debounced)
-      function fitAllMarkers(immediate = false) {
-        if (isUserFocusing || trackedSesiId) return;
-
+      // Listener: Saat popup ditutup, kembalikan tampilan ke seluruh alat
+      map.on('popupclose', function() {
+        trackedSesiId = null;
+        isUserFocusing = false;
         clearTimeout(fitTimeout);
-        const performFit = () => {
-          if (isUserFocusing || trackedSesiId) return;
-          var markerArray = Object.values(markers);
-          if (markerArray.length > 0) {
-            var group = new L.featureGroup(markerArray);
-            map.fitBounds(group.getBounds().pad(0.1), {
-              animate: true
-            });
-          }
-        };
-
-        if (immediate) performFit();
-        else fitTimeout = setTimeout(performFit, 800); // Reduced delay for better responsiveness
-      }
-
-      // Tracking state listeners
-      map.on('popupopen', function(e) {
-        isUserFocusing = true;
-        // Find which marker this popup belongs to
-        for (let id in markers) {
-          if (markers[id].getPopup() === e.popup) {
-            // Safety: Ensure any previously tracked marker is reset to outline
-            if (trackedSesiId && trackedSesiId !== id && markers[trackedSesiId]) {
-              markers[trackedSesiId].setIcon(getMarkerIcon(false));
-            }
-
-            trackedSesiId = id;
-            markers[id].setIcon(getMarkerIcon(true)); // Set active icon
-            break;
-          }
-        }
+        fitTimeout = setTimeout(fitAllMarkers, 1000);
       });
 
-      map.on('popupclose', function(e) {
-        // Find which marker this popup belongs to
-        for (let id in markers) {
-          if (markers[id].getPopup() === e.popup) {
-            markers[id].setIcon(getMarkerIcon(false)); // Always revert the closed marker to outline
-
-            // Only reset global tracking state if we just closed the currently tracked one
-            if (trackedSesiId === id) {
-              trackedSesiId = null;
-              isUserFocusing = false;
-              fitAllMarkers(); // Trigger fit (debounced)
-            }
-            break;
-          }
-        }
-      });
-
-      // Initialize markers and low battery tracker
+      // Inisialisasi marker
       locations.forEach(function(loc) {
-        if (loc.is_low_bat && loc.id_sesi) {
-          lowBatSessions.add(loc.id_sesi);
-        }
+        if (loc.is_low_bat && loc.id_sesi) lowBatSessions.add(loc.id_sesi);
 
         if (loc.lat && loc.long) {
-          var customIcon = getMarkerIcon(false); // Default outline icon
+          var marker = L.marker([loc.lat, loc.long], { icon: getMarkerIcon(false) })
+            .bindPopup(`<div class="p-1" id="popup-${loc.id_sesi}">
+                          <div class="fw-bold mb-1">${loc.nama_alat}</div>
+                          <div class="text-muted small mb-2">${loc.kendaraan}</div>
+                          <div class="d-flex justify-content-between border-top pt-2">
+                            <span class="small">Baterai:</span>
+                            <span class="fw-bold small text-primary bat-text">${loc.battery}%</span>
+                          </div>
+                          <div class="text-muted text-end mt-1 last-update-text" style="font-size: 9px;">
+                            ${loc.last_update}
+                          </div>
+                        </div>`, { minWidth: 150, autoPan: false });
 
-          var batLevel = parseInt(loc.battery || 0);
-          var batColorClass = batLevel > 70 ? 'text-success' : (batLevel >= 30 ? 'text-warning' : 'text-danger');
-
-          var marker = L.marker([loc.lat, loc.long], {
-              icon: customIcon
-            })
-            .bindPopup(`
-              <div class="p-0" style="min-width: 140px;" id="popup-${loc.id_sesi}">
-                <div style="border-bottom: 1px solid #eee; padding-bottom: 4px; margin-bottom: 6px;">
-                  <div class="fw-bold" style="font-size: 13px; color: #333;">${loc.nama_alat}</div>
-                  <div class="text-muted" style="font-size: 10px; margin-top: -2px;">${loc.kendaraan}</div>
-                </div>
-                <div class="d-flex flex-column gap-1">
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted" style="font-size: 11px;">Baterai</span>
-                    <span class="fw-bold bat-text ${batColorClass}" style="font-size: 11px;">${batLevel}%</span>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted" style="font-size: 11px;">Status</span>
-                    <span class="fw-bold ${loc.status === 'Aktif' ? 'text-success' : 'text-danger'}" style="font-size: 11px;">${loc.status}</span>
-                  </div>
-                  <div class="text-muted text-end mt-1 last-update-text" style="font-size: 9px; opacity: 0.8;">
-                    ${loc.last_update}
-                  </div>
-                </div>
-              </div>
-            `, {
-              minWidth: 140,
-              maxWidth: 200,
-              autoPanPadding: [50, 50],
-              className: 'custom-card-popup'
-            });
+          // Unifikasi: Klik marker memanggil focusMarker yang sama dengan tabel
+          marker.on('click', function() {
+            focusMarker(loc.id_sesi, true);
+          });
 
           markerCluster.addLayer(marker);
-          if (loc.id_sesi) {
-            markers[loc.id_sesi] = marker;
-          }
+          if (loc.id_sesi) markers[loc.id_sesi] = marker;
         }
 
         // --- Realtime Setup per Active Session ---
         if (loc.id_sesi && loc.status === 'Aktif' && window.Echo) {
           window.Echo.channel(`tracking.sesi.${loc.id_sesi}`)
             .listen('.LokasiBaru', (e) => {
-              console.log("Realtime Update for Sesi", loc.id_sesi, e);
               const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
               const battery = parseInt(e.battery || 0);
               const isLowBat = battery <= 20;
@@ -752,47 +556,44 @@
               // 1. Update Map Marker
               if (markers[loc.id_sesi]) {
                 const marker = markers[loc.id_sesi];
-                const isTracked = (loc.id_sesi == trackedSesiId);
+                // Cek apakah alat yang baru gerak ini adalah alat yang sedang kita kunci fokusnya
+                const isThisToolTracked = (trackedSesiId && String(loc.id_sesi) === trackedSesiId);
 
                 marker.setLatLng(latLng);
-
-                // Update marker in cluster logic
                 if (typeof markerCluster.refreshClusters === 'function') {
                   markerCluster.refreshClusters(marker);
                 }
 
                 // Update popup content if open
                 const popup = marker.getPopup();
-                if (isTracked) {
-                  // Ensure popup stays open (refreshClusters might close it)
-                  if (!popup.isOpen()) {
-                    marker.openPopup();
-                  }
-
+                if (popup && popup.isOpen()) {
                   const popupElement = popup.getElement();
                   if (popupElement) {
                     const batText = popupElement.querySelector('.bat-text');
                     const updateText = popupElement.querySelector('.last-update-text');
                     if (batText) {
                       batText.innerText = battery + '%';
-                      batText.className = 'fw-bold bat-text ' + (battery > 70 ? 'text-success' : (
-                        battery >= 30 ? 'text-warning' : 'text-danger'));
+                      batText.className = 'fw-bold small ' + (battery > 70 ? 'text-success' : (battery >= 30 ? 'text-warning' : 'text-danger'));
                     }
                     if (updateText) updateText.innerText = 'Sesaat lalu';
                   }
+                }
 
-                  // Follow the marker smoothly
-                  map.panTo(latLng);
-                } else if (!trackedSesiId && !isUserFocusing) {
-                  // Trigger debounced fit ONLY if not focusing anyone
-                  fitAllMarkers();
+                // LOGIKA KRUSIAL: Ikuti hanya jika alat ini yang dilacak
+                if (isThisToolTracked) {
+                  map.panTo(latLng, { animate: true });
+                } else if (!isUserFocusing) {
+                  // Jika TIDAK ADA alat yang dilacak, barulah sesuaikan viewport agar semua masuk layar (debounced)
+                  clearTimeout(fitTimeout);
+                  fitTimeout = setTimeout(() => {
+                    if (!isUserFocusing) fitAllMarkers();
+                  }, 2000);
                 }
               }
 
               // 2. Update Table Row
               const row = document.getElementById(`row-alat-${loc.id_sesi}`);
               if (row) {
-                // Update battery progress bar
                 const batCell = row.querySelector('.battery-cell');
                 if (batCell) {
                   const bar = batCell.querySelector('.progress-bar');
@@ -805,28 +606,21 @@
                   if (text) text.innerText = battery + '%';
                 }
 
-                // Update last update text
                 const updateCell = row.querySelector('.update-cell');
                 if (updateCell) {
                   const icon = updateCell.querySelector('i') ? updateCell.querySelector('i').outerHTML + ' ' : '';
-                  updateCell.innerHTML = icon + 'Sesaat lalu';
+                  updateCell.innerHTML = `<span class="text-muted small">${icon}Sesaat lalu</span>`;
                 }
 
-                // Handle Low Battery Styling
+                const nameCell = row.querySelector('.name-cell');
                 if (isLowBat) {
                   row.classList.add('table-danger');
-                  const nameCell = row.querySelector('.name-cell');
-                  if (nameCell) {
-                    nameCell.classList.add('fw-bold', 'text-danger');
-                    if (!nameCell.querySelector('.ri-error-warning-fill')) {
-                      nameCell.insertAdjacentHTML('afterbegin', '<i class="ri-error-warning-fill me-1"></i>');
-                    }
+                  if (nameCell && !nameCell.querySelector('.ri-error-warning-fill')) {
+                    nameCell.insertAdjacentHTML('afterbegin', '<i class="ri-error-warning-fill text-danger me-1"></i>');
                   }
                 } else {
                   row.classList.remove('table-danger');
-                  const nameCell = row.querySelector('.name-cell');
                   if (nameCell) {
-                    nameCell.classList.remove('fw-bold', 'text-danger');
                     const icon = nameCell.querySelector('.ri-error-warning-fill');
                     if (icon) icon.remove();
                   }
@@ -841,50 +635,126 @@
                 lowBatSessions.delete(loc.id_sesi);
               }
 
-              // Update Alert and Card
               const currentCount = lowBatSessions.size;
               const countDisplay = document.getElementById('count-low-bat');
               const cardLowBat = document.getElementById('card-low-bat');
+              const alertContainer = document.getElementById('low-bat-alert-container');
 
               if (countDisplay) {
                 countDisplay.innerText = currentCount;
-                countDisplay.className = 'mb-0 ' + (currentCount > 0 ? 'text-danger' : '');
+                countDisplay.className = 'fw-black mb-0 ' + (currentCount > 0 ? 'text-danger' : 'text-dark');
               }
+              
               if (cardLowBat) {
-                if (currentCount > 0) {
-                  cardLowBat.classList.add('border-danger');
-                  cardLowBat.style.cursor = 'pointer';
-                  cardLowBat.onclick = () => document.getElementById('daftar-alat-table').scrollIntoView({
-                    behavior: 'smooth'
-                  });
-                  cardLowBat.title = 'Klik untuk melihat detail alat dengan baterai lemah';
-                } else {
-                  cardLowBat.classList.remove('border-danger');
-                  cardLowBat.style.cursor = 'default';
-                  cardLowBat.onclick = null;
-                  cardLowBat.title = '';
-                }
+                if (currentCount > 0) cardLowBat.classList.add('border-start', 'border-danger', 'border-4');
+                else cardLowBat.classList.remove('border-start', 'border-danger', 'border-4');
               }
 
-              // Note: Alert box visibility is harder to toggle perfectly without a container, 
-              // but we can update the count inside it if it exists.
-              const alertBox = document.querySelector('.alert-danger b');
-              if (alertBox) alertBox.innerText = currentCount;
+              if (currentCount > 0) {
+                if (!document.getElementById('alert-low-bat-count')) {
+                  alertContainer.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-4 shadow-sm border-0" role="alert" style="cursor: pointer; border-left: 5px solid #dc3545 !important;"
+                    onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
+                    <i class="ri-error-warning-fill fs-24 me-3"></i>
+                    <div>
+                      <strong class="d-block text-uppercase fs-12">Peringatan Baterai Lemah!</strong> 
+                      Terdapat <b id="alert-low-bat-count">${currentCount}</b> perangkat yang memerlukan pengisian daya segera.
+                    </div>
+                  </div>`;
+                } else {
+                  document.getElementById('alert-low-bat-count').innerText = currentCount;
+                }
+              } else {
+                alertContainer.innerHTML = '';
+              }
             });
         }
       });
 
-      // Fit map bounds
-      var markerArray = Object.values(markers);
-      if (markerArray.length > 0) {
-        var group = new L.featureGroup(markerArray);
-        map.fitBounds(group.getBounds().pad(0.1));
+      if (Object.keys(markers).length > 0) {
+        fitAllMarkers();
       }
 
-      // Fix map rendering issues
-      setTimeout(function() {
+      setTimeout(() => {
         map.invalidateSize();
       }, 500);
+
+      // --- CHARTS SETUP ---
+      const activityOptions = {
+        series: [{
+          name: 'Rekaman Lokasi',
+          data: @json(collect($last7Days)->pluck('count'))
+        }],
+        chart: {
+          height: 350,
+          type: 'area',
+          width: '100%',
+          toolbar: { show: false },
+          fontFamily: 'inherit',
+          animations: { enabled: true },
+          sparkline: { enabled: false },
+          parentHeightOffset: 0
+        },
+        dataLabels: { enabled: false },
+        stroke: { curve: 'smooth', width: 3, colors: ['#be1e2d'] },
+        fill: {
+          type: 'gradient',
+          gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1, stops: [0, 90, 100], colorStops: [{ offset: 0, color: '#be1e2d', opacity: 0.4 }] }
+        },
+        xaxis: {
+          categories: @json(collect($last7Days)->pluck('date')),
+          axisBorder: { show: false },
+          axisTicks: { show: false },
+          labels: { style: { colors: '#64748b', fontWeight: 500 } },
+          tooltip: { enabled: false }
+        },
+        yaxis: { show: false },
+        grid: { 
+          borderColor: '#f1f1f1', 
+          strokeDashArray: 4,
+          padding: { left: 15, right: 15, top: 0, bottom: 0 }
+        },
+        tooltip: { theme: 'light', x: { show: true } }
+      };
+
+      const activityChart = new ApexCharts(document.querySelector("#activity-chart"), activityOptions);
+      
+      setTimeout(() => {
+        activityChart.render();
+        window.dispatchEvent(new Event('resize'));
+      }, 300);
+
+      const batteryOptions = {
+        series: [@json($batteryStats['good']), @json($batteryStats['moderate']), @json($batteryStats['low'])],
+        chart: { type: 'donut', height: 280, width: '100%' },
+        labels: ['Bagus (>70%)', 'Cukup (30-70%)', 'Lemah (<30%)'],
+        colors: ['#10b981', '#f59e0b', '#ef4444'],
+        legend: { position: 'bottom', fontWeight: 600 },
+        plotOptions: { pie: { donut: { size: '75%', labels: { show: true, total: { show: true, label: 'Total Alat', fontWeight: 700, color: '#1e293b', formatter: () => @json(count($lokasiAlat)) } } } } },
+        dataLabels: { enabled: false }
+      };
+      new ApexCharts(document.querySelector("#battery-chart"), batteryOptions).render();
+
+      const statusOptions = {
+        series: [@json($vehicleStatusStats['moving']), @json($vehicleStatusStats['idle'])],
+        chart: { type: 'donut', height: 300, width: '100%' },
+        labels: ['Bergerak', 'Idle'],
+        colors: ['#3b82f6', '#94a3b8'],
+        legend: { position: 'bottom', fontWeight: 600 },
+        plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: 'Total Armada', formatter: () => @json($totalKendaraan) } } } } },
+        dataLabels: { enabled: false }
+      };
+      new ApexCharts(document.querySelector("#status-chart"), statusOptions).render();
+
+      const toolStatusOptions = {
+        series: [@json($toolStatusStats['active']), @json($toolStatusStats['idle'])],
+        chart: { type: 'donut', height: 300, width: '100%' },
+        labels: ['Berjalan', 'Idle'],
+        colors: ['#f59e0b', '#cbd5e1'],
+        legend: { position: 'bottom', fontWeight: 600 },
+        plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: 'Total Alat', formatter: () => @json($totalAlat) } } } } },
+        dataLabels: { enabled: false }
+      };
+      new ApexCharts(document.querySelector("#tool-status-chart"), toolStatusOptions).render();
     });
   </script>
 @endsection
