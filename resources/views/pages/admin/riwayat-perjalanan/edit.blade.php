@@ -159,7 +159,7 @@
 
                     <div class="info-group" style="border-left-color: #fbbf24; background: #fffbeb;">
                         <strong style="color: #92400e;">⚠️ Catatan:</strong><br>
-                        <span class="text-muted">Data ini tidak memiliki sesi alat. Pastikan koordinat sudah benar sebelum menyimpan.</span>
+                        <span class="text-muted">Data ini tidak memiliki perjalanan. Pastikan koordinat sudah benar sebelum menyimpan.</span>
                     </div>
                 </div>
             </div>

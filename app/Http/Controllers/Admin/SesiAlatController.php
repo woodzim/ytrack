@@ -106,12 +106,12 @@ class SesiAlatController extends Controller
             'action' => 'CREATE',
             'subject_type' => SesiAlat::class,
             'subject_id' => $sesiAlat->id,
-            'description' => "Admin membuat sesi alat baru. Alat: {$sesiAlat->alat->id}, Kendaraan: {$sesiAlat->kendaraan->nama} ({$sesiAlat->kendaraan->plat})",
+            'description' => "Admin membuat perjalanan baru. Alat: {$sesiAlat->alat->id}, Kendaraan: {$sesiAlat->kendaraan->nama} ({$sesiAlat->kendaraan->plat})",
             'ip_address' => $request->ip(),
         ]);
         // -----------------------------
 
-        return redirect()->route('sesi-alat.index')->with('success', 'Sesi Alat berhasil dibuat');
+        return redirect()->route('sesi-alat.index')->with('success', 'Perjalanan berhasil dibuat');
     }
 
     /**
@@ -189,7 +189,7 @@ class SesiAlatController extends Controller
         $sesiAlat->update($validated);
 
         // --- 2. LOGGING ---
-        $desc = "Admin memperbarui Sesi Alat ID #{$sesiAlat->id}.";
+        $desc = "Admin memperbarui Perjalanan ID #{$sesiAlat->id}.";
         
         // Cek perubahan Alat
         if ($oldAlat !== $validated['id_alat']) {
@@ -221,7 +221,7 @@ class SesiAlatController extends Controller
         ]);
         // ------------------------------------
 
-        return redirect()->route('sesi-alat.index')->with('success', 'Sesi Alat berhasil diperbarui');
+        return redirect()->route('sesi-alat.index')->with('success', 'Perjalanan berhasil diperbarui');
     }
 
     /**
@@ -258,13 +258,13 @@ class SesiAlatController extends Controller
             'action' => 'UPDATE', // Bisa dianggap update status
             'subject_type' => SesiAlat::class,
             'subject_id' => $sesiAlat->id,
-            'description' => "Admin $statusText sesi alat (ID: {$sesiAlat->id_alat}) pada kendaraan (ID: {$sesiAlat->id_kendaraan})",
+            'description' => "Admin $statusText perjalanan (ID: {$sesiAlat->id_alat}) pada kendaraan (ID: {$sesiAlat->id_kendaraan})",
             'ip_address' => request()->ip(),
         ]);
         // -----------------------------
 
         $status = $sesiAlat->aktif ? 'diaktifkan' : 'dinonaktifkan';
-        return back()->with('success', 'Sesi Alat berhasil ' . $status);
+        return back()->with('success', 'Perjalanan berhasil ' . $status);
     }
 
     /**
@@ -345,11 +345,11 @@ class SesiAlatController extends Controller
             'action' => 'DELETE',
             'subject_type' => SesiAlat::class,
             'subject_id' => $id,
-            'description' => "Admin menghapus sesi alat. Detail: [$info]",
+            'description' => "Admin menghapus perjalanan. Detail: [$info]",
             'ip_address' => request()->ip(),
         ]);
         // -----------------------------
 
-        return redirect()->route('sesi-alat.index')->with('success', 'Sesi Alat berhasil dihapus');
+        return redirect()->route('sesi-alat.index')->with('success', 'Perjalanan berhasil dihapus');
     }
 }

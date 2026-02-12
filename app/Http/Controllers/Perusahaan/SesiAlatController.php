@@ -131,13 +131,13 @@ class SesiAlatController extends Controller
             'action' => 'CREATE',
             'subject_type' => SesiAlat::class,
             'subject_id' => $sesiAlat->id,
-            'description' => "Perusahaan memulai sesi alat baru. Alat: {$request->id_alat}, Kendaraan: {$plat}",
+            'description' => "Perusahaan memulai perjalanan baru. Alat: {$request->id_alat}, Kendaraan: {$plat}",
             'ip_address' => $request->ip(),
         ]);
         // -----------------------------
 
         return redirect()->route('perusahaan.sesi-alat.index')
-                        ->with('success', 'Sesi alat berhasil dibuat.');
+                        ->with('success', 'Perjalanan berhasil dibuat.');
     }
 
     /**
@@ -153,9 +153,12 @@ class SesiAlatController extends Controller
 
         $cacheKey = "sesi_alat_tracking_{$sesiAlat->id}_perusahaan";
 
-        // Cache history for 30 seconds
+        // Cache history for 10 seconds and get ALL points
         $riwayatPerjalanan = Cache::remember($cacheKey, 10, function () use ($sesiAlat) {
-            return $sesiAlat->riwayatPerjalanan()->orderBy('created_at', 'desc')->get();
+            return $sesiAlat->riwayatPerjalanan()
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->values();
         });
 
         return view('pages.perusahaan.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));
@@ -193,7 +196,7 @@ class SesiAlatController extends Controller
             'action' => 'UPDATE',
             'subject_type' => SesiAlat::class,
             'subject_id' => $sesi->id,
-            'description' => "Perusahaan $statusText sesi alat (ID Alat: {$sesi->id_alat})",
+            'description' => "Perusahaan $statusText perjalanan (ID Alat: {$sesi->id_alat})",
             'ip_address' => request()->ip(),
         ]);
         // -----------------------------
@@ -223,7 +226,7 @@ class SesiAlatController extends Controller
             'action' => 'DELETE',
             'subject_type' => SesiAlat::class,
             'subject_id' => $deletedId,
-            'description' => "Perusahaan menghapus sesi alat. Detail: [$info]",
+            'description' => "Perusahaan menghapus perjalanan. Detail: [$info]",
             'ip_address' => request()->ip(),
         ]);
         // -----------------------------

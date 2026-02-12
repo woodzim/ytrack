@@ -103,7 +103,7 @@
 @section('content')
   <div class="page-header-section">
     <div>
-      <h1>Detail Sesi Alat</h1>
+      <h1>Detail Perjalanan</h1>
       <p>Informasi lengkap sesi YA-Track</p>
     </div>
     <div>

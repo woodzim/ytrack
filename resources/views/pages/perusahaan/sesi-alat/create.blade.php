@@ -26,7 +26,7 @@
 @section('content')
   <div class="page-header-section d-flex align-items-center justify-content-between">
     <div>
-      <h1 class="fw-bold">Buat Sesi Baru</h1>
+      <h1 class="fw-bold">Buat Perjalanan Baru</h1>
       <p class="">Hubungkan Alat GPS dengan Kendaraan untuk memulai tracking</p>
     </div>
   </div>

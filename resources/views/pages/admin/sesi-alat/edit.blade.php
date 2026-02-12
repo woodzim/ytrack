@@ -15,8 +15,8 @@
 @section('content')
   <div class="page-header-section d-flex align-items-center justify-content-between">
     <div>
-      <h1>Edit Sesi Alat</h1>
-      <p>Ubah konfigurasi sesi alat GPS</p>
+      <h1>Edit Perjalanan</h1>
+      <p>Ubah konfigurasi perjalanan kendaraan</p>
     </div>
   </div>
   <div class="row pb-3">

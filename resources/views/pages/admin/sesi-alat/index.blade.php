@@ -3,7 +3,7 @@
 @section('content')
   <div class="page-header-section d-flex align-items-center justify-content-between">
     <div>
-      <h1>Sesi Alat</h1>
+      <h1>Perjalanan</h1>
       <p>Kelola sesi penggunaan alat GPS di kendaraan</p>
     </div>
     <div class="ms-auto">
@@ -45,7 +45,7 @@
       <div class="card table-wrapper">
         <div class="card-header border-bottom-0 bg-white py-3">
           <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Daftar Sesi Alat ({{ $sesiAlat->total() }})</h5>
+            <h5 class="card-title mb-0">Daftar Perjalanan ({{ $sesiAlat->total() }})</h5>
           </div>
         </div>
         <div class="card-body p-0">
@@ -167,8 +167,8 @@
               <div class="mb-3">
                 <i class="ri-bluetooth-connect-line" style="font-size: 48px; color: #ddd;"></i>
               </div>
-              <h5 class="text-muted mb-2">Tidak ada sesi alat</h5>
-              <p class="text-muted mb-3">Mulai dengan membuat sesi alat baru</p>
+              <h5 class="text-muted mb-2">Tidak ada perjalanan</h5>
+              <p class="text-muted mb-3">Mulai dengan membuat perjalanan baru</p>
               <a href="{{ route('sesi-alat.create') }}" class="btn btn-primary btn-wave">
                 <i class="ri-add-line me-2"></i>Buat Sesi
               </a>

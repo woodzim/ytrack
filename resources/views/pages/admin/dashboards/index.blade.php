@@ -154,7 +154,7 @@
                     @else
                         <div class="alert alert-info mb-0 m-3">
                             <i class="ri-information-line me-2"></i>
-                            Tidak ada sesi alat yang aktif saat ini
+                            Tidak ada perjalanan yang aktif saat ini
                         </div>
                     @endif
                 </div>
