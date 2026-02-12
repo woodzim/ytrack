@@ -3,7 +3,7 @@
 @section('content')
   <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h1 class="fw-bold mb-2">Sesi Alat</h1>
+      <h1 class="fw-bold mb-2">Perjalanan</h1>
       <p class="">Kelola sesi penggunaan alat GPS di kendaraan</p>
     </div>
     <div class="ms-auto">
@@ -61,7 +61,7 @@
       <div class="card custom-card">
         <div class="card-header justify-content-between">
           <div class="card-title">
-            Daftar Sesi Alat ({{ $sesiAlat->total() }})
+            Daftar Perjalanan ({{ $sesiAlat->total() }})
           </div>
         </div>
 
@@ -202,7 +202,7 @@
                   <i class="ri-route-line display-5"></i>
                 </div>
               </div>
-              <h5 class="fw-bold">Belum Ada Sesi Alat</h5>
+              <h5 class="fw-bold">Belum Ada Perjalanan</h5>
               <p class="text-muted mb-4">Buat sesi baru untuk mulai menghubungkan Alat GPS dengan Kendaraan.</p>
               <a href="{{ route('perusahaan.sesi-alat.create') }}" class="btn btn-primary btn-wave">
                 <i class="ri-add-line me-2"></i>Buat Sesi Sekarang

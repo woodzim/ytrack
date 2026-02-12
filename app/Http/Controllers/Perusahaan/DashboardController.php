@@ -10,6 +10,8 @@ use App\Models\RiwayatPerjalanan;
 use App\Models\Alat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -23,14 +25,24 @@ class DashboardController extends Controller
         // Get perusahaan data
         $perusahaan = Perusahaan::find($idPerusahaan);
         
-        // Get total sesi alat for this perusahaan
+        // Get total perjalanan for this perusahaan
         $totalSesiAlat = SesiAlat::where('id_perusahaan', $idPerusahaan)->count();
         
         // Get total kendaraan for this perusahaan
         $totalKendaraan = Kendaraan::where('id_perusahaan', $idPerusahaan)->count();
         
-        // Get kendaraan dalam perjalanan (has active sesi alat)
+        // Get total alat for this perusahaan
+        $totalAlat = Alat::where('id_perusahaan', $idPerusahaan)->count();
+        
+        // Get kendaraan dalam perjalanan (has active perjalanan)
         $kendaraanDalamPerjalanan = Kendaraan::where('id_perusahaan', $idPerusahaan)
+            ->whereHas('sesiAlat', function ($query) {
+                $query->where('aktif', true);
+            })
+            ->count();
+
+        // Get alat dalam perjalanan (active session)
+        $alatAktifCount = Alat::where('id_perusahaan', $idPerusahaan)
             ->whereHas('sesiAlat', function ($query) {
                 $query->where('aktif', true);
             })
@@ -78,52 +90,62 @@ class DashboardController extends Controller
             ->values();
 
         $lowBatCount = $lokasiAlat->where('is_low_bat', true)->count();
+
+        // --- CHART DATA ---
+        
+        // 1. Battery Distribution
+        $batteryStats = [
+            'good' => 0, // > 70
+            'moderate' => 0, // 30 - 70
+            'low' => 0 // < 30
+        ];
+        
+        foreach ($lokasiAlat as $alat) {
+            $bat = $alat['battery'];
+            if ($bat > 70) $batteryStats['good']++;
+            elseif ($bat >= 30) $batteryStats['moderate']++;
+            else $batteryStats['low']++;
+        }
+
+        // 2. Activity Last 7 Days (Records count)
+        $last7Days = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $count = RiwayatPerjalanan::where('id_perusahaan', $idPerusahaan)
+                ->whereDate('created_at', $date)
+                ->count();
+            
+            $last7Days[] = [
+                'date' => Carbon::now()->subDays($i)->format('d M'),
+                'count' => $count
+            ];
+        }
+
+        // 3. Vehicle Status
+        $vehicleStatusStats = [
+            'moving' => $kendaraanDalamPerjalanan,
+            'idle' => max(0, $totalKendaraan - $kendaraanDalamPerjalanan)
+        ];
+
+        // 4. Tool Status
+        $toolStatusStats = [
+            'active' => $alatAktifCount,
+            'idle' => max(0, $totalAlat - $alatAktifCount)
+        ];
         
         return view('pages.perusahaan.dashboard.index', [
             'perusahaan' => $perusahaan,
             'totalSesiAlat' => $totalSesiAlat,
             'totalKendaraan' => $totalKendaraan,
+            'totalAlat' => $totalAlat,
             'kendaraanDalamPerjalanan' => $kendaraanDalamPerjalanan,
             'recentRiwayat' => $recentRiwayat,
             'lokasiAlat' => $lokasiAlat,
             'lowBatCount' => $lowBatCount,
+            'batteryStats' => $batteryStats,
+            'last7Days' => $last7Days,
+            'vehicleStatusStats' => $vehicleStatusStats,
+            'toolStatusStats' => $toolStatusStats
         ]);
-    }
-
-    /**
-     * Update perusahaan profile.
-     */
-    public function update(Request $request)
-    {
-        $idPerusahaan = Auth::user()->id_perusahaan;
-        
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
-            'nama' => 'required|string|max:255',
-            'alamat' => 'required|string|max:500',
-        ], [
-            'name.required' => 'Nama pengguna wajib diisi',
-            'email.required' => 'Email wajib diisi',
-            'email.email' => 'Format email tidak valid',
-            'email.unique' => 'Email sudah terdaftar',
-            'nama.required' => 'Nama perusahaan wajib diisi',
-            'alamat.required' => 'Alamat perusahaan wajib diisi',
-        ]);
-        
-        // Update user data
-        Auth::user()->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-        ]);
-        
-        // Update perusahaan data
-        $perusahaan = Perusahaan::find($idPerusahaan);
-        $perusahaan->update([
-            'nama' => $validated['nama'],
-            'alamat' => $validated['alamat'],
-        ]);
-        
-        return back()->with('success', 'Data profil dan perusahaan berhasil diperbarui');
     }
 }

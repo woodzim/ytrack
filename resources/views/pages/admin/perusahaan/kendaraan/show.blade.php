@@ -92,7 +92,7 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="stat-item">
-                                <div class="stat-label text-muted">Sesi Alat</div>
+                                <div class="stat-label text-muted">Perjalanan</div>
                                 <div class="stat-value">
                                     <strong class="fs-5">{{ $kendaraan->sesiAlat->count() }}</strong>
                                 </div>

@@ -45,7 +45,7 @@
               <li class="slide">
                 <a href="{{ route('sesi-alat.index') }}"
                   class="side-menu__item d-flex align-items-center justify-content-between">
-                  <div class="d-flex align-items-center">Sesi Alat</div>
+                  <div class="d-flex align-items-center">Perjalanan</div>
                   @php
                     $activeSesiAlatCount = \App\Models\SesiAlat::where('aktif', true)->count();
                   @endphp
@@ -174,7 +174,14 @@
           <li class="slide">
             <a href="{{ route('perusahaan.sesi-alat.index') }}" class="side-menu__item">
               <i class="ri-map-pin-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-              <span class="side-menu__label">Sesi Alat</span>
+              <span class="side-menu__label">Perjalanan</span>
+            </a>
+          </li>
+
+          <li class="slide">
+            <a href="{{ route('perusahaan.profile.index') }}" class="side-menu__item">
+              <i class="ri-user-settings-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+              <span class="side-menu__label">Profil Perusahaan</span>
             </a>
           </li>
         @endrole

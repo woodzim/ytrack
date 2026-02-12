@@ -26,7 +26,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th style="width: 8%;">ID</th>
-                                        <th style="width: 10%;">Sesi Alat</th>
+                                        <th style="width: 10%;">Perjalanan</th>
                                         <th style="width: 10%;">Alat</th>
                                         <th style="width: 12%;">Kendaraan</th>
                                         <th style="width: 12%;">Perusahaan</th>
@@ -44,7 +44,7 @@
                                             <td data-label="ID">
                                                 <span class="badge bg-light text-dark">{{ $item->id }}</span>
                                             </td>
-                                            <td data-label="Sesi Alat">
+                                            <td data-label="Perjalanan">
                                                 @if ($item->id_sesi_alat)
                                                     <span class="badge bg-light text-dark">{{ $item->id_sesi_alat }}</span>
                                                 @else
