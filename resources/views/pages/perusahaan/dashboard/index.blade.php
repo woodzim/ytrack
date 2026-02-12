@@ -12,7 +12,8 @@
   <style>
     /* --- Layout Refinements --- */
     #map-dashboard {
-      height: 55vh; /* Ditetapkan 55vh sesuai permintaan */
+      height: 55vh;
+      /* Ditetapkan 55vh sesuai permintaan */
       width: 100%;
       border-radius: 8px;
       position: relative;
@@ -20,8 +21,8 @@
     }
 
     /* Reset margin untuk elemen pertama agar sejajar sempurna */
-    .col-lg-9 > :first-child,
-    .aside-stats-container > :first-child {
+    .col-lg-9> :first-child,
+    .aside-stats-container> :first-child {
       margin-top: 0 !important;
     }
 
@@ -48,7 +49,7 @@
       margin-bottom: 1.25rem;
       border-radius: 12px;
     }
-    
+
     .stats-card-enhanced:hover {
       transform: translateY(-3px);
       box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
@@ -96,7 +97,7 @@
       padding-right: 0.5rem !important;
       overflow: hidden;
     }
-    
+
     .activity-chart-container .chart-title {
       margin-left: 1rem;
       margin-right: 1rem;
@@ -106,6 +107,7 @@
       .aside-stats-container {
         margin-top: 2rem !important;
       }
+
       #map-dashboard {
         height: 45vh;
       }
@@ -126,11 +128,12 @@
   <!-- Alert Section -->
   <div id="low-bat-alert-container">
     @if ($lowBatCount > 0)
-      <div class="alert alert-danger d-flex align-items-center mb-4 shadow-sm border-0" role="alert" style="cursor: pointer; border-left: 5px solid #dc3545 !important;"
+      <div class="alert alert-danger d-flex align-items-center mb-4 shadow-sm border-0" role="alert"
+        style="cursor: pointer; border-left: 5px solid #dc3545 !important;"
         onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
         <i class="ri-error-warning-fill fs-24 me-3"></i>
         <div>
-          <strong class="d-block text-uppercase fs-12">Peringatan Baterai Lemah!</strong> 
+          <strong class="d-block text-uppercase fs-12">Peringatan Baterai Lemah!</strong>
           Terdapat <b id="alert-low-bat-count">{{ $lowBatCount }}</b> perangkat yang memerlukan pengisian daya segera.
         </div>
       </div>
@@ -154,7 +157,8 @@
           <div class="card-title mb-0 fw-bold fs-16 text-uppercase ls-1">
             <i class="ri-list-check-2 me-2 text-primary"></i>Daftar Alat & Status Terkini
           </div>
-          <span class="badge bg-primary-transparent text-primary px-3 rounded-pill">{{ count($lokasiAlat) }} Alat Terdeteksi</span>
+          <span class="badge bg-primary-transparent text-primary px-3 rounded-pill">{{ count($lokasiAlat) }} Alat
+            Terdeteksi</span>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">
@@ -175,7 +179,9 @@
                     @if ($alat['id_sesi']) onclick="focusMarker('{{ $alat['id_sesi'] }}')" @endif>
                     <td class="ps-3">
                       <div class="fw-bold text-dark name-cell">
-                        @if($alat['is_low_bat']) <i class="ri-error-warning-fill text-danger me-1"></i> @endif
+                        @if ($alat['is_low_bat'])
+                          <i class="ri-error-warning-fill text-danger me-1"></i>
+                        @endif
                         {{ $alat['nama_alat'] }}
                       </div>
                       <code class="text-muted small">{{ $alat['serial_number'] }}</code>
@@ -190,8 +196,11 @@
                       @php
                         $bat = (int) $alat['battery'];
                         $batColor = 'bg-danger';
-                        if ($bat > 70) $batColor = 'bg-success';
-                        elseif ($bat >= 30) $batColor = 'bg-warning';
+                        if ($bat > 70) {
+                            $batColor = 'bg-success';
+                        } elseif ($bat >= 30) {
+                            $batColor = 'bg-warning';
+                        }
                       @endphp
                       <div class="d-flex align-items-center" style="width: 110px;">
                         <div class="progress flex-grow-1 shadow-sm" style="height: 8px; border-radius: 10px;">
@@ -202,7 +211,8 @@
                       </div>
                     </td>
                     <td>
-                      <span class="badge rounded-pill {{ $alat['status'] == 'Aktif' ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }}">
+                      <span
+                        class="badge rounded-pill {{ $alat['status'] == 'Aktif' ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }}">
                         <i class="ri-checkbox-blank-circle-fill fs-8 me-1"></i> {{ $alat['status'] }}
                       </span>
                     </td>
@@ -223,8 +233,8 @@
                 @empty
                   <tr>
                     <td colspan="6" class="text-center py-5 text-muted">
-                        <i class="ri-inbox-line fs-40 d-block mb-2"></i>
-                        Tidak ada data alat aktif saat ini.
+                      <i class="ri-inbox-line fs-40 d-block mb-2"></i>
+                      Tidak ada data alat aktif saat ini.
                     </td>
                   </tr>
                 @endforelse
@@ -240,7 +250,8 @@
           <h6 class="card-title mb-0 fw-bold fs-16 text-uppercase ls-1">
             <i class="ri-history-line me-2 text-primary"></i>Aktivitas Terakhir Perjalanan
           </h6>
-          <a href="{{ route('perusahaan.sesi-alat.index') }}" class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold">
+          <a href="{{ route('perusahaan.sesi-alat.index') }}"
+            class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold">
             LIHAT SEMUA
           </a>
         </div>
@@ -257,12 +268,13 @@
                     </td>
                     <td>
                       <div class="fw-bold text-dark">{{ $item->kendaraan?->nama ?? 'Unit Armada' }}</div>
-                      <div class="text-muted small">Alat: <span class="text-dark fw-medium">{{ $item->alat?->id ?? '-' }}</span></div>
+                      <div class="text-muted small">Alat: <span
+                          class="text-dark fw-medium">{{ $item->alat?->id ?? '-' }}</span></div>
                     </td>
                     <td>
-                        <span class="badge bg-light text-muted border fw-normal">
-                            <i class="ri-map-pin-line me-1"></i> {{ $item->lat }}, {{ $item->long }}
-                        </span>
+                      <span class="badge bg-light text-muted border fw-normal">
+                        <i class="ri-map-pin-line me-1"></i> {{ $item->lat }}, {{ $item->long }}
+                      </span>
                     </td>
                     <td class="text-end pe-4">
                       <div class="text-dark fw-bold small">{{ $item->created_at?->translatedFormat('d M Y, H:i') }}</div>
@@ -271,7 +283,8 @@
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="4" class="text-center py-5 text-muted fst-italic">Belum ada aktivitas perjalanan yang tercatat.</td>
+                    <td colspan="4" class="text-center py-5 text-muted fst-italic">Belum ada aktivitas perjalanan yang
+                      tercatat.</td>
                   </tr>
                 @endforelse
               </tbody>
@@ -326,8 +339,9 @@
     <!-- Right Sidebar Stats (Aside) -->
     <div class="col-lg-3 aside-stats-container">
       <!-- BATERAI LEMAH (Sekarang Paling Atas) -->
-      <div class="card stats-card-enhanced border-0 {{ $lowBatCount > 0 ? 'border-start border-danger border-4' : '' }}" 
-        id="card-low-bat" @if ($lowBatCount > 0) style="cursor: pointer;" onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})" @endif>
+      <div class="card stats-card-enhanced border-0 {{ $lowBatCount > 0 ? 'border-start border-danger border-4' : '' }}"
+        id="card-low-bat"
+        @if ($lowBatCount > 0) style="cursor: pointer;" onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})" @endif>
         <div class="card-body p-4">
           <div class="d-flex align-items-center">
             <div class="icon-box bg-danger-transparent text-danger">
@@ -335,7 +349,8 @@
             </div>
             <div class="ms-3">
               <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Baterai Lemah</h6>
-              <h3 class="fw-black mb-0 {{ $lowBatCount > 0 ? 'text-danger' : 'text-dark' }}" id="count-low-bat">{{ $lowBatCount }}</h3>
+              <h3 class="fw-black mb-0 {{ $lowBatCount > 0 ? 'text-danger' : 'text-dark' }}" id="count-low-bat">
+                {{ $lowBatCount }}</h3>
             </div>
           </div>
         </div>
@@ -398,13 +413,14 @@
       </div>
 
       <div class="card border-0 shadow-sm mt-4 custom-card-enhanced bg-light">
-          <div class="card-body p-4 text-center">
-              <div class="mb-3">
-                  <i class="ri-information-fill text-primary fs-32"></i>
-              </div>
-              <h6 class="fw-bold mb-2 fs-14">Tips Pemantauan</h6>
-              <p class="text-muted small mb-0 fst-italic">Klik baris pada tabel armada untuk memfokuskan peta ke lokasi unit tersebut secara otomatis.</p>
+        <div class="card-body p-4 text-center">
+          <div class="mb-3">
+            <i class="ri-information-fill text-primary fs-32"></i>
           </div>
+          <h6 class="fw-bold mb-2 fs-14">Tips Pemantauan</h6>
+          <p class="text-muted small mb-0 fst-italic">Klik baris pada tabel "Daftar Alat & Status Terkini" untuk
+            memfokuskan peta ke lokasi unit tersebut secara otomatis.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -417,7 +433,7 @@
   <script src="https://unpkg.com/leaflet-gesture-handling@1.2.2/dist/leaflet-gesture-handling.min.js"></script>
   <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  
+
   <script>
     let markers = {};
     let map;
@@ -430,11 +446,13 @@
     const fitAllMarkers = () => {
       // Jika sedang fokus (isUserFocusing true) atau ada alat yang dilacak, JANGAN panggil fitBounds
       if (isUserFocusing || trackedSesiId) return;
-      
+
       var markerArray = Object.values(markers);
       if (markerArray.length > 0) {
         var group = new L.featureGroup(markerArray);
-        map.fitBounds(group.getBounds().pad(0.1), { animate: true });
+        map.fitBounds(group.getBounds().pad(0.1), {
+          animate: true
+        });
       }
     };
 
@@ -443,14 +461,14 @@
         // Batalkan semua antrian fitAllMarkers yang mungkin masih berjalan
         clearTimeout(fitTimeout);
         fitTimeout = null;
-        
+
         trackedSesiId = String(id_sesi); // Simpan sebagai string untuk perbandingan presisi
         isUserFocusing = true;
-        
+
         const marker = markers[id_sesi];
         map.stop(); // Hentikan animasi peta yang sedang berlangsung
         map.setView(marker.getLatLng(), 17);
-        
+
         if (markerCluster.hasLayer(marker)) {
           markerCluster.zoomToShowLayer(marker, () => {
             marker.openPopup();
@@ -458,7 +476,7 @@
         } else {
           marker.openPopup();
         }
-        
+
         if (!skipScroll) {
           const element = document.getElementById('map-dashboard');
           window.scrollTo({
@@ -510,12 +528,25 @@
         });
       };
 
-      // Listener: Saat popup ditutup, kembalikan tampilan ke seluruh alat
+      // Listener: Saat popup ditutup, kembalikan tampilan ke seluruh alat jika benar-benar tidak ada yang difokuskan
       map.on('popupclose', function() {
-        trackedSesiId = null;
-        isUserFocusing = false;
-        clearTimeout(fitTimeout);
-        fitTimeout = setTimeout(fitAllMarkers, 1000);
+        // Berikan delay sedikit untuk mengecek apakah ini perpindahan fokus atau benar-benar ditutup
+        setTimeout(() => {
+          let anyPopupOpen = false;
+          // Cek apakah ada marker yang masih memiliki popup terbuka
+          Object.values(markers).forEach(m => {
+            if (m.getPopup() && m.getPopup().isOpen()) {
+              anyPopupOpen = true;
+            }
+          });
+
+          if (!anyPopupOpen) {
+            trackedSesiId = null;
+            isUserFocusing = false;
+            clearTimeout(fitTimeout);
+            fitTimeout = setTimeout(fitAllMarkers, 1000);
+          }
+        }, 200);
       });
 
       // Inisialisasi marker
@@ -523,7 +554,9 @@
         if (loc.is_low_bat && loc.id_sesi) lowBatSessions.add(loc.id_sesi);
 
         if (loc.lat && loc.long) {
-          var marker = L.marker([loc.lat, loc.long], { icon: getMarkerIcon(false) })
+          var marker = L.marker([loc.lat, loc.long], {
+              icon: getMarkerIcon(false)
+            })
             .bindPopup(`<div class="p-1" id="popup-${loc.id_sesi}">
                           <div class="fw-bold mb-1">${loc.nama_alat}</div>
                           <div class="text-muted small mb-2">${loc.kendaraan}</div>
@@ -534,7 +567,10 @@
                           <div class="text-muted text-end mt-1 last-update-text" style="font-size: 9px;">
                             ${loc.last_update}
                           </div>
-                        </div>`, { minWidth: 150, autoPan: false });
+                        </div>`, {
+              minWidth: 150,
+              autoPan: false
+            });
 
           // Unifikasi: Klik marker memanggil focusMarker yang sama dengan tabel
           marker.on('click', function() {
@@ -573,7 +609,8 @@
                     const updateText = popupElement.querySelector('.last-update-text');
                     if (batText) {
                       batText.innerText = battery + '%';
-                      batText.className = 'fw-bold small ' + (battery > 70 ? 'text-success' : (battery >= 30 ? 'text-warning' : 'text-danger'));
+                      batText.className = 'fw-bold small ' + (battery > 70 ? 'text-success' : (battery >= 30 ?
+                        'text-warning' : 'text-danger'));
                     }
                     if (updateText) updateText.innerText = 'Sesaat lalu';
                   }
@@ -581,12 +618,14 @@
 
                 // LOGIKA KRUSIAL: Ikuti hanya jika alat ini yang dilacak
                 if (isThisToolTracked) {
-                  map.panTo(latLng, { animate: true });
-                } else if (!isUserFocusing) {
+                  map.panTo(latLng, {
+                    animate: true
+                  });
+                } else if (!isUserFocusing && !trackedSesiId) {
                   // Jika TIDAK ADA alat yang dilacak, barulah sesuaikan viewport agar semua masuk layar (debounced)
                   clearTimeout(fitTimeout);
                   fitTimeout = setTimeout(() => {
-                    if (!isUserFocusing) fitAllMarkers();
+                    if (!isUserFocusing && !trackedSesiId) fitAllMarkers();
                   }, 2000);
                 }
               }
@@ -608,7 +647,8 @@
 
                 const updateCell = row.querySelector('.update-cell');
                 if (updateCell) {
-                  const icon = updateCell.querySelector('i') ? updateCell.querySelector('i').outerHTML + ' ' : '';
+                  const icon = updateCell.querySelector('i') ? updateCell.querySelector('i').outerHTML + ' ' :
+                    '';
                   updateCell.innerHTML = `<span class="text-muted small">${icon}Sesaat lalu</span>`;
                 }
 
@@ -616,7 +656,8 @@
                 if (isLowBat) {
                   row.classList.add('table-danger');
                   if (nameCell && !nameCell.querySelector('.ri-error-warning-fill')) {
-                    nameCell.insertAdjacentHTML('afterbegin', '<i class="ri-error-warning-fill text-danger me-1"></i>');
+                    nameCell.insertAdjacentHTML('afterbegin',
+                      '<i class="ri-error-warning-fill text-danger me-1"></i>');
                   }
                 } else {
                   row.classList.remove('table-danger');
@@ -644,7 +685,7 @@
                 countDisplay.innerText = currentCount;
                 countDisplay.className = 'fw-black mb-0 ' + (currentCount > 0 ? 'text-danger' : 'text-dark');
               }
-              
+
               if (cardLowBat) {
                 if (currentCount > 0) cardLowBat.classList.add('border-start', 'border-danger', 'border-4');
                 else cardLowBat.classList.remove('border-start', 'border-danger', 'border-4');
@@ -688,36 +729,81 @@
           height: 350,
           type: 'area',
           width: '100%',
-          toolbar: { show: false },
+          toolbar: {
+            show: false
+          },
           fontFamily: 'inherit',
-          animations: { enabled: true },
-          sparkline: { enabled: false },
+          animations: {
+            enabled: true
+          },
+          sparkline: {
+            enabled: false
+          },
           parentHeightOffset: 0
         },
-        dataLabels: { enabled: false },
-        stroke: { curve: 'smooth', width: 3, colors: ['#be1e2d'] },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          curve: 'smooth',
+          width: 3,
+          colors: ['#be1e2d']
+        },
         fill: {
           type: 'gradient',
-          gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.1, stops: [0, 90, 100], colorStops: [{ offset: 0, color: '#be1e2d', opacity: 0.4 }] }
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.4,
+            opacityTo: 0.1,
+            stops: [0, 90, 100],
+            colorStops: [{
+              offset: 0,
+              color: '#be1e2d',
+              opacity: 0.4
+            }]
+          }
         },
         xaxis: {
           categories: @json(collect($last7Days)->pluck('date')),
-          axisBorder: { show: false },
-          axisTicks: { show: false },
-          labels: { style: { colors: '#64748b', fontWeight: 500 } },
-          tooltip: { enabled: false }
+          axisBorder: {
+            show: false
+          },
+          axisTicks: {
+            show: false
+          },
+          labels: {
+            style: {
+              colors: '#64748b',
+              fontWeight: 500
+            }
+          },
+          tooltip: {
+            enabled: false
+          }
         },
-        yaxis: { show: false },
-        grid: { 
-          borderColor: '#f1f1f1', 
+        yaxis: {
+          show: false
+        },
+        grid: {
+          borderColor: '#f1f1f1',
           strokeDashArray: 4,
-          padding: { left: 15, right: 15, top: 0, bottom: 0 }
+          padding: {
+            left: 15,
+            right: 15,
+            top: 0,
+            bottom: 0
+          }
         },
-        tooltip: { theme: 'light', x: { show: true } }
+        tooltip: {
+          theme: 'light',
+          x: {
+            show: true
+          }
+        }
       };
 
       const activityChart = new ApexCharts(document.querySelector("#activity-chart"), activityOptions);
-      
+
       setTimeout(() => {
         activityChart.render();
         window.dispatchEvent(new Event('resize'));
@@ -725,34 +811,105 @@
 
       const batteryOptions = {
         series: [@json($batteryStats['good']), @json($batteryStats['moderate']), @json($batteryStats['low'])],
-        chart: { type: 'donut', height: 280, width: '100%' },
+        chart: {
+          type: 'donut',
+          height: 280,
+          width: '100%'
+        },
         labels: ['Bagus (>70%)', 'Cukup (30-70%)', 'Lemah (<30%)'],
         colors: ['#10b981', '#f59e0b', '#ef4444'],
-        legend: { position: 'bottom', fontWeight: 600 },
-        plotOptions: { pie: { donut: { size: '75%', labels: { show: true, total: { show: true, label: 'Total Alat', fontWeight: 700, color: '#1e293b', formatter: () => @json(count($lokasiAlat)) } } } } },
-        dataLabels: { enabled: false }
+        legend: {
+          position: 'bottom',
+          fontWeight: 600
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '75%',
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  label: 'Total Alat',
+                  fontWeight: 700,
+                  color: '#1e293b',
+                  formatter: () => @json(count($lokasiAlat))
+                }
+              }
+            }
+          }
+        },
+        dataLabels: {
+          enabled: false
+        }
       };
       new ApexCharts(document.querySelector("#battery-chart"), batteryOptions).render();
 
       const statusOptions = {
         series: [@json($vehicleStatusStats['moving']), @json($vehicleStatusStats['idle'])],
-        chart: { type: 'donut', height: 300, width: '100%' },
+        chart: {
+          type: 'donut',
+          height: 300,
+          width: '100%'
+        },
         labels: ['Bergerak', 'Idle'],
         colors: ['#3b82f6', '#94a3b8'],
-        legend: { position: 'bottom', fontWeight: 600 },
-        plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: 'Total Armada', formatter: () => @json($totalKendaraan) } } } } },
-        dataLabels: { enabled: false }
+        legend: {
+          position: 'bottom',
+          fontWeight: 600
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '70%',
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  label: 'Total Armada',
+                  formatter: () => @json($totalKendaraan)
+                }
+              }
+            }
+          }
+        },
+        dataLabels: {
+          enabled: false
+        }
       };
       new ApexCharts(document.querySelector("#status-chart"), statusOptions).render();
 
       const toolStatusOptions = {
         series: [@json($toolStatusStats['active']), @json($toolStatusStats['idle'])],
-        chart: { type: 'donut', height: 300, width: '100%' },
+        chart: {
+          type: 'donut',
+          height: 300,
+          width: '100%'
+        },
         labels: ['Berjalan', 'Idle'],
         colors: ['#f59e0b', '#cbd5e1'],
-        legend: { position: 'bottom', fontWeight: 600 },
-        plotOptions: { pie: { donut: { size: '70%', labels: { show: true, total: { show: true, label: 'Total Alat', formatter: () => @json($totalAlat) } } } } },
-        dataLabels: { enabled: false }
+        legend: {
+          position: 'bottom',
+          fontWeight: 600
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '70%',
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  label: 'Total Alat',
+                  formatter: () => @json($totalAlat)
+                }
+              }
+            }
+          }
+        },
+        dataLabels: {
+          enabled: false
+        }
       };
       new ApexCharts(document.querySelector("#tool-status-chart"), toolStatusOptions).render();
     });
