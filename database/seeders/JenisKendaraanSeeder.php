@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\JenisKendaraan;
 use Carbon\Carbon;
 
 class JenisKendaraanSeeder extends Seeder
@@ -13,90 +13,29 @@ class JenisKendaraanSeeder extends Seeder
      */
     public function run(): void
     {
-        $now = Carbon::now();
-
         $data = [
             // --- KATEGORI: KENDARAAN (10 Item) ---
-            [
-                'nama' => 'Blind Van',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Pick Up Bak',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Pick Up Box',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Truk Engkel (CDE)',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Truk CDD (Double)',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Truk Fuso',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Truk Tronton',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Truk Wingbox',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Trailer Flatbed',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Trailer Lowbed',
-                'kategori' => 'Kendaraan',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
+            ['nama' => 'Blind Van', 'kategori' => 'Kendaraan'],
+            ['nama' => 'Pick Up Bak', 'kategori' => 'Kendaraan'],
+            ['nama' => 'Pick Up Box', 'kategori' => 'Kendaraan'],
+            ['nama' => 'Truk Engkel (CDE)', 'kategori' => 'Kendaraan'],
+            ['nama' => 'Truk CDD (Double)', 'kategori' => 'Kendaraan'],
+            ['nama' => 'Truk Fuso', 'kategori' => 'Kendaraan'],
+            ['nama' => 'Truk Tronton', 'kategori' => 'Kendaraan'],
+            ['nama' => 'Truk Wingbox', 'kategori' => 'Kendaraan'],
+            ['nama' => 'Trailer Flatbed', 'kategori' => 'Kendaraan'],
+            ['nama' => 'Trailer Lowbed', 'kategori' => 'Kendaraan'],
 
             // --- KATEGORI: CONTAINER (5 Item) ---
-            [
-                'nama' => 'Container 20 Feet',
-                'kategori' => 'Container',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Container 40 Feet',
-                'kategori' => 'Container',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Container 40 Feet High Cube',
-                'kategori' => 'Container',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Container Reefer (Pendingin)',
-                'kategori' => 'Container',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
-            [
-                'nama' => 'Container Open Top',
-                'kategori' => 'Container',
-                'created_at' => $now, 'updated_at' => $now,
-            ],
+            ['nama' => 'Container 20 Feet', 'kategori' => 'Container'],
+            ['nama' => 'Container 40 Feet', 'kategori' => 'Container'],
+            ['nama' => 'Container 40 Feet High Cube', 'kategori' => 'Container'],
+            ['nama' => 'Container Reefer (Pendingin)', 'kategori' => 'Container'],
+            ['nama' => 'Container Open Top', 'kategori' => 'Container'],
         ];
 
-        // Masukkan data ke tabel
-        DB::table('jenis_kendaraan')->insert($data);
+        foreach ($data as $item) {
+            JenisKendaraan::create($item);
+        }
     }
 }

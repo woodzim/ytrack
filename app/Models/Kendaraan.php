@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Kendaraan extends Model
 {
+    use HasUuids;
+
     protected $table = 'kendaraan';
+
+    public $incrementing = false;
+    protected $keyType = 'string';
     
     protected $fillable = [
         'id_perusahaan',

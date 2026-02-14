@@ -23,7 +23,10 @@
             <div class="header-element mx-lg-0 mx-2">
                 <a aria-label="Hide Sidebar"
                     class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle"
-                    data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
+                    data-bs-toggle="sidebar" href="javascript:void(0);">
+                    <i class="ri-menu-line header-link-icon side-menu__icon-hamburger"></i>
+                    <i class="ri-close-line header-link-icon side-menu__icon-close"></i>
+                </a>
             </div>
             <!-- End::header-element -->
         </div>
@@ -206,6 +209,16 @@
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile.index') }}"><i
                                             class="ti ti-user-circle me-2 fs-18"></i>Profil</a>
+                                </li>
+                            </ul>
+                        </li>
+                        @endrole
+                        @role('perusahaan')
+                        <li>
+                            <ul class="list-unstyled mb-0 sub-list">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('perusahaan.profile.index') }}"><i
+                                            class="ti ti-building me-2 fs-18"></i>Informasi Profil Perusahaan</a>
                                 </li>
                             </ul>
                         </li>

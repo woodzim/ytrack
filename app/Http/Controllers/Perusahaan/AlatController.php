@@ -30,7 +30,7 @@ class AlatController extends Controller
         $query = Alat::where('id_perusahaan', $user->id_perusahaan);
 
         // Filter Pencarian (Serial Number)
-        if ($search) {
+        if ($request->filled('search')) {
             $query->where('id', 'like', "%{$search}%");
         }
 
@@ -51,7 +51,7 @@ class AlatController extends Controller
         });
 
         // Filter Status (jika user memilih filter di dropdown)
-        if ($status) {
+        if ($request->filled('status')) {
             $alatList = $alatList->where('status_pemakaian', $status == '1' ? 'digunakan' : 'tersedia');
         }
 

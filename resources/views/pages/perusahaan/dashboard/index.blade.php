@@ -119,8 +119,8 @@
   <!-- Start::page-header -->
   <div class="d-flex align-items-center justify-content-between mb-4 page-header-breadcrumb flex-wrap gap-2">
     <div>
-      <h1 class="page-title fw-bold fs-24 mb-1">Dashboard YA-Track</h1>
-      <p class="text-muted mb-0">Pantau armada Anda secara real-time dengan data akurat.</p>
+      <h1 class="page-title fw-bold fs-24 mb-1">Beranda YA-Track</h1>
+      <p class="text-muted mb-0">Pantau kendaraan Anda secara langsung dengan data akurat.</p>
     </div>
   </div>
   <!-- End::page-header -->
@@ -132,9 +132,13 @@
         style="cursor: pointer; border-left: 5px solid #dc3545 !important;"
         onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
         <i class="ri-error-warning-fill fs-24 me-3"></i>
-        <div>
+        <div class="flex-grow-1">
           <strong class="d-block text-uppercase fs-12">Peringatan Baterai Lemah!</strong>
           Terdapat <b id="alert-low-bat-count">{{ $lowBatCount }}</b> perangkat yang memerlukan pengisian daya segera.
+        </div>
+        <div class="ms-auto text-end d-none d-sm-block">
+          <span class="badge bg-white-transparent text-white border-0 py-2">Klik untuk Lihat <i
+              class="ri-arrow-right-line ms-1"></i></span>
         </div>
       </div>
     @endif
@@ -155,7 +159,7 @@
       <div class="card border-0 shadow-sm mb-4 custom-card-enhanced" id="daftar-alat-table">
         <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
           <div class="card-title mb-0 fw-bold fs-16 text-uppercase ls-1">
-            <i class="ri-list-check-2 me-2 text-primary"></i>Daftar Alat & Status Terkini
+            <i class="ri-list-check-2 me-2 text-primary"></i>Daftar Alat & Status Terbaru
           </div>
           <span class="badge bg-primary-transparent text-primary px-3 rounded-pill">{{ count($lokasiAlat) }} Alat
             Terdeteksi</span>
@@ -165,11 +169,11 @@
             <table class="table table-hover align-middle mb-0">
               <thead class="table-light text-uppercase fs-11 fw-bold text-muted">
                 <tr>
-                  <th class="ps-3 border-0">Nama Alat / Serial</th>
+                  <th class="ps-3 border-0">Nama Alat / No. Seri</th>
                   <th class="border-0">Kendaraan</th>
                   <th class="border-0">Baterai</th>
                   <th class="border-0">Status</th>
-                  <th class="border-0">Update</th>
+                  <th class="border-0">Pembaruan</th>
                   <th class="text-center border-0">Aksi</th>
                 </tr>
               </thead>
@@ -244,11 +248,53 @@
         </div>
       </div>
 
+      <!-- Charts Row 1 -->
+      <div class="row">
+        <div class="col-xl-8 mb-4">
+          <div class="chart-container custom-card-enhanced activity-chart-container h-100">
+            <div class="chart-title">
+              <i class="ri-pulse-line"></i> Grafik Aktivitas Pelacakan (7 Hari Terakhir)
+            </div>
+            <div id="activity-chart"></div>
+          </div>
+        </div>
+        <div class="col-xl-4 mb-4">
+          <div class="chart-container custom-card-enhanced h-100">
+            <div class="chart-title">
+              <i class="ri-battery-2-charge-line"></i> Status Baterai Alat
+            </div>
+            <div id="battery-chart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="row">
+        <div class="col-xl-6 mb-4">
+          <div class="chart-container custom-card-enhanced text-center">
+            <div class="chart-title d-flex justify-content-between align-items-center text-start">
+              <span><i class="ri-donut-chart-line"></i> Penggunaan Kendaraan</span>
+              <span class="badge bg-light text-muted fw-normal">Bergerak vs Berhenti</span>
+            </div>
+            <div id="status-chart" class="d-flex justify-content-center"></div>
+          </div>
+        </div>
+        <div class="col-xl-6 mb-4">
+          <div class="chart-container custom-card-enhanced text-center">
+            <div class="chart-title d-flex justify-content-between align-items-center text-start">
+              <span><i class="ri-cpu-line"></i> Penggunaan Alat</span>
+              <span class="badge bg-light text-muted fw-normal">Aktif vs Diam</span>
+            </div>
+            <div id="tool-status-chart" class="d-flex justify-content-center"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Aktivitas Terakhir -->
       <div class="card border-0 shadow-sm mb-4 custom-card-enhanced">
         <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
           <h6 class="card-title mb-0 fw-bold fs-16 text-uppercase ls-1">
-            <i class="ri-history-line me-2 text-primary"></i>Aktivitas Terakhir Perjalanan
+            <i class="ri-history-line me-2 text-primary"></i>Riwayat Perjalanan Terakhir
           </h6>
           <a href="{{ route('perusahaan.sesi-alat.index') }}"
             class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold">
@@ -277,13 +323,15 @@
                       </span>
                     </td>
                     <td class="text-end pe-4">
-                      <div class="text-dark fw-bold small">{{ $item->created_at?->translatedFormat('d M Y, H:i') }}</div>
+                      <div class="text-dark fw-bold small">{{ $item->created_at?->translatedFormat('d M Y, H:i') }}
+                      </div>
                       <div class="text-muted tiny">{{ $item->created_at?->diffForHumans() }}</div>
                     </td>
                   </tr>
                 @empty
                   <tr>
-                    <td colspan="4" class="text-center py-5 text-muted fst-italic">Belum ada aktivitas perjalanan yang
+                    <td colspan="4" class="text-center py-5 text-muted fst-italic">Belum ada aktivitas perjalanan
+                      yang
                       tercatat.</td>
                   </tr>
                 @endforelse
@@ -292,65 +340,39 @@
           </div>
         </div>
       </div>
-
-      <!-- Charts Row 1 -->
-      <div class="row">
-        <div class="col-xl-8 mb-4">
-          <div class="chart-container custom-card-enhanced activity-chart-container h-100">
-            <div class="chart-title">
-              <i class="ri-pulse-line"></i> Tren Aktivitas Pelacakan (7 Hari Terakhir)
-            </div>
-            <div id="activity-chart"></div>
-          </div>
-        </div>
-        <div class="col-xl-4 mb-4">
-          <div class="chart-container custom-card-enhanced h-100">
-            <div class="chart-title">
-              <i class="ri-battery-2-charge-line"></i> Distribusi Baterai Alat
-            </div>
-            <div id="battery-chart"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Charts Row 2 -->
-      <div class="row">
-        <div class="col-xl-6 mb-4">
-          <div class="chart-container custom-card-enhanced text-center">
-            <div class="chart-title d-flex justify-content-between align-items-center text-start">
-              <span><i class="ri-donut-chart-line"></i> Utilisasi Armada</span>
-              <span class="badge bg-light text-muted fw-normal">Berjalan vs Idle</span>
-            </div>
-            <div id="status-chart" class="d-flex justify-content-center"></div>
-          </div>
-        </div>
-        <div class="col-xl-6 mb-4">
-          <div class="chart-container custom-card-enhanced text-center">
-            <div class="chart-title d-flex justify-content-between align-items-center text-start">
-              <span><i class="ri-cpu-line"></i> Utilisasi Alat</span>
-              <span class="badge bg-light text-muted fw-normal">Berjalan vs Idle</span>
-            </div>
-            <div id="tool-status-chart" class="d-flex justify-content-center"></div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Right Sidebar Stats (Aside) -->
     <div class="col-lg-3 aside-stats-container">
-      <!-- BATERAI LEMAH (Sekarang Paling Atas) -->
-      <div class="card stats-card-enhanced border-0 {{ $lowBatCount > 0 ? 'border-start border-danger border-4' : '' }}"
-        id="card-low-bat"
-        @if ($lowBatCount > 0) style="cursor: pointer;" onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})" @endif>
+      @if ($lowBatCount > 0)
+        <!-- BATERAI LEMAH -->
+        <div class="card stats-card-enhanced border-0 border-start border-danger border-4" id="card-low-bat"
+          style="cursor: pointer;"
+          onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center">
+              <div class="icon-box bg-danger-transparent text-danger">
+                <i class="ri-battery-low-line fs-24"></i>
+              </div>
+              <div class="ms-3">
+                <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Baterai Lemah</h6>
+                <h3 class="fw-black mb-0 text-danger" id="count-low-bat">
+                  {{ $lowBatCount }}</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      @endif
+
+      <div class="card stats-card-enhanced border-0">
         <div class="card-body p-4">
           <div class="d-flex align-items-center">
-            <div class="icon-box bg-danger-transparent text-danger">
-              <i class="ri-battery-low-line fs-24"></i>
+            <div class="icon-box bg-success-transparent text-success">
+              <i class="ri-map-pin-line fs-24"></i>
             </div>
             <div class="ms-3">
-              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Baterai Lemah</h6>
-              <h3 class="fw-black mb-0 {{ $lowBatCount > 0 ? 'text-danger' : 'text-dark' }}" id="count-low-bat">
-                {{ $lowBatCount }}</h3>
+              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Sedang Bergerak</h6>
+              <h3 class="fw-black mb-0 text-success" id="count-moving-vehicles">{{ $kendaraanDalamPerjalanan }}</h3>
             </div>
           </div>
         </div>
@@ -373,20 +395,6 @@
       <div class="card stats-card-enhanced border-0">
         <div class="card-body p-4">
           <div class="d-flex align-items-center">
-            <div class="icon-box bg-info-transparent text-info">
-              <i class="ri-car-fill fs-24"></i>
-            </div>
-            <div class="ms-3">
-              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Kendaraan</h6>
-              <h3 class="fw-black mb-0 text-dark">{{ $totalKendaraan }}</h3>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card stats-card-enhanced border-0">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center">
             <div class="icon-box bg-warning-transparent text-warning">
               <i class="ri-cpu-line fs-24"></i>
             </div>
@@ -401,12 +409,12 @@
       <div class="card stats-card-enhanced border-0">
         <div class="card-body p-4">
           <div class="d-flex align-items-center">
-            <div class="icon-box bg-success-transparent text-success">
-              <i class="ri-map-pin-line fs-24"></i>
+            <div class="icon-box bg-info-transparent text-info">
+              <i class="ri-car-fill fs-24"></i>
             </div>
             <div class="ms-3">
-              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Sedang Bergerak</h6>
-              <h3 class="fw-black mb-0 text-success" id="count-moving-vehicles">{{ $kendaraanDalamPerjalanan }}</h3>
+              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Kendaraan</h6>
+              <h3 class="fw-black mb-0 text-dark">{{ $totalKendaraan }}</h3>
             </div>
           </div>
         </div>
@@ -418,7 +426,7 @@
             <i class="ri-information-fill text-primary fs-32"></i>
           </div>
           <h6 class="fw-bold mb-2 fs-14">Tips Pemantauan</h6>
-          <p class="text-muted small mb-0 fst-italic">Klik baris pada tabel "Daftar Alat & Status Terkini" untuk
+          <p class="text-muted small mb-0 fst-italic">Klik baris pada tabel "Daftar Alat & Status Terbaru" untuk
             memfokuskan peta ke lokasi unit tersebut secara otomatis.</p>
         </div>
       </div>
@@ -687,8 +695,12 @@
               }
 
               if (cardLowBat) {
-                if (currentCount > 0) cardLowBat.classList.add('border-start', 'border-danger', 'border-4');
-                else cardLowBat.classList.remove('border-start', 'border-danger', 'border-4');
+                if (currentCount > 0) {
+                  cardLowBat.style.display = 'block';
+                  cardLowBat.classList.add('border-start', 'border-danger', 'border-4');
+                } else {
+                  cardLowBat.style.display = 'none';
+                }
               }
 
               if (currentCount > 0) {
@@ -696,9 +708,12 @@
                   alertContainer.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-4 shadow-sm border-0" role="alert" style="cursor: pointer; border-left: 5px solid #dc3545 !important;"
                     onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
                     <i class="ri-error-warning-fill fs-24 me-3"></i>
-                    <div>
+                    <div class="flex-grow-1">
                       <strong class="d-block text-uppercase fs-12">Peringatan Baterai Lemah!</strong> 
                       Terdapat <b id="alert-low-bat-count">${currentCount}</b> perangkat yang memerlukan pengisian daya segera.
+                    </div>
+                    <div class="ms-auto text-end d-none d-sm-block">
+                      <span class="badge bg-white-transparent text-white border-0 py-2">Klik untuk Lihat <i class="ri-arrow-right-line ms-1"></i></span>
                     </div>
                   </div>`;
                 } else {
@@ -852,7 +867,7 @@
           height: 300,
           width: '100%'
         },
-        labels: ['Bergerak', 'Idle'],
+        labels: ['Bergerak', 'Berhenti'],
         colors: ['#3b82f6', '#94a3b8'],
         legend: {
           position: 'bottom',
@@ -886,7 +901,7 @@
           height: 300,
           width: '100%'
         },
-        labels: ['Berjalan', 'Idle'],
+        labels: ['Aktif', 'Diam'],
         colors: ['#f59e0b', '#cbd5e1'],
         legend: {
           position: 'bottom',

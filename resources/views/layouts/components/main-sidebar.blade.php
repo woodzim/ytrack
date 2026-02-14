@@ -27,15 +27,15 @@
 
           <li class="slide">
             <a href="{{ route('dashboard') }}" class="side-menu__item">
-              <i class="ri-dashboard-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
+              <i class="ri-dashboard-line side-menu__icon text-primary"></i>
               <span class="side-menu__label">Dashboard</span>
             </a>
           </li>
 
           <li class="slide has-sub">
             <a href="javascript:void(0);" class="side-menu__item">
-              <i class="ri-archive-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-              <span class="side-menu__label">Menu</span>
+              <i class="ri-archive-line side-menu__icon text-primary"></i>
+              <span class="side-menu__label">Menu Utama</span>
               <i class="ri-arrow-right-s-line side-menu__angle"></i>
             </a>
             <ul class="slide-menu child1">
@@ -45,7 +45,10 @@
               <li class="slide">
                 <a href="{{ route('sesi-alat.index') }}"
                   class="side-menu__item d-flex align-items-center justify-content-between">
-                  <div class="d-flex align-items-center">Perjalanan</div>
+                  <div class="d-flex align-items-center">
+                    <i class="ri-road-map-line me-2"></i>
+                    Perjalanan
+                  </div>
                   @php
                     $activeSesiAlatCount = \App\Models\SesiAlat::where('aktif', true)->count();
                   @endphp
@@ -57,6 +60,7 @@
 
               <li class="slide has-sub">
                 <a href="javascript:void(0);" class="side-menu__item">
+                  <i class="ri-building-line me-2"></i>
                   Aset & Mitra
                   <i class="ri-arrow-right-s-line side-menu__angle"></i>
                 </a>
@@ -64,7 +68,7 @@
                   <li class="slide">
                     <a href="{{ route('perusahaan.index') }}"
                       class="side-menu__item d-flex align-items-center justify-content-between">
-                      <span>Perusahaan</span>
+                      <span><i class="ri-community-line me-1"></i> Perusahaan</span>
                       @php $perusahaanCount = \App\Models\Perusahaan::count(); @endphp
                       @if ($perusahaanCount > 0)
                         <span class="badge bg-white text-primary ms-2">{{ $perusahaanCount }}</span>
@@ -74,7 +78,7 @@
                   <li class="slide">
                     <a href="{{ route('alat.index') }}"
                       class="side-menu__item d-flex align-items-center justify-content-between">
-                      <span>Alat</span>
+                      <span><i class="ri-rfid-line me-1"></i> Alat</span>
                       @php $alatCount = \App\Models\Alat::count(); @endphp
                       @if ($alatCount > 0)
                         <span class="badge bg-white text-primary ms-2">{{ $alatCount }}</span>
@@ -86,6 +90,7 @@
 
               <li class="slide has-sub">
                 <a href="javascript:void(0);" class="side-menu__item">
+                  <i class="ri-car-line me-2"></i>
                   Kendaraan
                   <i class="ri-arrow-right-s-line side-menu__angle"></i>
                 </a>
@@ -93,7 +98,7 @@
                   <li class="slide">
                     <a href="{{ route('kendaraan.index') }}"
                       class="side-menu__item d-flex align-items-center justify-content-between">
-                      <span>Kendaraan</span>
+                      <span><i class="ri-steering-2-line me-1"></i> Daftar Kendaraan</span>
                       @php $kendaraanCount = \App\Models\Kendaraan::count(); @endphp
                       @if ($kendaraanCount > 0)
                         <span class="badge bg-white text-primary ms-2">{{ $kendaraanCount }}</span>
@@ -103,7 +108,7 @@
                   <li class="slide">
                     <a href="{{ route('jenis-kendaraan.index') }}"
                       class="side-menu__item d-flex align-items-center justify-content-between">
-                      <span>Jenis Kendaraan</span>
+                      <span><i class="ri-truck-line me-1"></i> Jenis Kendaraan</span>
                       @php $jenisKendaraan = \App\Models\JenisKendaraan::count(); @endphp
                       @if ($jenisKendaraan > 0)
                         <span class="badge bg-white text-primary ms-2">{{ $jenisKendaraan }}</span>
@@ -116,7 +121,10 @@
               <li class="slide">
                 <a href="{{ route('tracking-tidak-lengkap.index') }}"
                   class="side-menu__item d-flex align-items-center justify-content-between">
-                  <div class="d-flex align-items-center">Error Tracking</div>
+                  <div class="d-flex align-items-center">
+                    <i class="ri-error-warning-line me-2 text-danger"></i>
+                    Error Tracking
+                  </div>
                   @php $errorTracking = \App\Models\RiwayatPerjalanan::uncompleted()->count(); @endphp
                   @if ($errorTracking > 0)
                     <span class="badge bg-white text-primary ms-2">{{ $errorTracking }}</span>
@@ -128,15 +136,15 @@
 
           <li class="slide">
             <a href="{{ route('users.index') }}" class="side-menu__item">
-              <i class="ri-user-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-              <span class="side-menu__label">Pengguna</span>
+              <i class="ri-user-line side-menu__icon text-primary"></i>
+              <span class="side-menu__label">Pengaturan Pengguna</span>
             </a>
           </li>
 
           <li class="slide">
             <a href="{{ route('logs.index') }}" class="side-menu__item">
-              <i class="ri-file-list-3-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-              <span class="side-menu__label">Log Aktivitas</span>
+              <i class="ri-file-list-3-line side-menu__icon text-primary"></i>
+              <span class="side-menu__label">Log Aktivitas Sistem</span>
             </a>
           </li>
         @endrole
@@ -150,38 +158,29 @@
 
           <li class="slide">
             <a href="{{ route('perusahaan.dashboard.index') }}" class="side-menu__item">
-              <i class="ri-dashboard-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-              <span class="side-menu__label">Dashboard</span>
+              <i class="ri-dashboard-line side-menu__icon text-primary"></i>
+              <span class="side-menu__label">Dashboard Monitoring</span>
             </a>
           </li>
 
           <li class="slide">
             <a href="{{ route('perusahaan.kendaraan.index') }}" class="side-menu__item">
-              <i class="ri-car-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-              <span class="side-menu__label">Kendaraan</span>
+              <i class="ri-car-line side-menu__icon text-primary"></i>
+              <span class="side-menu__label">Manajemen Kendaraan</span>
             </a>
           </li>
 
-          {{-- TAMBAHAN MENU ALAT DISINI --}}
           <li class="slide">
             <a href="{{ route('perusahaan.alat.index') }}" class="side-menu__item">
-              <i class="ri-rfid-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-              <span class="side-menu__label">Alat GPS</span>
+              <i class="ri-rfid-line side-menu__icon text-primary"></i>
+              <span class="side-menu__label">Perangkat Alat GPS</span>
             </a>
           </li>
-          {{-- END TAMBAHAN --}}
 
           <li class="slide">
             <a href="{{ route('perusahaan.sesi-alat.index') }}" class="side-menu__item">
-              <i class="ri-map-pin-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-              <span class="side-menu__label">Perjalanan</span>
-            </a>
-          </li>
-
-          <li class="slide">
-            <a href="{{ route('perusahaan.profile.index') }}" class="side-menu__item">
-              <i class="ri-user-settings-line ri-2x pe-2 me-2 me-md-0 text-primary"></i>
-              <span class="side-menu__label">Profil Perusahaan</span>
+              <i class="ri-map-pin-line side-menu__icon text-primary"></i>
+              <span class="side-menu__label">Riwayat Perjalanan</span>
             </a>
           </li>
         @endrole

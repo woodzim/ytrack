@@ -96,8 +96,12 @@ class PerusahaanSeeder extends Seeder
         // Hapus data lama jika perlu, atau langsung insert
         // DB::table('perusahaan')->truncate(); // Hati-hati, ini menghapus semua data
         
-        if (DB::table('perusahaan')->count() == 0) {
-            DB::table('perusahaan')->insert($data);
+        if (Perusahaan::count() == 0) {
+            foreach ($data as $perusahaanData) {
+                // Hapus created_at/updated_at dari array karena Eloquent menangani otomatis
+                unset($perusahaanData['created_at'], $perusahaanData['updated_at']);
+                Perusahaan::create($perusahaanData);
+            }
         }
 
         // Buat User untuk setiap Perusahaan menggunakan firstOrCreate

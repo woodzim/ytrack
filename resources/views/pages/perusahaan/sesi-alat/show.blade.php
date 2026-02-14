@@ -117,10 +117,6 @@
           <div class="row">
             <div class="col-md-6">
               <div class="detail-group">
-                <label class="detail-label">ID Sesi</label>
-                <span class="detail-value">{{ $sesiAlat->id }}</span>
-              </div>
-              <div class="detail-group">
                 <label class="detail-label">Nama Sesi</label>
                 <span class="detail-value">{{ $sesiAlat->nama ?? '-' }}</span>
               </div>
@@ -230,7 +226,7 @@
       console.warn('Echo is not defined. Realtime updates might not work.');
     }
 
-    window.SESI_ALAT_ID = {{ $sesiAlat->id }};
+    window.SESI_ALAT_ID = "{{ $sesiAlat->id }}";
     
     // Konversi Data PHP ke JS
     const rawRiwayatData = @json($riwayatPerjalanan);
@@ -431,6 +427,17 @@
           selectedMarker.on('popupclose', function() {
             if (selectedMarker) { map.removeLayer(selectedMarker); selectedMarker = null; }
             document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+          });
+
+          // SCROLL KE PETA (Dengan offset navbar)
+          const mapEl = document.getElementById('map-container');
+          const navbarHeight = 80; // Estimasi tinggi navbar + margin
+          const elementPosition = mapEl.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
           });
         }
       });

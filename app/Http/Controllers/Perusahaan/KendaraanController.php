@@ -26,7 +26,7 @@ class KendaraanController extends Controller
                 $q->where('aktif', true);
             }]);
 
-        if ($search) {
+        if ($request->filled('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('plat', 'like', '%' . $search . '%')
                     ->orWhere('nama', 'like', '%' . $search . '%');

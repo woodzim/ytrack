@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="transparent"
-  data-width="fullwidth" data-menu-styles="transparent" data-page-style="flat" data-toggled="close"
-  data-vertical-style="doublemenu" data-toggled="double-menu-open">
+  data-width="fullwidth" data-menu-styles="transparent" data-page-style="flat" data-vertical-style="overlay">
 
 <head>
 
@@ -92,6 +91,9 @@
 
   <!-- Sticky JS -->
   <script src="{{ asset('build/assets/sticky.js') }}"></script>
+
+  <!-- Defaultmenu JS -->
+  @vite('resources/assets/js/defaultmenu.js')
 
   <!-- Custom-Switcher JS -->
   @vite('resources/assets/js/custom-switcher.js')

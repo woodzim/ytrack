@@ -9,17 +9,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('activity_logs', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             // Siapa yang melakukan (Admin/User)
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->uuid('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->nullOnDelete();
             
             // Jenis Aksi: CREATE, UPDATE, DELETE, LOGIN, CHANGE_PASSWORD, REGISTER
             $table->string('action'); 
             
             // Target Model: Kendaraan, Alat, SesiAlat, atau User
             $table->string('subject_type')->nullable(); 
-            // ID dari target tersebut
-            $table->unsignedBigInteger('subject_id')->nullable(); 
+            // ID dari target tersebut (Bisa UUID, String Alat, atau Int)
+            $table->string('subject_id')->nullable(); 
             
             // Deskripsi detail (misal: "Mengubah plat nomor dari B 1234 ke B 5678")
             $table->text('description')->nullable();
