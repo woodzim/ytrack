@@ -77,20 +77,34 @@
                                             <td data-label="Dibuat">
                                                 <small class="text-muted">{{ $item->created_at->format('d M Y') }}</small>
                                             </td>
-                                            <td data-label="Aksi" class="table-action-btns text-center">
-                                                <a href="{{ route('kendaraan.show', $item->id) }}" class="btn btn-sm btn-info btn-wave" title="Lihat">
-                                                    <i class="ri-eye-line"></i>
-                                                </a>
-                                                <a href="{{ route('kendaraan.edit', $item->id) }}" class="btn btn-sm btn-warning btn-wave" title="Edit">
-                                                    <i class="ri-edit-line"></i>
-                                                </a>
-                                                <form action="{{ route('kendaraan.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Anda yakin ingin menghapus kendaraan ini?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-primary btn-wave" title="Hapus">
-                                                        <i class="ri-delete-bin-line"></i>
+                                            <td data-label="Aksi" class="text-center">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                                                        <i class="ri-more-2-fill"></i>
                                                     </button>
-                                                </form>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('kendaraan.show', $item->id) }}">
+                                                                <i class="ri-eye-line me-2 align-middle text-info"></i>Lihat Detail
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="{{ route('kendaraan.edit', $item->id) }}">
+                                                                <i class="ri-edit-line me-2 align-middle text-warning"></i>Edit Data
+                                                            </a>
+                                                        </li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <form action="{{ route('kendaraan.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Anda yakin ingin menghapus kendaraan ini?');">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="dropdown-item text-danger">
+                                                                    <i class="ri-delete-bin-line me-2 align-middle"></i>Hapus
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach

@@ -35,6 +35,10 @@ class KendaraanController extends Controller
 
         $kendaraan = $query->latest()->paginate(10)->withQueryString();
 
+        if ($request->ajax()) {
+            return view('pages.perusahaan.kendaraan.table', compact('kendaraan', 'search'))->render();
+        }
+
         return view('pages.perusahaan.kendaraan.index', compact('kendaraan', 'search'));
     }
 

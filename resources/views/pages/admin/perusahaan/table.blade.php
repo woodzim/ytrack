@@ -23,7 +23,7 @@
             @foreach ($perusahaan as $item)
               <tr>
                 <td data-label="No">
-                  <span class="badge bg-light text-dark">{{ $item->id }}</span>
+                  <span class="badge bg-light text-dark">{{ $perusahaan->firstItem() + $loop->index }}</span>
                 </td>
                 <td data-label="Nama Perusahaan">
                   <strong>{{ $item->nama }}</strong>
