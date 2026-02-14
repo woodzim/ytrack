@@ -24,13 +24,13 @@ class UsersController extends Controller
         $users = User::query();
 
         // Apply search filter
-        if ($search) {
+        if ($request->filled('search')) {
             $users->where('name', 'like', '%' . $search . '%')
                   ->orWhere('email', 'like', '%' . $search . '%');
         }
 
         // Apply role filter
-        if ($filter_role !== '') {
+        if ($request->filled('role')) {
             $users->whereHas('roles', function ($q) use ($filter_role) {
                 $q->where('name', $filter_role);
             });

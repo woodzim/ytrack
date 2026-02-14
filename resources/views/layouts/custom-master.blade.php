@@ -28,6 +28,7 @@
 
         <!-- APP CSS & APP SCSS -->
         @vite(['resources/sass/app.scss'])
+        @vite('resources/js/app.js')
 
         @yield('styles')
 

@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('sesi_alat', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('id_alat')->nullable();
-            $table->unsignedBigInteger('id_kendaraan')->nullable();
-            $table->unsignedBigInteger('id_perusahaan')->nullable();
+            $table->uuid('id_kendaraan')->nullable();
+            $table->uuid('id_perusahaan')->nullable();
             $table->string('nama')->nullable();
             $table->boolean('aktif')->default(true);
             $table->timestamps();

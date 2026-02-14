@@ -3,10 +3,16 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class SesiAlat extends Model
 {
+    use HasUuids;
+
     protected $table = 'sesi_alat';
+
+    public $incrementing = false;
+    protected $keyType = 'string';
     
     protected $fillable = [
         'id_alat',

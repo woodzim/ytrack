@@ -1,5 +1,8 @@
 @extends('layouts.master')
 
+@section('styles')
+@endsection
+
 @section('content')
   <div class="page-header-section d-flex align-items-center justify-content-between">
     <div>
@@ -12,204 +15,156 @@
       </a>
     </div>
   </div>
+
   <div class="row">
     <div class="col-12">
       <div class="card mb-3">
         <div class="card-body">
-          <form action="{{ route('sesi-alat.index') }}" method="GET" class="d-flex gap-2 flex-wrap align-items-end">
-            <div class="grow" style="min-width: 200px;">
+          <form action="{{ route('sesi-alat.index') }}" method="GET" id="filterForm" class="d-flex gap-2 flex-wrap align-items-end">
+            <div class="grow" style="min-width: 250px;">
               <label for="searchInput" class="form-label mb-2">Cari Sesi</label>
               <input type="text" id="searchInput" name="search" class="form-control"
-                placeholder="Cari alat atau kendaraan..." value="{{ $search }}">
+                placeholder="Cari alat atau kendaraan..." value="{{ $search }}" autocomplete="off" style="height: 38px;">
             </div>
-            <div>
-              <label for="statusFilter" class="form-label mb-2">Status</label>
-              <select id="statusFilter" name="status" class="form-select">
-                <option value="">Semua</option>
-                <option value="1" {{ $filter_status === '1' ? 'selected' : '' }}>Aktif</option>
-                <option value="0" {{ $filter_status === '0' ? 'selected' : '' }}>Nonaktif</option>
-              </select>
+
+            <div style="min-width: 200px;">
+              <label class="form-label mb-2">Perusahaan</label>
+              <input type="hidden" name="id_perusahaan" id="id_perusahaan_input" value="{{ $filter_perusahaan }}">
+              <div class="dropdown">
+                <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="id_perusahaanDropdown">
+                  <span class="text-truncate">
+                    @php $selectedP = $perusahaan->firstWhere('id', $filter_perusahaan); @endphp
+                    {{ $selectedP ? $selectedP->nama : 'Semua Perusahaan' }}
+                  </span>
+                </button>
+                <ul class="dropdown-menu shadow-sm" style="max-height: 300px; overflow-y: auto;">
+                  <li><a class="dropdown-item" href="#" onclick="selectFilter('id_perusahaan', '', 'Semua Perusahaan')">Semua Perusahaan</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  @foreach ($perusahaan as $p)
+                    <li><a class="dropdown-item" href="#" onclick="selectFilter('id_perusahaan', '{{ $p->id }}', '{{ $p->nama }}')">{{ $p->nama }}</a></li>
+                  @endforeach
+                </ul>
+              </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-wave">
-              <i class="ri-search-line me-2"></i>Cari
-            </button>
-            @if ($search || $filter_status !== '')
-              <a href="{{ route('sesi-alat.index') }}" class="btn btn-outline-secondary btn-wave">
+
+            <div style="min-width: 160px;">
+              <label class="form-label mb-2">Status</label>
+              <input type="hidden" name="status" id="status_input" value="{{ $filter_status }}">
+              <div class="dropdown">
+                <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown">
+                  <span>
+                    @if($filter_status === '1') Aktif
+                    @elseif($filter_status === '0') Nonaktif
+                    @else Semua Status @endif
+                  </span>
+                </button>
+                <ul class="dropdown-menu shadow-sm">
+                  <li><a class="dropdown-item" href="#" onclick="selectFilter('status', '', 'Semua Status')">Semua Status</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="selectFilter('status', '1', 'Aktif')">Aktif</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="selectFilter('status', '0', 'Nonaktif')">Nonaktif</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <div id="reset-container" class="{{ $search || $filter_status !== '' || $filter_perusahaan !== '' ? '' : 'd-none' }}">
+              <a href="{{ route('sesi-alat.index') }}" class="btn btn-outline-secondary btn-wave d-flex align-items-center" id="resetBtn" style="height: 38px;">
                 <i class="ri-close-line me-2"></i>Reset
               </a>
-            @endif
+            </div>
           </form>
         </div>
       </div>
 
-      <div class="card table-wrapper">
-        <div class="card-header border-bottom-0 bg-white py-3">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Daftar Perjalanan ({{ $sesiAlat->total() }})</h5>
-          </div>
-        </div>
-        <div class="card-body p-0">
-          @if ($sesiAlat->count() > 0)
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th style="width: 10%;">Perusahaan</th>
-                    <th style="width: 15%;">Kendaraan</th>
-                    <th style="width: 12%;">Alat</th>
-                    <th style="width: 15%;">Nama Sesi</th>
-                    <th style="width: 12%;">Status</th>
-                    <th style="width: 12%;">Status Battery</th>
-                    <th style="width: 16%;">Waktu Track Terakhir</th>
-                    <th style="width: 15%;" class="text-center">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach ($sesiAlat as $item)
-                    <tr>
-                      <td data-label="Perusahaan">
-                        <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan?->nama : '-' }}</small>
-                      </td>
-                      <td data-label="Kendaraan">
-                        <small class="text-muted">{{ $item->kendaraan ? $item->kendaraan?->nama : '-' }}</small>
-                      </td>
-                      <td data-label="Alat">
-                        <span class="badge bg-light text-dark">{{ $item->alat ? $item->alat?->id : '-' }}</span>
-                      </td>
-                      <td data-label="Nama Sesi">
-                        <span class="fw-medium {{ empty($item->nama) ? 'fst-italic text-muted' : '' }}">
-                          {{ $item->nama ?? '(Sesi Tanpa Nama)' }}
-                        </span>
-                      </td>
-                      <td data-label="Status">
-                        <span class="status-badge"
-                          style="background-color: {{ $item->aktif ? '#10b981' : '#6b7280' }}; color: white;">
-                          {{ $item->aktif ? 'Aktif' : 'Nonaktif' }}
-                        </span>
-                      </td>
-                      <td data-label="Status Battery">
-                        @php
-                          $lastRiwayat = $item->riwayatPerjalanan?->sortByDesc('created_at')->first();
-                          $batLevel = (int) ($lastRiwayat?->battery ?? 0);
-                          $batColor = 'bg-danger';
-                          if ($batLevel > 70) {
-                              $batColor = 'bg-success';
-                          } elseif ($batLevel >= 30) {
-                              $batColor = 'bg-warning';
-                          }
-                        @endphp
-                        @if ($lastRiwayat && $lastRiwayat->battery !== null)
-                          <div class="d-flex align-items-center" style="min-width: 80px;">
-                            <div class="progress grow" style="height: 6px; background-color: #e9ecef;">
-                              <div class="progress-bar {{ $batColor }}" role="progressbar"
-                                style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
-                                aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <span class="ms-2" style="font-size: 11px; font-weight: 600;">{{ $batLevel }}%</span>
-                          </div>
-                        @else
-                          <small class="text-muted">-</small>
-                        @endif
-                      </td>
-
-                      {{-- Bagian Tanggal Diubah Disini --}}
-                      <td data-label="Tanggal Track">
-                        @if ($item->riwayatPerjalanan?->isEmpty())
-                          <small class="text-muted">Belum ada track</small>
-                        @else
-                          {{-- Mengambil max date dan mengubah ke ISO String agar dibaca JS --}}
-                          <small class="text-muted local-date">
-                            {{ \Carbon\Carbon::parse($item->riwayatPerjalanan()->max('created_at'))->toIso8601String() }}
-                          </small>
-                        @endif
-                      </td>
-
-                      <td data-label="Aksi" class="table-action-btns text-end text-md-start">
-                        <div class="mb-2">
-                          <a href="{{ route('sesi-alat.show', $item->id) }}" class="w-100 btn btn-sm btn-info btn-wave"
-                            title="Lihat">
-                            <i class="ri-eye-line"></i>
-                            Lihat Tracking
-                          </a>
-                        </div>
-                        <div class="mb-2">
-                          <form action="{{ route('sesi-alat.toggle', $item->id) }}" method="POST"
-                            style="display: inline;">
-                            @csrf
-                            @method('PUT')
-                            <button type="submit"
-                              class="w-100 btn btn-sm {{ $item->aktif ? 'btn-warning' : 'btn-success' }} btn-wave"
-                              title="{{ $item->aktif ? 'Nonaktifkan' : 'Aktifkan' }}">
-                              <i class="ri-{{ $item->aktif ? 'pause' : 'play' }}-line"></i>
-                              {{ $item->aktif ? 'Nonaktifkan' : 'Aktifkan' }}
-                            </button>
-                          </form>
-                        </div>
-                        <div>
-                          <form action="{{ route('sesi-alat.destroy', $item->id) }}" method="POST"
-                            style="display: inline;" onsubmit="return confirm('Hapus sesi ini?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="w-100 btn btn-sm btn-primary btn-wave" title="Hapus">
-                              <i class="ri-delete-bin-line"></i>
-                              Hapus
-                            </button>
-                          </form>
-                        </div>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-          @else
-            <div class="p-4 text-center">
-              <div class="mb-3">
-                <i class="ri-bluetooth-connect-line" style="font-size: 48px; color: #ddd;"></i>
-              </div>
-              <h5 class="text-muted mb-2">Tidak ada perjalanan</h5>
-              <p class="text-muted mb-3">Mulai dengan membuat perjalanan baru</p>
-              <a href="{{ route('sesi-alat.create') }}" class="btn btn-primary btn-wave">
-                <i class="ri-add-line me-2"></i>Buat Sesi
-              </a>
-            </div>
-          @endif
-        </div>
-
-        @if ($sesiAlat->hasPages())
-          <div class="card-footer bg-white border-top">
-            <nav aria-label="Page navigation">
-              {{ $sesiAlat->links() }}
-            </nav>
-          </div>
-        @endif
+      <div id="table-container">
+        @include('pages.admin.sesi-alat.table')
       </div>
     </div>
   </div>
 @endsection
 
 @section('scripts')
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const dateElements = document.querySelectorAll('.local-date');
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const filterForm = document.getElementById('filterForm');
+    const tableContainer = document.getElementById('table-container');
+    const resetContainer = document.getElementById('reset-container');
+    let debounceTimer;
 
-      dateElements.forEach(el => {
-        const rawDate = el.textContent.trim();
-        if (rawDate) {
-          const date = new Date(rawDate);
+    const fetchTable = (url) => {
+        tableContainer.style.opacity = '0.5';
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(res => res.text())
+        .then(html => {
+            tableContainer.innerHTML = html;
+            tableContainer.style.opacity = '1';
+            formatDates();
+            if (typeof Waves !== 'undefined') Waves.init();
+        });
+    };
 
-          // Format: 31 Des 2024, 14:30 (Termasuk Jam karena ini tracking)
-          const formatted = new Intl.DateTimeFormat('id-ID', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          }).format(date);
+    const triggerFetch = () => {
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams(formData).toString();
+        const url = `${filterForm.action}?${params}`;
+        
+        const search = formData.get('search');
+        const id_perusahaan = formData.get('id_perusahaan');
+        const status = formData.get('status');
 
-          el.textContent = formatted;
+        if ((search && search.trim() !== "") || id_perusahaan !== "" || status !== "") {
+            resetContainer.classList.remove('d-none');
+        } else {
+            resetContainer.classList.add('d-none');
         }
-      });
+        
+        window.history.pushState({}, '', url);
+        fetchTable(url);
+    };
+
+    window.selectFilter = function(type, value, label) {
+        document.getElementById(type + '_input').value = value;
+        const btn = document.getElementById(type + 'Dropdown');
+        btn.querySelector('span').textContent = label;
+        triggerFetch();
+    };
+
+    document.getElementById('searchInput').addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(triggerFetch, 500);
     });
-  </script>
+
+    tableContainer.addEventListener('click', function(e) {
+        const link = e.target.closest('.pagination a');
+        if (link) {
+            e.preventDefault();
+            window.history.pushState({}, '', link.href);
+            fetchTable(link.href);
+            tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+
+    function formatDates() {
+        document.querySelectorAll('.local-date').forEach(el => {
+            const date = new Date(el.textContent.trim());
+            el.textContent = new Intl.DateTimeFormat('id-ID', {
+                day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            }).format(date);
+        });
+    }
+
+    document.getElementById('resetBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('searchInput').value = '';
+        document.getElementById('id_perusahaan_input').value = '';
+        document.getElementById('status_input').value = '';
+        document.getElementById('id_perusahaanDropdown').querySelector('span').textContent = 'Semua Perusahaan';
+        document.getElementById('statusDropdown').querySelector('span').textContent = 'Semua Status';
+        resetContainer.classList.add('d-none');
+        window.history.pushState({}, '', this.href);
+        fetchTable(this.href);
+    });
+
+    formatDates();
+});
+</script>
 @endsection

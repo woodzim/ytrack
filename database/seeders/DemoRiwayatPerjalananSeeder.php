@@ -10,6 +10,7 @@ use App\Models\RiwayatPerjalanan;
 use App\Models\SesiAlat;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class DemoRiwayatPerjalananSeeder extends Seeder
 {
@@ -70,6 +71,7 @@ class DemoRiwayatPerjalananSeeder extends Seeder
             $timestamp = $now->copy()->addSeconds($i * 10);
             
             $points[] = [
+                'id' => (string) Str::uuid(),
                 'id_sesi_alat' => $sesiAlat->id,
                 'id_perusahaan' => $perusahaan->id,
                 'id_kendaraan' => $kendaraan->id,

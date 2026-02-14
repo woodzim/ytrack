@@ -156,34 +156,43 @@
                       </td>
 
                       <td class="text-center">
-                        <div class="btn-group btn-group-sm">
-                          {{-- Tombol Lihat --}}
-                          <a href="{{ route('perusahaan.sesi-alat.show', $item->id) }}" class="btn btn-light"
-                            data-bs-toggle="tooltip" title="Lihat Tracking">
-                            <i class="ri-eye-line text-info"></i>
-                          </a>
-
-                          {{-- Tombol Toggle --}}
-                          <form action="{{ route('perusahaan.sesi-alat.toggle', $item->id) }}" method="POST"
-                            onsubmit="return confirm('Ubah status sesi ini?')">
-                            @csrf
-                            @method('PUT')
-                            <button type="submit" class="btn btn-light" data-bs-toggle="tooltip"
-                              title="{{ $item->aktif ? 'Matikan Sesi' : 'Aktifkan Sesi' }}">
-                              <i
-                                class="ri-{{ $item->aktif ? 'stop-circle-line text-warning' : 'play-circle-line text-success' }}"></i>
-                            </button>
-                          </form>
-
-                          {{-- Tombol Hapus --}}
-                          <form action="{{ route('perusahaan.sesi-alat.destroy', $item->id) }}" method="POST"
-                            onsubmit="return confirm('Hapus sesi ini? Data tracking mungkin akan hilang.')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-light" data-bs-toggle="tooltip" title="Hapus">
-                              <i class="ri-delete-bin-line text-danger"></i>
-                            </button>
-                          </form>
+                        <div class="dropdown">
+                          <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                            <i class="ri-more-2-fill"></i>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                              <a class="dropdown-item" href="{{ route('perusahaan.sesi-alat.show', $item->id) }}">
+                                <i class="ri-eye-line me-2 align-middle text-info"></i>Lihat Tracking
+                              </a>
+                            </li>
+                            <li>
+                              <form action="{{ route('perusahaan.sesi-alat.toggle', $item->id) }}" method="POST"
+                                onsubmit="return confirm('Ubah status sesi ini?')">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="dropdown-item">
+                                  <i
+                                    class="ri-{{ $item->aktif ? 'stop-circle-line text-warning' : 'play-circle-line text-success' }} me-2 align-middle"></i>
+                                  {{ $item->aktif ? 'Matikan Sesi' : 'Aktifkan Sesi' }}
+                                </button>
+                              </form>
+                            </li>
+                            <li>
+                              <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                              <form action="{{ route('perusahaan.sesi-alat.destroy', $item->id) }}" method="POST"
+                                onsubmit="return confirm('Hapus sesi ini? Data tracking mungkin akan hilang.')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="dropdown-item text-danger">
+                                  <i class="ri-delete-bin-line me-2 align-middle"></i>Hapus
+                                </button>
+                              </form>
+                            </li>
+                          </ul>
                         </div>
                       </td>
                     </tr>

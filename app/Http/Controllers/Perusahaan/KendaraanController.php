@@ -26,7 +26,7 @@ class KendaraanController extends Controller
                 $q->where('aktif', true);
             }]);
 
-        if ($search) {
+        if ($request->filled('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('plat', 'like', '%' . $search . '%')
                     ->orWhere('nama', 'like', '%' . $search . '%');
@@ -34,6 +34,10 @@ class KendaraanController extends Controller
         }
 
         $kendaraan = $query->latest()->paginate(10)->withQueryString();
+
+        if ($request->ajax()) {
+            return view('pages.perusahaan.kendaraan.table', compact('kendaraan', 'search'))->render();
+        }
 
         return view('pages.perusahaan.kendaraan.index', compact('kendaraan', 'search'));
     }

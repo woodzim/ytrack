@@ -26,17 +26,20 @@ class SesiAlatController extends Controller
         $sesiAlat = SesiAlat::with('alat', 'kendaraan', 'perusahaan', 'riwayatPerjalanan')
             ->where('id_perusahaan', $idPerusahaan);
 
-        if ($search) {
-            $sesiAlat->whereHas('alat', function ($q) use ($search) {
-                $q->where('id', 'like', '%' . $search . '%');
-            })->orWhereHas('kendaraan', function ($q) use ($search) {
-                $q->where('nama', 'like', '%' . $search . '%');
-            })->orWhereHas('perusahaan', function ($q) use ($search) {
-                $q->where('nama', 'like', '%' . $search . '%');
+        if ($request->filled('search')) {
+            $sesiAlat->where(function ($query) use ($search) {
+                $query->where('id', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%")
+                    ->orWhereHas('alat', function ($q) use ($search) {
+                        $q->where('id', 'like', '%' . $search . '%');
+                    })->orWhereHas('kendaraan', function ($q) use ($search) {
+                        $q->where('nama', 'like', '%' . $search . '%')
+                            ->orWhere('plat', 'like', '%' . $search . '%');
+                    });
             });
         }
 
-        if ($filter_status !== '') {
+        if ($request->filled('status')) {
             $sesiAlat->where('aktif', (bool)$filter_status);
         }
 

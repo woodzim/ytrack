@@ -23,6 +23,10 @@ class PerusahaanController extends Controller
         }
         
         $perusahaan = $perusahaan->paginate(10)->appends(request()->query());
+
+        if ($request->ajax()) {
+            return view('pages.admin.perusahaan.table', compact('perusahaan', 'search'))->render();
+        }
         
         return view('pages.admin.perusahaan.index', compact('perusahaan', 'search'));
     }

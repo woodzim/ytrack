@@ -76,44 +76,14 @@
       </div>
     </div>
 
-    {{-- Kolom Kanan: Statistik & Daftar Aset (Biarkan Saja, tidak ada perubahan) --}}
+    {{-- Kolom Kanan: Statistik & Daftar Aset (Dihapus sesuai permintaan) --}}
     <div class="col-12 col-lg-4">
-      <div class="card card-detail mb-4">
-        <div class="card-body">
-          <div class="row">
-            <div class="col-12">
-              <div class="text-center">
-                <h3 class="mb-1 text-primary">{{ $perusahaan->kendaraan->count() }}</h3>
-                <p class="text-muted small mb-0">Total Kendaraan</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div class="card card-detail">
         <div class="card-header border-bottom bg-white">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0"><i class="ri-truck-line me-2"></i>Daftar Kendaraan</h5>
-          </div>
+          <h5 class="card-title mb-0"><i class="ri-history-line me-2"></i>Aktivitas Terakhir</h5>
         </div>
-        <div class="card-body p-0">
-          @if ($perusahaan->kendaraan->count() > 0)
-            <ul class="list-group list-group-flush">
-              @foreach ($perusahaan->kendaraan as $kendaraan)
-                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
-                  <div>
-                    <h6 class="mb-1 fw-bold">{{ $kendaraan->nama }}</h6>
-                    <span class="badge bg-light text-dark border">{{ $kendaraan->plat }}</span>
-                  </div>
-                </li>
-              @endforeach
-            </ul>
-          @else
-            <div class="p-4 text-center">
-              <p class="text-muted mb-0">Belum ada kendaraan yang terdaftar.</p>
-            </div>
-          @endif
+        <div class="card-body">
+            <p class="text-muted small mb-0">Fitur aktivitas akan segera hadir.</p>
         </div>
       </div>
     </div>

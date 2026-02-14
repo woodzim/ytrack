@@ -63,7 +63,7 @@
                                         <th style="width: 12%;">Role</th>
                                         <th style="width: 14%;">Status</th>
                                         <th style="width: 16%;">Tanggal Daftar</th>
-                                        <th style="width: 22%;">Aksi</th>
+                                        <th style="width: 22%;" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -102,30 +102,43 @@
                                                     {{ $user->created_at?->format('d-m-Y') ?? '-' }}
                                                 </small>
                                             </td>
-                                            <td data-label="Aksi">
+                                            <td data-label="Aksi" class="text-center">
                                                 @if ($user->hasRole('perusahaan'))
-                                                    <div class="d-flex gap-2" role="group">
-                                                        @if (!$user->is_validated)
-                                                            <button type="button"
-                                                                class="btn btn-sm {{ $user->is_validated ? 'btn-danger' : 'btn-success' }} btn-wave"
-                                                                data-bs-toggle="modal" data-bs-target="#validateUserModal"
-                                                                data-user-id="{{ $user->id }}"
-                                                                data-user-name="{{ $user->name }}"
-                                                                data-is-validated="{{ $user->is_validated ? '1' : '0' }}">
-                                                                @if ($user->is_validated)
-                                                                    <i class="ri-close-line"></i>
-                                                                @else
-                                                                    <i class="ri-check-line me-1"></i>
-                                                                @endif
-                                                                {{ $user->is_validated ? 'Batalkan Validasi' : 'Validasi' }}
-                                                            </button>
-                                                        @endif
-                                                        <button type="button" class="btn btn-sm btn-primary btn-wave"
-                                                            data-bs-toggle="modal" data-bs-target="#resetPasswordModal"
-                                                            data-user-id="{{ $user->id }}"
-                                                            data-user-name="{{ $user->name }}">
-                                                            <i class="ri-lock-password-line me-1"></i>Password
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                            <i class="ri-more-2-fill"></i>
                                                         </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
+                                                            @if (!$user->is_validated)
+                                                                <li>
+                                                                    <button type="button" class="dropdown-item text-success"
+                                                                        data-bs-toggle="modal" data-bs-target="#validateUserModal"
+                                                                        data-user-id="{{ $user->id }}"
+                                                                        data-user-name="{{ $user->name }}"
+                                                                        data-is-validated="{{ $user->is_validated ? '1' : '0' }}">
+                                                                        <i class="ri-check-line me-2 align-middle"></i>Validasi Akun
+                                                                    </button>
+                                                                </li>
+                                                            @else
+                                                                <li>
+                                                                    <button type="button" class="dropdown-item text-warning"
+                                                                        data-bs-toggle="modal" data-bs-target="#validateUserModal"
+                                                                        data-user-id="{{ $user->id }}"
+                                                                        data-user-name="{{ $user->name }}"
+                                                                        data-is-validated="{{ $user->is_validated ? '1' : '0' }}">
+                                                                        <i class="ri-close-line me-2 align-middle"></i>Batalkan Validasi
+                                                                    </button>
+                                                                </li>
+                                                            @endif
+                                                            <li>
+                                                                <button type="button" class="dropdown-item text-primary"
+                                                                    data-bs-toggle="modal" data-bs-target="#resetPasswordModal"
+                                                                    data-user-id="{{ $user->id }}"
+                                                                    data-user-name="{{ $user->name }}">
+                                                                    <i class="ri-lock-password-line me-2 align-middle"></i>Reset Password
+                                                                </button>
+                                                            </li>
+                                                        </ul>
                                                     </div>
                                                 @else
                                                     <span class="text-muted small">-</span>
