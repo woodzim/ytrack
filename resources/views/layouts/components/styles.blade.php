@@ -1,7 +1,4 @@
 
-        <!-- Choices JS -->
-        <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-
         <!-- Main Theme Js -->
         @vite('resources/assets/js/main.js')
         
@@ -16,9 +13,6 @@
         
         <!-- Color Picker Css -->
         <link rel="stylesheet" href="{{asset('build/assets/libs/@simonwep/pickr/themes/nano.min.css')}}">
-
-        <!-- Choices Css -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 
         <!-- FlatPickr CSS -->
         <link rel="stylesheet" href="{{asset('build/assets/libs/flatpickr/flatpickr.min.css')}}">

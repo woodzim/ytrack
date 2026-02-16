@@ -1,14 +1,6 @@
 @extends('layouts.master')
 
 @section('styles')
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-gesture-handling@1.2.2/dist/leaflet-gesture-handling.min.css"
-    type="text/css">
-  <link rel="stylesheet"
-    href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css" />
   <style>
     /* --- Layout Refinements --- */
     #map-dashboard {
@@ -436,12 +428,6 @@
 @endsection
 
 @section('scripts')
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
-  <script src="https://unpkg.com/leaflet-gesture-handling@1.2.2/dist/leaflet-gesture-handling.min.js"></script>
-  <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
   <script>
     let markers = {};
     let map;
@@ -459,7 +445,8 @@
       if (markerArray.length > 0) {
         var group = new L.featureGroup(markerArray);
         map.fitBounds(group.getBounds().pad(0.1), {
-          animate: true
+          animate: true,
+          maxZoom: 6
         });
       }
     };
@@ -475,7 +462,7 @@
 
         const marker = markers[id_sesi];
         map.stop(); // Hentikan animasi peta yang sedang berlangsung
-        map.setView(marker.getLatLng(), 17);
+        map.setView(marker.getLatLng(), 10);
 
         if (markerCluster.hasLayer(marker)) {
           markerCluster.zoomToShowLayer(marker, () => {
@@ -572,7 +559,7 @@
                             <span class="small">Baterai:</span>
                             <span class="fw-bold small text-primary bat-text">${loc.battery}%</span>
                           </div>
-                          <div class="text-muted text-end mt-1 last-update-text" style="font-size: 9px;">
+                          <div class="text-muted text-end mt-1 text-xs last-update-text">
                             ${loc.last_update}
                           </div>
                         </div>`, {
@@ -747,6 +734,9 @@
           toolbar: {
             show: false
           },
+          zoom: {
+            enabled: false
+          },
           fontFamily: 'inherit',
           animations: {
             enabled: true
@@ -779,7 +769,8 @@
           }
         },
         xaxis: {
-          categories: @json(collect($last7Days)->pluck('date')),
+          type: 'category',
+          categories: @json(collect($last7Days)->map(fn($d) => \Carbon\Carbon::parse($d['date'])->translatedFormat('d M'))),
           axisBorder: {
             show: false
           },
@@ -803,8 +794,8 @@
           borderColor: '#f1f1f1',
           strokeDashArray: 4,
           padding: {
-            left: 15,
-            right: 15,
+            left: 20,
+            right: 20,
             top: 0,
             bottom: 0
           }

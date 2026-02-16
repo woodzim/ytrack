@@ -1,26 +1,45 @@
 "use strict";
 
 const ANIMATION_DURATION = 300;
-const sidebar = document.getElementById("sidebar");
-let mainContentDiv = document.querySelector(".main-content");
 
+// Helper storage yang aman dari Tracking Prevention
 function setStorage(key, value) {
-    try { localStorage.setItem(key, value); } catch (e) {}
+    try { 
+        localStorage.setItem(key, value); 
+    } catch (e) {
+        console.warn("Storage access blocked by browser tracking prevention.");
+    }
 }
 function getStorage(key) {
-    try { return localStorage.getItem(key); } catch (e) { return null; }
+    try { 
+        return localStorage.getItem(key); 
+    } catch (e) { 
+        return null; 
+    }
 }
-
-const slideHasSub = document.querySelectorAll(".nav > ul > .slide.has-sub");
-const firstLevelItems = document.querySelectorAll(".nav > ul > .slide.has-sub > a");
-const innerLevelItems = document.querySelectorAll(".nav > ul > .slide.has-sub .slide.has-sub > a");
 
 // --- Exported functions for custom-switcher.js ---
 export function ResizeMenu() {}
-export function closedSidemenuFn() {}
-export function detachedFn() {}
-export function iconTextFn() {}
-export function doubletFn() {}
+export function closedSidemenuFn() {
+    const html = document.querySelector("html");
+    html.setAttribute("data-vertical-style", "closed");
+    html.setAttribute("data-toggled", "close-menu-close");
+}
+export function detachedFn() {
+    const html = document.querySelector("html");
+    html.setAttribute("data-vertical-style", "detached");
+    html.setAttribute("data-toggled", "detached-close");
+}
+export function iconTextFn() {
+    const html = document.querySelector("html");
+    html.setAttribute("data-vertical-style", "icontext");
+    html.setAttribute("data-toggled", "icon-text-close");
+}
+export function doubletFn() {
+    const html = document.querySelector("html");
+    html.setAttribute("data-vertical-style", "doublemenu");
+    html.setAttribute("data-toggled", "double-menu-close");
+}
 export function menuClickFn() {}
 export function menuhoverFn() {}
 export function iconClickFn() {}
@@ -28,7 +47,11 @@ export function iconHoverFn() {}
 export function setNavActive() {}
 export function clearNavDropdown() {}
 export function checkHoriMenu() {}
-export function iconOverayFn() {}
+export function iconOverayFn() {
+    const html = document.querySelector("html");
+    html.setAttribute("data-vertical-style", "overlay");
+    html.setAttribute("data-toggled", "icon-overlay-close");
+}
 
 // Fungsi Hover untuk membuka sidebar sementara
 function mouseEntered() {
@@ -48,6 +71,7 @@ function mouseLeave() {
 }
 
 const slideUp = (target, duration = ANIMATION_DURATION) => {
+  if (!target) return;
   const { parentElement } = target;
   if (!parentElement) return;
   parentElement.classList.remove("open");
@@ -76,6 +100,7 @@ const slideUp = (target, duration = ANIMATION_DURATION) => {
 };
 
 const slideDown = (target, duration = ANIMATION_DURATION) => {
+  if (!target) return;
   const { parentElement } = target;
   if (!parentElement) return;
   parentElement.classList.add("open");
@@ -121,7 +146,7 @@ export function toggleSidemenu() {
     let currentToggled = html.getAttribute("data-toggled");
     let newState = "";
 
-    if (currentToggled) {
+    if (currentToggled && !currentToggled.includes("open")) {
         html.removeAttribute("data-toggled");
         newState = "open";
     } else {
@@ -135,7 +160,8 @@ export function toggleSidemenu() {
         newState = toggleVal;
     }
     setStorage("sidebar-toggled", newState);
-  } else if (window.innerWidth < 992) {
+  } else {
+    // Mobile toggle
     if (html.getAttribute("data-toggled") === "open") {
       html.setAttribute("data-toggled", "close");
     } else {
@@ -144,50 +170,61 @@ export function toggleSidemenu() {
   }
 }
 
-(() => {
-  const headerToggleBtn = document.querySelector(".sidemenu-toggle");
-  if (headerToggleBtn) headerToggleBtn.addEventListener("click", toggleSidemenu);
+// Inisialisasi Event Listeners
+const initMenu = () => {
+  const sidebar = document.getElementById("sidebar");
+  const headerToggleBtns = document.querySelectorAll(".sidemenu-toggle");
+  
+  headerToggleBtns.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        toggleSidemenu();
+    });
+  });
 
   if (sidebar) {
     sidebar.addEventListener("mouseenter", mouseEntered);
     sidebar.addEventListener("mouseleave", mouseLeave);
   }
 
-  // Handle first level submenus
-  firstLevelItems.forEach((element) => {
+  // Handle submenus
+  const menuItems = document.querySelectorAll(".nav > ul .slide.has-sub > a");
+  menuItems.forEach((element) => {
     element.addEventListener("click", (e) => {
       const parent = element.parentElement;
       const next = element.nextElementSibling;
+      
       if (next && next.classList.contains('slide-menu')) {
-        parent.parentElement.querySelectorAll(':scope > .slide.has-sub.open').forEach(openSlide => {
+        e.preventDefault();
+        // Close other open siblings at the same level
+        const siblings = parent.parentElement.querySelectorAll(':scope > .slide.has-sub.open');
+        siblings.forEach(openSlide => {
             if (openSlide !== parent) {
                 slideUp(openSlide.querySelector('.slide-menu'));
             }
         });
+        
         slideToggle(next);
       }
     });
   });
 
-  // Handle inner level submenus
-  innerLevelItems.forEach((element) => {
-    element.addEventListener("click", (e) => {
-      const parent = element.parentElement;
-      const next = element.nextElementSibling;
-      if (next && next.classList.contains('slide-menu')) {
-        parent.parentElement.querySelectorAll(':scope > .slide.has-sub.open').forEach(openSlide => {
-            if (openSlide !== parent) {
-                slideUp(openSlide.querySelector('.slide-menu'));
-            }
-        });
-        slideToggle(next);
-      }
-    });
+  // --- INITIALIZATION: Sync server-side 'open' state with client-side visibility ---
+  document.querySelectorAll(".slide.has-sub.open > .slide-menu").forEach((openMenu) => {
+    openMenu.style.display = "block";
   });
 
+  // Apply saved sidebar state (if allowed)
   const html = document.querySelector("html");
   const savedState = getStorage("sidebar-toggled");
   if (window.innerWidth >= 992 && savedState && savedState !== "open") {
       html.setAttribute("data-toggled", savedState);
   }
-})();
+};
+
+// Run on load
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initMenu);
+} else {
+    initMenu();
+}

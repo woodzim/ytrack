@@ -1,7 +1,6 @@
 @extends('layouts.master')
 
 @section('styles')
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <style>
     /* --- Styling Map Icon (Sesuai Desain Anda) --- */
     .custom-pin-icon {
@@ -217,8 +216,6 @@
 @endsection
 
 @section('scripts')
-  {{-- 1. LOAD LIBRARY --}}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
   <script>
     // --- 2. CHECK ECHO ---
@@ -386,7 +383,7 @@
             startMarker = L.marker(pathLatLngs[0], { icon: createCustomIcon('start') }).addTo(map).bindPopup("Titik Awal");
             truckMarker = L.marker(pathLatLngs[pathLatLngs.length - 1], { icon: createCustomIcon('end'), zIndexOffset: 1000 }).addTo(map).bindPopup("Lokasi Terkini");
             polyline = L.polyline(pathLatLngs, { color: '#be1e2d', weight: 4, dashArray: '5, 5' }).addTo(map);
-            map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+            map.fitBounds(polyline.getBounds(), { padding: [50, 50], maxZoom: 15 });
         }
       } else {
         const tbody = document.getElementById('history-table-body');

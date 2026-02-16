@@ -39,6 +39,19 @@
       position: relative;
       width: 100%;
     }
+
+    #map-admin {
+      height: 55vh;
+      width: 100% !important;
+      border-radius: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .leaflet-top,
+    .leaflet-bottom {
+      z-index: 400 !important;
+    }
   </style>
 @endsection
 
@@ -47,7 +60,7 @@
   <div class="d-flex align-items-center justify-content-between mb-3 page-header-breadcrumb flex-wrap gap-2">
     <div>
       <h1 class="page-title fw-medium fs-20 mb-0">Selamat datang, {{ auth()->user()->name }}.</h1>
-      <p class="text-muted mb-0">Dashboard YA-Track</p>
+      <p class="text-muted mb-0">Dashboard Monitoring Seluruh Alat YA-Track</p>
     </div>
   </div>
   <!-- End::page-header -->
@@ -120,13 +133,31 @@
     </div>
   </div>
 
+  <!-- Map Section -->
+  <div class="row g-2 mt-1">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+          <div class="card-title mb-0 fw-bold fs-14 text-uppercase ls-1">
+            <i class="ri-map-pin-2-fill me-2 text-primary"></i>Monitoring Lokasi Alat Terkini (Seluruh Perusahaan)
+          </div>
+          <span class="badge bg-primary-transparent text-primary px-3 rounded-pill">{{ count($lokasiAlat) }} Alat
+            Terdeteksi</span>
+        </div>
+        <div class="card-body p-0">
+          <div id="map-admin"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="row g-2 mt-1">
     <!-- Active Sessions -->
     <div class="col-12">
       <div class="card h-100">
         <div class="card-header border-bottom">
-          <div class="card-title mb-0">Sesi Aktif</div>
-          <p class="text-muted mb-0 small">Perangkat yang sedang aktif melacak</p>
+          <div class="card-title mb-0">Sesi Perjalanan Aktif</div>
+          <p class="text-muted mb-0 small">Perangkat yang sedang aktif melacak secara real-time</p>
         </div>
         <div class="card-body p-0">
           @if ($activeSessions->count() > 0)
@@ -179,7 +210,7 @@
         <div class="card-header">
           <div class="card-title">Statistik Perjalanan (7 Hari Terakhir)</div>
         </div>
-        <div class="card-body p-0 chart-container-fixed">
+        <div class="card-body p-0 chart-container-fixed" id="travel-chart-container">
           <div id="travel-chart"></div>
         </div>
       </div>
@@ -294,15 +325,92 @@
 @endsection
 
 @section('scripts')
-  <!-- Apex Charts JS -->
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
+      // --- MAP LOGIC ---
+      let markers = {};
+      let map;
+      let markerCluster;
+
+      const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; CARTO',
+        maxZoom: 19
+      });
+
+      map = L.map('map-admin', {
+        center: [-2.5489, 118.0149],
+        zoom: 5,
+        layers: [streets],
+        gestureHandling: true,
+        fullscreenControl: true,
+        preferCanvas: true
+      });
+
+      markerCluster = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        spiderfyOnMaxZoom: true,
+        disableClusteringAtZoom: 17
+      });
+      map.addLayer(markerCluster);
+
+      const locations = @json($lokasiAlat);
+
+      const getMarkerIcon = (isActive = true) => {
+        const color = isActive ? '#be1e2d' : '#64748b';
+        const html = `<div style="background: white; border-radius: 50%; padding: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 2px solid ${color}; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;">
+                        <i class="ri-map-pin-line" style="color: ${color}; font-size: 20px;"></i>
+                      </div>`;
+        return L.divIcon({
+          html: html,
+          className: '',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32]
+        });
+      };
+
+      locations.forEach(function(loc) {
+        if (loc.lat && loc.long) {
+          const marker = L.marker([loc.lat, loc.long], {
+              icon: getMarkerIcon(loc.status === 'Aktif')
+            })
+            .bindPopup(`<div class="p-1">
+                          <div class="fw-bold mb-1">${loc.nama_alat}</div>
+                          <div class="badge bg-primary-transparent text-primary mb-2">${loc.perusahaan}</div>
+                          <div class="text-muted small mb-2">Kendaraan: ${loc.kendaraan}</div>
+                          <div class="d-flex justify-content-between border-top pt-2">
+                            <span class="small">Baterai:</span>
+                            <span class="fw-bold small ${loc.battery > 70 ? 'text-success' : (loc.battery >= 30 ? 'text-warning' : 'text-danger')}">${loc.battery}%</span>
+                          </div>
+                          <div class="text-muted text-end mt-1" style="font-size: 9px;">
+                            ${loc.last_update}
+                          </div>
+                        </div>`, {
+              minWidth: 150
+            });
+
+          markerCluster.addLayer(marker);
+          markers[loc.id_sesi] = marker;
+        }
+      });
+
+      if (Object.keys(markers).length > 0) {
+        map.fitBounds(markerCluster.getBounds().pad(0.1), {
+          maxZoom: 6
+        });
+      }
+
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 500);
+
       // Travel History Chart
+      const travelData = @json($last7Days);
+
       var travelOptions = {
         series: [{
           name: 'Jumlah Perjalanan',
-          data: @json($riwayatChart->pluck('count'))
+          data: travelData.map(item => item.count)
         }],
         chart: {
           height: 380,
@@ -311,56 +419,82 @@
           toolbar: {
             show: false
           },
+          zoom: {
+            enabled: false
+          },
+          fontFamily: 'inherit',
+          animations: {
+            enabled: true
+          },
           sparkline: {
             enabled: false
           },
           parentHeightOffset: 0
         },
-        grid: {
-          borderColor: '#f1f1f1',
-          padding: {
-            top: 10,
-            right: 0,
-            bottom: 0,
-            left: 0
-          }
-        },
-        colors: ['#be1e2d'],
         dataLabels: {
           enabled: false
         },
         stroke: {
           curve: 'smooth',
-          width: 2
+          width: 3,
+          colors: ['#be1e2d']
+        },
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: 0.4,
+            opacityTo: 0.1,
+            stops: [0, 90, 100],
+            colorStops: [{
+              offset: 0,
+              color: '#be1e2d',
+              opacity: 0.4
+            }]
+          }
         },
         xaxis: {
           type: 'category',
-          categories: @json($riwayatChart->pluck('date')),
-          labels: {
-            formatter: function(val) {
-              return new Date(val).toLocaleDateString('id-ID', {
-                day: 'numeric',
-                month: 'short'
-              });
-            },
-            offsetY: 0
-          },
+          categories: travelData.map(d => new Date(d.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })),
           axisBorder: {
             show: false
           },
           axisTicks: {
             show: false
+          },
+          labels: {
+            style: {
+              colors: '#64748b',
+              fontWeight: 500
+            }
+          },
+          tooltip: {
+            enabled: false
           }
         },
         yaxis: {
           show: true,
           labels: {
-            offsetX: 0
+            style: {
+              colors: '#64748b',
+              fontWeight: 500
+            }
+          }
+        },
+        grid: {
+          borderColor: '#f1f1f1',
+          strokeDashArray: 4,
+          padding: {
+            left: 20,
+            right: 20,
+            top: 0,
+            bottom: 0
           }
         },
         tooltip: {
+          theme: 'light',
           x: {
-            format: 'dd MMM yyyy'
+            show: true
           }
         }
       };

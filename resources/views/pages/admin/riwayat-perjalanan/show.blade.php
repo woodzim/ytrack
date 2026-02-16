@@ -1,7 +1,6 @@
 @extends('layouts.master')
 
 @section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <style>
         #map-container {
             height: 400px;
@@ -169,7 +168,6 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Check if map container exists

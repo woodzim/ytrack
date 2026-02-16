@@ -1,5 +1,16 @@
 @extends('layouts.master')
 
+@section('styles')
+  <style>
+    /* Force parent containers to allow overflow so dropdowns aren't cut off */
+    .custom-card,
+    .custom-card .card-body,
+    .table-responsive {
+        overflow: visible !important;
+    }
+  </style>
+@endsection
+
 @section('content')
   <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>

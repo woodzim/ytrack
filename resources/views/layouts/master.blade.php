@@ -22,6 +22,60 @@
   <!-- Main Theme Js -->
   <script src="{{ asset('build/assets/main.js') }}"></script>
 
+  <script>
+    /* Pre-rendering script to prevent flickering */
+    (function () {
+      const html = document.querySelector('html');
+      const getStorage = (key) => {
+        try { return localStorage.getItem(key); } catch (e) { return null; }
+      };
+
+      // Theme Mode
+      const themeMode = getStorage("vyzorthememode") || getStorage("vyzordarktheme");
+      if (themeMode === 'dark') html.setAttribute("data-theme-mode", "dark");
+      
+      // Vertical Style (Sidebar mode)
+      const verticalStyle = getStorage("vyzorverticalstyles");
+      if (verticalStyle) html.setAttribute("data-vertical-style", verticalStyle);
+
+      // Toggled State
+      const toggled = getStorage("sidebar-toggled") || getStorage("vyzortoggled");
+      if (toggled && window.innerWidth >= 992) {
+        html.setAttribute("data-toggled", toggled);
+      } else if (window.innerWidth < 992) {
+        html.setAttribute("data-toggled", "close");
+      }
+
+      // Other persistable settings
+      const navLayout = getStorage("vyzornavlayout");
+      if (navLayout) html.setAttribute("data-nav-layout", navLayout);
+      
+      const menuStyles = getStorage("vyzormenustyles");
+      if (menuStyles) html.setAttribute("data-menu-styles", menuStyles);
+    })();
+  </script>
+
+  <style>
+    /* Prevent submenu flickering: force display if 'open' class is present from server */
+    [data-nav-layout="vertical"] .slide.has-sub.open > .slide-menu {
+        display: block !important;
+    }
+    /* Force sidebar arrow visibility with high specificity */
+    .app-sidebar .side-menu__angle {
+        color: rgba(0, 0, 0, 0.3) !important; /* Default visible grey */
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    /* Active and Hover states */
+    .app-sidebar .side-menu__item.active .side-menu__angle,
+    .app-sidebar .side-menu__item:hover .side-menu__angle,
+    .app-sidebar .side-menu__item.active:hover .side-menu__angle {
+        color: #be1e2d !important; 
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+  </style>
+
   <!-- ICONS CSS -->
   <link href="{{ asset('build/assets/icon-fonts/icons.css') }}" rel="stylesheet">
 
