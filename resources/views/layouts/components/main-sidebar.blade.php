@@ -32,8 +32,10 @@
             </a>
           </li>
 
-          <li class="slide has-sub {{ Route::is('sesi-alat.*', 'perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active open' : '' }}">
-            <a href="javascript:void(0);" class="side-menu__item {{ Route::is('sesi-alat.*', 'perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active' : '' }}">
+          <li
+            class="slide has-sub {{ Route::is('sesi-alat.*', 'perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);"
+              class="side-menu__item {{ Route::is('sesi-alat.*', 'perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active' : '' }}">
               <i class="ri-archive-line side-menu__icon text-primary"></i>
               <span class="side-menu__label">Menu Utama</span>
               <i class="ri-arrow-right-s-line side-menu__angle"></i>
@@ -59,10 +61,13 @@
               </li>
 
               <li class="slide has-sub {{ Route::is('perusahaan.*', 'alat.*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="side-menu__item {{ Route::is('perusahaan.*', 'alat.*') ? 'active' : '' }}">
-                  <i class="ri-building-line side-menu__icon"></i>
+                <a href="javascript:void(0);"
+                  class="side-menu__item {{ Route::is('perusahaan.*', 'alat.*') ? 'active' : '' }}">
+                  <i
+                    class="ri-building-line side-menu__icon {{ Route::is('perusahaan.*', 'alat.*') ? 'text-primary' : '' }}"></i>
                   <span class="side-menu__label">Aset & Mitra</span>
-                  <i class="ri-arrow-right-s-line side-menu__angle"></i>
+                  <i
+                    class="ri-arrow-right-s-line side-menu__angle {{ Route::is('perusahaan.*', 'alat.*') ? 'text-primary' : '' }}"></i>
                 </a>
                 <ul class="slide-menu child2">
                   <li class="slide">
@@ -89,10 +94,13 @@
               </li>
 
               <li class="slide has-sub {{ Route::is('kendaraan.*', 'jenis-kendaraan.*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="side-menu__item {{ Route::is('kendaraan.*', 'jenis-kendaraan.*') ? 'active' : '' }}">
-                  <i class="ri-car-line side-menu__icon"></i>
+                <a href="javascript:void(0);"
+                  class="side-menu__item {{ Route::is('kendaraan.*', 'jenis-kendaraan.*') ? 'active' : '' }}">
+                  <i
+                    class="ri-car-line side-menu__icon {{ Route::is('kendaraan.*', 'jenis-kendaraan.*') ? 'text-primary' : '' }}"></i>
                   <span class="side-menu__label">Kendaraan</span>
-                  <i class="ri-arrow-right-s-line side-menu__angle"></i>
+                  <i
+                    class="ri-arrow-right-s-line side-menu__angle {{ Route::is('kendaraan.*', 'jenis-kendaraan.*') ? 'text-primary' : '' }}"></i>
                 </a>
                 <ul class="slide-menu child2">
                   <li class="slide">
@@ -157,30 +165,34 @@
           <li class="slide__category"><span class="category-name">Menu Perusahaan</span></li>
 
           <li class="slide">
-            <a href="{{ route('perusahaan.dashboard.index') }}" class="side-menu__item {{ Route::is('perusahaan.dashboard.*') ? 'active' : '' }}">
+            <a href="{{ route('perusahaan.dashboard.index') }}"
+              class="side-menu__item {{ Route::is('perusahaan.dashboard.*') ? 'active' : '' }}">
               <i class="ri-dashboard-line side-menu__icon text-primary"></i>
               <span class="side-menu__label">Dashboard Monitoring</span>
             </a>
           </li>
 
           <li class="slide">
-            <a href="{{ route('perusahaan.kendaraan.index') }}" class="side-menu__item {{ Route::is('perusahaan.kendaraan.*') ? 'active' : '' }}">
+            <a href="{{ route('perusahaan.sesi-alat.index') }}"
+              class="side-menu__item {{ Route::is('perusahaan.sesi-alat.*') ? 'active' : '' }}">
+              <i class="ri-map-pin-line side-menu__icon text-primary"></i>
+              <span class="side-menu__label">Riwayat Perjalanan</span>
+            </a>
+          </li>
+
+          <li class="slide">
+            <a href="{{ route('perusahaan.kendaraan.index') }}"
+              class="side-menu__item {{ Route::is('perusahaan.kendaraan.*') ? 'active' : '' }}">
               <i class="ri-car-line side-menu__icon text-primary"></i>
               <span class="side-menu__label">Manajemen Kendaraan</span>
             </a>
           </li>
 
           <li class="slide">
-            <a href="{{ route('perusahaan.alat.index') }}" class="side-menu__item {{ Route::is('perusahaan.alat.*') ? 'active' : '' }}">
+            <a href="{{ route('perusahaan.alat.index') }}"
+              class="side-menu__item {{ Route::is('perusahaan.alat.*') ? 'active' : '' }}">
               <i class="ri-rfid-line side-menu__icon text-primary"></i>
               <span class="side-menu__label">Perangkat Alat GPS</span>
-            </a>
-          </li>
-
-          <li class="slide">
-            <a href="{{ route('perusahaan.sesi-alat.index') }}" class="side-menu__item {{ Route::is('perusahaan.sesi-alat.*') ? 'active' : '' }}">
-              <i class="ri-map-pin-line side-menu__icon text-primary"></i>
-              <span class="side-menu__label">Riwayat Perjalanan</span>
             </a>
           </li>
         @endrole

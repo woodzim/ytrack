@@ -6,7 +6,7 @@
   </div>
   <div class="card-body p-0">
     @if ($sesiAlat->count() > 0)
-      <div class="table-responsive" style="min-height: 250px;">
+      <div class="table-responsive">
         <table class="table table-hover mb-0">
           <thead class="table-light">
             <tr>
@@ -49,7 +49,7 @@
 
                 <td data-label="Aksi" class="text-center">
                   <div class="dropdown">
-                    <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                    <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="ri-more-2-fill"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">

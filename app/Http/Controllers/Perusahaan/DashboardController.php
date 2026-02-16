@@ -67,23 +67,24 @@ class DashboardController extends Controller
                 $latestLocation = $alat->riwayatPerjalanan->first();
                 $lastSession = $alat->sesiAlat->first();
                 
-                if (!$latestLocation) return null;
+                // Jika tidak ada lokasi terakhir ATAU tidak ada sesi (sesi sudah dihapus), jangan tampilkan
+                if (!$latestLocation || !$lastSession) return null;
 
-                $isActive = $lastSession && $lastSession->aktif;
+                $isActive = $lastSession->aktif;
                 $battery = (int) ($latestLocation->battery ?? 0);
 
                 return [
                     'id_alat' => $alat->id,
                     'serial_number' => $alat->id,
                     'nama_alat' => $lastSession->nama ?? $alat->id,
-                    'kendaraan' => $lastSession ? ($lastSession->kendaraan->plat ?? '-') : '-',
+                    'kendaraan' => $lastSession->kendaraan->plat ?? '-',
                     'lat' => $latestLocation->lat,
                     'long' => $latestLocation->long,
                     'battery' => $battery,
                     'is_low_bat' => $battery <= 20,
                     'last_update' => $latestLocation->created_at->diffForHumans(),
                     'status' => $isActive ? 'Aktif' : 'Tidak Aktif',
-                    'id_sesi' => $lastSession ? $lastSession->id : null
+                    'id_sesi' => $lastSession->id
                 ];
             })
             ->filter()
@@ -110,13 +111,13 @@ class DashboardController extends Controller
         // 2. Activity Last 7 Days (Records count)
         $last7Days = [];
         for ($i = 6; $i >= 0; $i--) {
-            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $date = Carbon::today()->subDays($i);
             $count = RiwayatPerjalanan::where('id_perusahaan', $idPerusahaan)
-                ->whereDate('created_at', $date)
+                ->whereDate('created_at', $date->format('Y-m-d'))
                 ->count();
             
             $last7Days[] = [
-                'date' => Carbon::now()->subDays($i)->format('d M'),
+                'date' => $date->format('Y-m-d'),
                 'count' => $count
             ];
         }

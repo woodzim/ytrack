@@ -1,7 +1,6 @@
 @extends('layouts.master')
 
 @section('styles')
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <style>
     /* --- Styling Map Icon (Sesuai Desain Anda) --- */
     .custom-pin-icon {
@@ -226,258 +225,507 @@
 @endsection
 
 @section('scripts')
-  {{-- 1. LOAD LIBRARY --}}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
   <script>
+
     // --- 2. CHECK ECHO ---
+
     if (typeof window.Echo === 'undefined') {
+
       console.warn('Echo is not defined. Realtime updates might not work.');
+
     }
+
+
 
     window.SESI_ALAT_ID = "{{ $sesiAlat->id }}";
+
     
+
     // Konversi Data PHP ke JS
+
     const rawRiwayatData = @json($riwayatPerjalanan);
+
     let currentIndex = 0;
+
     const itemsPerPage = 100; 
+
     let isLoading = false;
 
+
+
     // --- VARIABEL GLOBAL ---
+
     let map = null;
+
     let polyline = null;
+
     let startMarker = null;
+
     let truckMarker = null;
+
     let selectedMarker = null;
+
     let liveLatLngs = [];
+
     let isAutoPan = true;
 
+
+
     // --- 3. HELPER: PARSE TANGGAL AMAN ---
+
     const parseDateSafe = (input) => {
+
       if (!input) return new Date();
+
       if (input instanceof Date) return input;
+
       let safeString = input.toString().replace(' ', 'T');
+
       if (!safeString.endsWith('Z') && !safeString.includes('+')) safeString += 'Z';
+
       let d = new Date(safeString);
+
       return isNaN(d.getTime()) ? new Date() : d;
+
     };
+
+
 
     // --- 4. FORMATTER DATE ---
+
     const formatDateJS = (d) => {
+
       const dateObj = parseDateSafe(d);
+
       const day = String(dateObj.getDate()).padStart(2, '0');
+
       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+
       const year = dateObj.getFullYear();
+
       const hours = String(dateObj.getHours()).padStart(2, '0');
+
       const minutes = String(dateObj.getMinutes()).padStart(2, '0');
+
       const seconds = String(dateObj.getSeconds()).padStart(2, '0');
+
       const offset = -dateObj.getTimezoneOffset();
+
       let zona = offset === 420 ? 'WIB' : (offset === 480 ? 'WITA' : (offset === 540 ? 'WIT' : ''));
+
       return `${day}-${month}-${year} ${hours}:${minutes}:${seconds} ${zona}`;
+
     };
+
+
 
     const getRowHtml = (item, index) => {
+
         const dateStr = formatDateJS(item.created_at);
+
         let bat = parseInt(item.battery || 0);
+
         let batColor = bat > 70 ? 'bg-success' : (bat >= 30 ? 'bg-warning' : 'bg-danger');
+
         
+
         return `
+
             <tr class="clickable-row" data-lat="${item.lat}" data-lng="${item.long}" 
+
                 data-time="${item.created_at}" data-speed="${item.speed || 0}">
+
                 <td style="font-size: 12px; font-weight: 600;">
+
                     <span class="rounded-circle py-1 px-2 bg-primary text-white number-badge">
+
                         ${rawRiwayatData.length - index}
+
                     </span>
+
                 </td>
+
                 <td style="font-size: 12px;"><i class="ri-time-line me-1"></i>${dateStr}</td>
+
                 <td style="font-size: 12px;">${item.lat}</td>
+
                 <td style="font-size: 12px;">${item.long}</td>
+
                 <td style="font-size: 12px;">${item.alt ? item.alt + ' m' : '-'}</td>
+
                 <td style="font-size: 12px;">${item.sat ? '<span class="badge bg-primary">' + item.sat + '</span>' : '-'}</td>
+
                 <td style="font-size: 12px;">${item.speed ? '<span style="color: #10b981; font-weight: 600;">' + item.speed + ' km/h</span>' : '-'}</td>
+
                 <td style="font-size: 12px;">
+
                     <div class="d-flex align-items-center" style="min-width: 100px;">
+
                         <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
+
                             <div class="progress-bar ${batColor}" role="progressbar" style="width: ${bat}%"></div>
+
                         </div>
+
                         <span class="ms-2" style="font-size: 11px; font-weight: 600;">${bat}%</span>
+
                     </div>
+
                 </td>
+
             </tr>
+
         `;
+
     };
+
+
 
     const loadMoreData = () => {
+
         if (isLoading || currentIndex >= rawRiwayatData.length) return;
+
         isLoading = true;
 
+
+
         const spinner = document.getElementById('loading-spinner');
+
         if (spinner) spinner.style.display = 'block';
 
+
+
         const tbody = document.getElementById('history-table-body');
+
         const limit = Math.min(currentIndex + itemsPerPage, rawRiwayatData.length);
+
         
+
         let chunkHtml = '';
+
         for (let i = currentIndex; i < limit; i++) {
+
             chunkHtml += getRowHtml(rawRiwayatData[i], i);
+
         }
+
         
+
         tbody.insertAdjacentHTML('beforeend', chunkHtml);
+
         currentIndex = limit;
+
         
+
         if (spinner) spinner.style.display = 'none';
+
         isLoading = false;
 
+
+
         const sentinel = document.getElementById('scroll-sentinel');
+
         if (sentinel) {
+
             const rect = sentinel.getBoundingClientRect();
+
             if (currentIndex < rawRiwayatData.length && rect.top < window.innerHeight + 400) {
+
                 setTimeout(loadMoreData, 50);
+
             } else if (currentIndex >= rawRiwayatData.length) {
+
                 sentinel.style.display = 'none';
+
             }
+
         }
+
     };
 
+
+
     // --- 5. CUSTOM ICON MAP ---
+
     function createCustomIcon(type) {
+
       let iconClass = type === 'start' ? 'ri-map-pin-line' : 'ri-map-pin-user-line';
+
       let pulseHtml = type === 'end' ? '<div class="pin-pulse"></div>' : '';
+
       return L.divIcon({
+
         html: `<div class="pin-wrapper">${pulseHtml}<i class="${iconClass}"></i></div>`,
+
         className: 'custom-pin-icon',
+
         iconSize: [50, 50],
+
         iconAnchor: [25, 45]
+
       });
+
     }
 
+
+
     document.addEventListener('DOMContentLoaded', function() {
+
       // A. INIT MAP
+
       map = L.map('map-container').setView([-2.5489, 118.0149], 5);
+
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+
         attribution: '© OpenStreetMap, © CARTO',
+
         maxZoom: 20
+
       }).addTo(map);
 
+
+
       map.on('click', () => {
+
         if (!isAutoPan) {
+
           isAutoPan = true;
+
           if (selectedMarker) { map.removeLayer(selectedMarker); selectedMarker = null; }
+
           document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+
           if (truckMarker) { map.panTo(truckMarker.getLatLng()); truckMarker.openPopup(); }
+
         }
+
       });
+
+
 
       // B. INIT DATA TABEL & MAP
+
       if (rawRiwayatData.length > 0) {
+
         loadMoreData();
+
         
+
         const observer = new IntersectionObserver((entries) => {
+
             if (entries[0].isIntersecting && !isLoading) {
+
                 loadMoreData();
+
             }
+
         }, { 
+
             rootMargin: '400px', 
+
             threshold: 0.01 
+
         });
+
         
+
         const sentinel = document.getElementById('scroll-sentinel');
+
         if (sentinel) observer.observe(sentinel);
+
         
+
         rawRiwayatData.forEach(item => {
+
             const lat = parseFloat(item.lat);
+
             const lng = parseFloat(item.long);
+
             if (!isNaN(lat) && !isNaN(lng)) liveLatLngs.push([lat, lng]);
+
         });
+
         
+
         const pathLatLngs = [...liveLatLngs].reverse();
+
         if (pathLatLngs.length > 0) {
+
             startMarker = L.marker(pathLatLngs[0], { icon: createCustomIcon('start') }).addTo(map).bindPopup("Titik Awal");
+
             truckMarker = L.marker(pathLatLngs[pathLatLngs.length - 1], { icon: createCustomIcon('end'), zIndexOffset: 1000 }).addTo(map).bindPopup("Lokasi Terkini");
+
             polyline = L.polyline(pathLatLngs, { color: '#be1e2d', weight: 4, dashArray: '5, 5' }).addTo(map);
-            map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+
+            map.fitBounds(polyline.getBounds(), { padding: [50, 50], maxZoom: 15 });
+
         }
+
       } else {
+
         const tbody = document.getElementById('history-table-body');
+
         if (tbody) {
+
             tbody.innerHTML = `
+
                 <tr id="empty-row">
+
                     <td colspan="8">
+
                         <div style="text-align: center; padding: 40px 20px; color: #999;">
+
                             <i class="ri-map-pin-2-line" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+
                             <p style="margin: 0;">Belum ada data riwayat perjalanan</p>
+
                         </div>
+
                     </td>
+
                 </tr>`;
+
         }
+
         const sentinel = document.getElementById('scroll-sentinel');
+
         if (sentinel) sentinel.style.display = 'none';
+
       }
 
+
+
       // C. KLIK TABEL
+
       document.querySelector('#history-table').addEventListener('click', (e) => {
+
         const row = e.target.closest('tr.clickable-row');
+
         if (row) {
+
           isAutoPan = false;
+
           const lat = parseFloat(row.dataset.lat);
+
           const lng = parseFloat(row.dataset.lng);
+
           const timeRaw = row.dataset.time;
+
           const timeDisplay = formatDateJS(timeRaw);
+
           const speed = row.dataset.speed;
 
+
+
           document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+
           row.classList.add('table-active-row');
 
+
+
           if (selectedMarker) map.removeLayer(selectedMarker);
+
           selectedMarker = L.circleMarker([lat, lng], { radius: 8, fillColor: "#0ea5e9", color: "#fff", weight: 2, fillOpacity: 1 }).addTo(map);
+
           selectedMarker.bindPopup(`<div class="text-center"><strong>Riwayat</strong><br>${timeDisplay}<br><span style="color: #10b981;">${speed} km/h</span></div>`).openPopup();
+
           map.panTo([lat, lng]);
 
+
+
           selectedMarker.on('popupclose', function() {
+
             if (selectedMarker) { map.removeLayer(selectedMarker); selectedMarker = null; }
+
             document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+
           });
+
+
 
           // SCROLL KE PETA (Dengan offset navbar)
+
           const mapEl = document.getElementById('map-container');
+
           const navbarHeight = 80; // Estimasi tinggi navbar + margin
+
           const elementPosition = mapEl.getBoundingClientRect().top;
+
           const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
 
+
+
           window.scrollTo({
+
             top: offsetPosition,
+
             behavior: "smooth"
+
           });
+
         }
+
       });
 
+
+
       // D. REALTIME UPDATE
+
       window.Echo.channel(`tracking.sesi.${window.SESI_ALAT_ID}`)
+
         .listen('.LokasiBaru', (e) => {
+
           const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
+
           rawRiwayatData.unshift(e);
+
           currentIndex++;
 
+
+
           if (liveLatLngs.length === 0) {
+
             startMarker = L.marker(latLng, { icon: createCustomIcon('start') }).addTo(map);
+
             truckMarker = L.marker(latLng, { icon: createCustomIcon('end') }).addTo(map);
+
             polyline = L.polyline([latLng], { color: '#be1e2d', weight: 4 }).addTo(map);
+
           } else {
+
             if (truckMarker) truckMarker.setLatLng(latLng);
+
             if (polyline) polyline.addLatLng(latLng);
+
           }
+
           liveLatLngs.push(latLng);
+
           if (isAutoPan) map.panTo(latLng);
 
+
+
           const tbody = document.getElementById('history-table-body');
+
           const emptyRow = document.getElementById('empty-row');
+
           if (emptyRow) emptyRow.remove();
+
           
+
           const rowHtml = getRowHtml(e, 0);
+
           tbody.insertAdjacentHTML('afterbegin', rowHtml);
+
         });
 
+
+
       setTimeout(() => { map.invalidateSize(); }, 500);
+
     });
+
   </script>
+
 @endsection
