@@ -46,25 +46,6 @@
             @method('PUT')
 
             <div class="mb-3">
-              <label for="id_perusahaan" class="form-label">
-                Perusahaan <span class="text-danger">*</span>
-              </label>
-              <select name="id_perusahaan" id="id_perusahaan"
-                class="form-select @error('id_perusahaan') is-invalid @enderror" required>
-                <option value="">-- Pilih Perusahaan --</option>
-                @foreach ($perusahaan as $item)
-                  <option value="{{ $item->id }}"
-                    {{ old('id_perusahaan', $sesiAlat->id_perusahaan) == $item->id ? 'selected' : '' }}>
-                    {{ $item->nama }}
-                  </option>
-                @endforeach
-              </select>
-              @error('id_perusahaan')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
-
-            <div class="mb-3">
               <label for="id_kendaraan" class="form-label">
                 Kendaraan <span class="text-danger">*</span>
               </label>
@@ -130,15 +111,10 @@
       const currentAlatId = "{{ $sesiAlat->id_alat }}";
 
       // Inisialisasi Element
-      const $perusahaanSelect = $('#id_perusahaan');
       const $kendaraanSelect = $('#id_kendaraan');
       const $alatSelect = $('#id_alat');
 
       // 1. Setup Select2 Dasar
-      $perusahaanSelect.select2({
-        theme: 'bootstrap-5',
-        width: '100%'
-      });
       $kendaraanSelect.select2({
         theme: 'bootstrap-5',
         width: '100%',
@@ -212,16 +188,9 @@
           .catch(err => console.error('Error fetching alat:', err));
       }
 
-      // 3. Event Listener Perusahaan Change
-      $perusahaanSelect.on('change', function() {
-        loadDataByPerusahaan(this.value);
-      });
-
-      // 4. Trigger saat halaman pertama dimuat
+      // 3. Trigger saat halaman pertama dimuat
       // Agar dropdown langsung terisi dengan data yang benar & status disable yang tepat
-      if ($perusahaanSelect.val()) {
-        loadDataByPerusahaan($perusahaanSelect.val());
-      }
+      loadDataByPerusahaan("{{ $sesiAlat->id_perusahaan }}");
     });
   </script>
 @endsection

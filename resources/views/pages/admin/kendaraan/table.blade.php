@@ -69,11 +69,6 @@
                       <i class="ri-more-2-fill"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li>
-                        <a class="dropdown-item" href="{{ route('kendaraan.edit', $item->id) }}">
-                          <i class="ri-edit-line me-2 align-middle text-warning"></i>Edit Data
-                        </a>
-                      </li>
                       <li><hr class="dropdown-divider"></li>
                       <li>
                         @if ($item->sedang_digunakan)

@@ -92,11 +92,7 @@
         <div class="mb-3">
           <i class="ri-bluetooth-connect-line" style="font-size: 48px; color: #ddd;"></i>
         </div>
-        <h5 class="text-muted mb-2">Tidak ada perjalanan</h5>
-        <p class="text-muted mb-3">Mulai dengan membuat perjalanan baru</p>
-        <a href="{{ route('sesi-alat.create') }}" class="btn btn-primary btn-wave">
-          <i class="ri-add-line me-2"></i>Buat Sesi
-        </a>
+        <h5 class="text-muted mb-2">Belum ada perjalanan</h5>
       </div>
     @endif
   </div>

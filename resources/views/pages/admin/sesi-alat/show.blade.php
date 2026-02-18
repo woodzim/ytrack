@@ -102,9 +102,6 @@
               {{ $sesiAlat->aktif ? 'Nonaktifkan' : 'Aktifkan' }}
           </button>
       </form>
-      <a href="{{ route('sesi-alat.edit', $sesiAlat->id) }}" class="btn btn-primary btn-wave">
-          <i class="ri-edit-line me-2"></i>Edit
-      </a>
       <a href="{{ route('sesi-alat.index') }}" class="btn btn-light btn-wave">
         <i class="ri-arrow-left-line me-2"></i>Kembali
       </a>

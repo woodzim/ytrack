@@ -18,11 +18,6 @@
       <h1>Perjalanan</h1>
       <p>Kelola sesi penggunaan alat GPS di kendaraan</p>
     </div>
-    <div class="ms-auto">
-      <a href="{{ route('sesi-alat.create') }}" class="btn btn-light btn-wave">
-        <i class="ri-add-line me-2"></i>Buat Sesi
-      </a>
-    </div>
   </div>
 
   <div class="row">

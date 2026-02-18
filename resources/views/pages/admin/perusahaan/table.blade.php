@@ -42,11 +42,6 @@
                           <i class="ri-eye-line me-2 align-middle text-info"></i>Lihat Detail
                         </a>
                       </li>
-                      <li>
-                        <a class="dropdown-item" href="{{ route('perusahaan.edit', $item->id) }}">
-                          <i class="ri-edit-line me-2 align-middle text-warning"></i>Edit Data
-                        </a>
-                      </li>
                       <li><hr class="dropdown-divider"></li>
                       <li>
                         <form action="{{ route('perusahaan.destroy', $item->id) }}" method="POST"
