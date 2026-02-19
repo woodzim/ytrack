@@ -25,8 +25,10 @@ class UsersController extends Controller
 
         // Apply search filter
         if ($request->filled('search')) {
-            $users->where('name', 'like', '%' . $search . '%')
+            $users->where(function($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
                   ->orWhere('email', 'like', '%' . $search . '%');
+            });
         }
 
         // Apply role filter
@@ -43,6 +45,10 @@ class UsersController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(15)
             ->appends(request()->query());
+
+        if ($request->ajax()) {
+            return view('pages.admin.users.table', compact('users', 'search', 'filter_role', 'roles'))->render();
+        }
 
         return view('pages.admin.users.index', compact('users', 'search', 'filter_role', 'roles'));
     }

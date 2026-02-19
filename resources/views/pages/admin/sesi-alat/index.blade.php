@@ -2,11 +2,17 @@
 
 @section('styles')
   <style>
-    /* Force all parent containers to allow overflow so dropdowns aren't cut off */
+    /* Memberikan ruang di bawah tabel agar dropdown tidak terpotong */
+    .table-responsive {
+        padding-bottom: 80px !important;
+        margin-bottom: -80px !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+    /* Memungkinkan konten dropdown keluar dari container kartu */
     #table-container,
     .table-wrapper,
-    .table-wrapper .card-body,
-    .table-responsive {
+    .table-wrapper .card-body {
         overflow: visible !important;
     }
   </style>
@@ -70,7 +76,7 @@
               </div>
             </div>
 
-            <div id="reset-container" class="{{ $search || $filter_status !== '' || $filter_perusahaan !== '' ? '' : 'd-none' }}">
+            <div id="reset-container" class="{{ $search || $filter_status !== '' || $filter_perusahaan !== '' ? 'd-flex' : 'd-none' }} gap-2">
               <a href="{{ route('sesi-alat.index') }}" class="btn btn-outline-secondary btn-wave d-flex align-items-center" id="resetBtn" style="height: 38px;">
                 <i class="ri-close-line me-2"></i>Reset
               </a>
@@ -117,8 +123,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if ((search && search.trim() !== "") || id_perusahaan !== "" || status !== "") {
             resetContainer.classList.remove('d-none');
+            resetContainer.classList.add('d-flex');
         } else {
             resetContainer.classList.add('d-none');
+            resetContainer.classList.remove('d-flex');
         }
         
         window.history.pushState({}, '', url);
@@ -164,6 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('id_perusahaanDropdown').querySelector('span').textContent = 'Semua Perusahaan';
         document.getElementById('statusDropdown').querySelector('span').textContent = 'Semua Status';
         resetContainer.classList.add('d-none');
+        resetContainer.classList.remove('d-flex');
         window.history.pushState({}, '', this.href);
         fetchTable(this.href);
     });

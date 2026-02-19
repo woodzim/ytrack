@@ -189,22 +189,7 @@
                       </div>
                     </td>
                     <td class="battery-cell">
-                      @php
-                        $bat = (int) $alat['battery'];
-                        $batColor = 'bg-danger';
-                        if ($bat > 70) {
-                            $batColor = 'bg-success';
-                        } elseif ($bat >= 30) {
-                            $batColor = 'bg-warning';
-                        }
-                      @endphp
-                      <div class="d-flex align-items-center" style="width: 110px;">
-                        <div class="progress flex-grow-1 shadow-sm" style="height: 8px; border-radius: 10px;">
-                          <div class="progress-bar {{ $batColor }}" role="progressbar"
-                            style="width: {{ $bat }}%"></div>
-                        </div>
-                        <span class="ms-2 small fw-bold text-dark">{{ $bat }}%</span>
-                      </div>
+                      <x-battery-circle :level="$alat['battery']" size="40px" />
                     </td>
                     <td>
                       <span
@@ -266,7 +251,7 @@
           <div class="chart-container custom-card-enhanced text-center">
             <div class="chart-title d-flex justify-content-between align-items-center text-start">
               <span><i class="ri-donut-chart-line"></i> Penggunaan Kendaraan</span>
-              <span class="badge bg-light text-muted fw-normal">Bergerak vs Berhenti</span>
+              <span class="badge bg-light text-muted fw-normal">Bergerak dan Berhenti</span>
             </div>
             <div id="status-chart" class="d-flex justify-content-center"></div>
           </div>
@@ -275,7 +260,7 @@
           <div class="chart-container custom-card-enhanced text-center">
             <div class="chart-title d-flex justify-content-between align-items-center text-start">
               <span><i class="ri-cpu-line"></i> Penggunaan Alat</span>
-              <span class="badge bg-light text-muted fw-normal">Aktif vs Diam</span>
+              <span class="badge bg-light text-muted fw-normal">Aktif dan Nonaktif</span>
             </div>
             <div id="tool-status-chart" class="d-flex justify-content-center"></div>
           </div>
@@ -446,7 +431,7 @@
         var group = new L.featureGroup(markerArray);
         map.fitBounds(group.getBounds().pad(0.1), {
           animate: true,
-          maxZoom: 6
+          maxZoom: 18
         });
       }
     };
@@ -462,7 +447,7 @@
 
         const marker = markers[id_sesi];
         map.stop(); // Hentikan animasi peta yang sedang berlangsung
-        map.setView(marker.getLatLng(), 10);
+        map.setView(marker.getLatLng(), 22);
 
         if (markerCluster.hasLayer(marker)) {
           markerCluster.zoomToShowLayer(marker, () => {
@@ -485,23 +470,24 @@
     document.addEventListener('DOMContentLoaded', function() {
       // --- MAP SETUP ---
       const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; CARTO',
-        maxZoom: 19
+        attribution: '&copy; Ya-Track Dumeg',
+        maxZoom: 18
       });
 
       map = L.map('map-dashboard', {
         center: [-2.5489, 118.0149],
-        zoom: 5,
+        zoom: 22,
         layers: [streets],
         gestureHandling: true,
         fullscreenControl: true,
-        preferCanvas: true
+        preferCanvas: true,
+        attributionControl: false
       });
 
       markerCluster = L.markerClusterGroup({
         showCoverageOnHover: false,
         spiderfyOnMaxZoom: true,
-        disableClusteringAtZoom: 17
+        disableClusteringAtZoom: 19
       });
       map.addLayer(markerCluster);
 
@@ -521,6 +507,21 @@
           iconAnchor: [16, 32],
           popupAnchor: [0, -32]
         });
+      };
+
+      const getBatteryHtml = (level, size = '32px', fontSize = '8px', maskSize = '3px') => {
+        const levelInt = parseInt(level || 0);
+        let color = '#be1e2d';
+        if (levelInt > 70) color = '#10b981';
+        else if (levelInt > 30) color = '#f59e0b';
+
+        const borderThickness = parseInt(maskSize);
+
+        return `<div class="battery-circle-container d-flex align-items-center justify-content-center">
+                  <div style="position: relative; width: ${size}; height: ${size}; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(closest-side, white calc(100% - ${borderThickness}px), transparent calc(100% - ${borderThickness}px + 0.5px)), conic-gradient(${color} ${levelInt}%, #e9ecef 0);">
+                    <span style="font-size: ${fontSize}; font-weight: 700; color: ${color}; z-index: 1;">${levelInt}%</span>
+                  </div>
+                </div>`;
       };
 
       // Listener: Saat popup ditutup, kembalikan tampilan ke seluruh alat jika benar-benar tidak ada yang difokuskan
@@ -555,9 +556,9 @@
             .bindPopup(`<div class="p-1" id="popup-${loc.id_sesi}">
                           <div class="fw-bold mb-1">${loc.nama_alat}</div>
                           <div class="text-muted small mb-2">${loc.kendaraan}</div>
-                          <div class="d-flex justify-content-between border-top pt-2">
+                          <div class="d-flex justify-content-between align-items-center border-top pt-2">
                             <span class="small">Baterai:</span>
-                            <span class="fw-bold small text-primary bat-text">${loc.battery}%</span>
+                            <div class="battery-popup-container">${getBatteryHtml(loc.battery, '32px', '8px', '3px')}</div>
                           </div>
                           <div class="text-muted text-end mt-1 text-xs last-update-text">
                             ${loc.last_update}
@@ -600,12 +601,10 @@
                 if (popup && popup.isOpen()) {
                   const popupElement = popup.getElement();
                   if (popupElement) {
-                    const batText = popupElement.querySelector('.bat-text');
+                    const batContainer = popupElement.querySelector('.battery-popup-container');
                     const updateText = popupElement.querySelector('.last-update-text');
-                    if (batText) {
-                      batText.innerText = battery + '%';
-                      batText.className = 'fw-bold small ' + (battery > 70 ? 'text-success' : (battery >= 30 ?
-                        'text-warning' : 'text-danger'));
+                    if (batContainer) {
+                      batContainer.innerHTML = getBatteryHtml(battery, '32px', '8px', '3px');
                     }
                     if (updateText) updateText.innerText = 'Sesaat lalu';
                   }
@@ -630,14 +629,7 @@
               if (row) {
                 const batCell = row.querySelector('.battery-cell');
                 if (batCell) {
-                  const bar = batCell.querySelector('.progress-bar');
-                  const text = batCell.querySelector('span');
-                  const colorClass = battery > 70 ? 'bg-success' : (battery >= 30 ? 'bg-warning' : 'bg-danger');
-                  if (bar) {
-                    bar.style.width = battery + '%';
-                    bar.className = 'progress-bar ' + colorClass;
-                  }
-                  if (text) text.innerText = battery + '%';
+                  batCell.innerHTML = getBatteryHtml(battery, '40px', '10px', '4px');
                 }
 
                 const updateCell = row.querySelector('.update-cell');
@@ -714,7 +706,8 @@
       });
 
       if (Object.keys(markers).length > 0) {
-        fitAllMarkers();
+        const firstSesiId = Object.keys(markers)[0];
+        focusMarker(firstSesiId, true);
       }
 
       setTimeout(() => {
@@ -892,7 +885,7 @@
           height: 300,
           width: '100%'
         },
-        labels: ['Aktif', 'Diam'],
+        labels: ['Aktif', 'Nonaktif'],
         colors: ['#f59e0b', '#cbd5e1'],
         legend: {
           position: 'bottom',

@@ -19,4 +19,7 @@
 
         <!-- Auto Complete CSS -->
         <link rel="stylesheet" href="{{asset('build/assets/libs/@tarekraafat/autocomplete.js/css/autoComplete.css')}}">
+
+        <!-- Choices CSS -->
+        <link rel="stylesheet" href="{{asset('build/assets/libs/choices.js/public/assets/styles/choices.min.css')}}">
         

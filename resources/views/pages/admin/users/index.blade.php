@@ -8,6 +8,34 @@
         .table-responsive {
             overflow: visible !important;
         }
+
+        /* Hide the default Bootstrap caret */
+        .hide-arrow::after {
+            display: none !important;
+        }
+
+        /* Custom Dropdown Styling */
+        .custom-filter-dropdown {
+            height: 38px;
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.25rem;
+            width: 100%;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            text-align: left;
+        }
+        .custom-filter-dropdown:hover {
+            border-color: #b1b5b9;
+        }
+        .custom-filter-dropdown:focus {
+            border-color: #86b7fe;
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
     </style>
 @endsection
 
@@ -27,157 +55,51 @@
             <!-- Filter & Search Section -->
             <div class="card mb-3">
                 <div class="card-body">
-                    <form action="{{ route('users.index') }}" method="GET" class="d-flex gap-2 flex-wrap align-items-end">
-                        <div class="flex-grow-1" style="min-width: 200px;">
+                    <form action="{{ route('users.index') }}" method="GET" id="filterForm" class="d-flex gap-2 flex-wrap align-items-end">
+                        <div class="flex-grow-1" style="min-width: 250px;">
                             <label for="searchInput" class="form-label mb-2">Cari Pengguna</label>
-                            <input type="text" id="searchInput" name="search" class="form-control"
-                                placeholder="Cari nama atau email..." value="{{ $search }}">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0" style="height: 38px;">
+                                    <i class="ri-search-line text-muted"></i>
+                                </span>
+                                <input type="text" id="searchInput" name="search" class="form-control border-start-0 ps-1"
+                                    placeholder="Cari nama atau email..." value="{{ $search }}" autocomplete="off" style="height: 38px;">
+                            </div>
                         </div>
-                        <div>
-                            <label for="roleFilter" class="form-label mb-2">Role</label>
-                            <select id="roleFilter" name="role" class="form-select">
-                                <option value="">Semua Role</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->name }}"
-                                        {{ $filter_role === $role->name ? 'selected' : '' }}>
-                                        {{ ucfirst($role->name) }}
-                                    </option>
-                                @endforeach
-                            </select>
+                        <div style="min-width: 180px;">
+                            <label class="form-label mb-2">Role</label>
+                            <input type="hidden" name="role" id="role_input" value="{{ $filter_role }}">
+                            <div class="dropdown">
+                                <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="roleDropdown">
+                                    <div class="d-flex align-items-center text-truncate">
+                                        <i class="ri-user-settings-line me-2 text-muted"></i>
+                                        <span class="text-truncate">
+                                            {{ $filter_role ? ucfirst($filter_role) : 'Semua Role' }}
+                                        </span>
+                                    </div>
+                                    <i class="ri-arrow-down-s-line text-muted"></i>
+                                </button>
+                                <ul class="dropdown-menu w-100 shadow-sm">
+                                    <li><a class="dropdown-item {{ $filter_role === '' ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'role', '', 'Semua Role')">Semua Role</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    @foreach ($roles as $role)
+                                        <li><a class="dropdown-item {{ $filter_role === $role->name ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'role', '{{ $role->name }}', '{{ ucfirst($role->name) }}')">{{ ucfirst($role->name) }}</a></li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-wave">
-                            <i class="ri-search-line me-2"></i>Cari
-                        </button>
-                        @if ($search || $filter_role !== '')
-                            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-wave">
+                        
+                        <div id="reset-container" class="{{ $search || $filter_role !== '' ? '' : 'd-none' }}">
+                            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-wave d-flex align-items-center" id="resetBtn" style="height: 38px;">
                                 <i class="ri-close-line me-2"></i>Reset
                             </a>
-                        @endif
+                        </div>
                     </form>
                 </div>
             </div>
 
-            <div class="card table-wrapper">
-                <div class="card-header border-bottom-0 bg-white py-3">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0">Daftar Pengguna ({{ $users->total() }})</h5>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    @if ($users->count() > 0)
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th style="width: 18%;">Nama</th>
-                                        <th style="width: 18%;">Email</th>
-                                        <th style="width: 12%;">Role</th>
-                                        <th style="width: 14%;">Status</th>
-                                        <th style="width: 16%;">Tanggal Daftar</th>
-                                        <th style="width: 22%;" class="text-center">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($users as $user)
-                                        <tr>
-                                            <td data-label="Nama">
-                                                <strong>{{ $user->name }}</strong>
-                                            </td>
-                                            <td data-label="Email">
-                                                <small class="text-muted">{{ $user->email }}</small>
-                                            </td>
-                                            <td data-label="Role">
-                                                @forelse ($user->roles as $role)
-                                                    <span class="badge bg-primary">{{ ucfirst($role->name) }}</span>
-                                                @empty
-                                                    <span class="badge bg-secondary">Tidak Ada Role</span>
-                                                @endforelse
-                                            </td>
-                                            <td data-label="Status">
-                                                @if ($user->hasRole('perusahaan'))
-                                                    @if ($user->is_validated)
-                                                        <span class="badge bg-success">
-                                                            <i class="ri-check-line me-1"></i>Tervalidasi
-                                                        </span>
-                                                    @else
-                                                        <span class="badge bg-warning">
-                                                            <i class="ri-time-line me-1"></i>Menunggu Validasi
-                                                        </span>
-                                                    @endif
-                                                @else
-                                                    <span class="badge bg-secondary">-</span>
-                                                @endif
-                                            </td>
-                                            <td data-label="Tanggal Daftar">
-                                                <small class="text-muted">
-                                                    {{ $user->created_at?->format('d-m-Y') ?? '-' }}
-                                                </small>
-                                            </td>
-                                            <td data-label="Aksi" class="text-center">
-                                                @if ($user->hasRole('perusahaan'))
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                            <i class="ri-more-2-fill"></i>
-                                                        </button>
-                                                        <ul class="dropdown-menu dropdown-menu-end">
-                                                            @if (!$user->is_validated)
-                                                                <li>
-                                                                    <button type="button" class="dropdown-item text-success"
-                                                                        data-bs-toggle="modal" data-bs-target="#validateUserModal"
-                                                                        data-user-id="{{ $user->id }}"
-                                                                        data-user-name="{{ $user->name }}"
-                                                                        data-is-validated="{{ $user->is_validated ? '1' : '0' }}">
-                                                                        <i class="ri-check-line me-2 align-middle"></i>Validasi Akun
-                                                                    </button>
-                                                                </li>
-                                                            @else
-                                                                <li>
-                                                                    <button type="button" class="dropdown-item text-warning"
-                                                                        data-bs-toggle="modal" data-bs-target="#validateUserModal"
-                                                                        data-user-id="{{ $user->id }}"
-                                                                        data-user-name="{{ $user->name }}"
-                                                                        data-is-validated="{{ $user->is_validated ? '1' : '0' }}">
-                                                                        <i class="ri-close-line me-2 align-middle"></i>Batalkan Validasi
-                                                                    </button>
-                                                                </li>
-                                                            @endif
-                                                            <li>
-                                                                <button type="button" class="dropdown-item text-primary"
-                                                                    data-bs-toggle="modal" data-bs-target="#resetPasswordModal"
-                                                                    data-user-id="{{ $user->id }}"
-                                                                    data-user-name="{{ $user->name }}">
-                                                                    <i class="ri-lock-password-line me-2 align-middle"></i>Reset Password
-                                                                </button>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                @else
-                                                    <span class="text-muted small">-</span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @else
-                        <div class="p-4 text-center">
-                            <div class="mb-3">
-                                <i class="ri-user-line" style="font-size: 48px; color: #ddd;"></i>
-                            </div>
-                            <h5 class="text-muted mb-2">Tidak ada pengguna</h5>
-                            <p class="text-muted mb-3">Tidak ada data pengguna yang sesuai dengan kriteria pencarian</p>
-                        </div>
-                    @endif
-                </div>
-
-                @if ($users->hasPages())
-                    <div class="card-footer bg-white border-top">
-                        <nav aria-label="Page navigation">
-                            {{ $users->links() }}
-                        </nav>
-                    </div>
-                @endif
+            <div class="card table-wrapper" id="table-container">
+                @include('pages.admin.users.table')
             </div>
         </div>
     </div>
@@ -274,6 +196,104 @@
 @section('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filterForm');
+            const searchInput = document.getElementById('searchInput');
+            const tableContainer = document.getElementById('table-container');
+            const resetContainer = document.getElementById('reset-container');
+            let debounceTimer;
+
+            const fetchTable = (url) => {
+                tableContainer.style.opacity = '0.5';
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    tableContainer.innerHTML = html;
+                    tableContainer.style.opacity = '1';
+                    if (typeof Waves !== 'undefined') Waves.init();
+                })
+                .catch(error => {
+                    console.error('Error fetching table:', error);
+                    tableContainer.style.opacity = '1';
+                });
+            };
+
+            const triggerFetch = () => {
+                const formData = new FormData(filterForm);
+                const params = new URLSearchParams(formData).toString();
+                const url = `${filterForm.action}?${params}`;
+                
+                const search = formData.get('search');
+                const role = formData.get('role');
+
+                if ((search && search.trim() !== "") || role !== "") {
+                    resetContainer.classList.remove('d-none');
+                } else {
+                    resetContainer.classList.add('d-none');
+                }
+
+                window.history.pushState({}, '', url);
+                fetchTable(url);
+            };
+
+            window.selectFilter = function(el, type, value, label) {
+                document.getElementById(type + '_input').value = value;
+                const btn = document.getElementById(type + 'Dropdown');
+                
+                const labelContainer = btn.querySelector('span');
+                if (labelContainer) {
+                    labelContainer.textContent = label;
+                }
+
+                const dropdownMenu = el.closest('.dropdown-menu');
+                dropdownMenu.querySelectorAll('.dropdown-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                el.classList.add('active');
+                
+                triggerFetch();
+            };
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(triggerFetch, 500);
+            });
+
+            tableContainer.addEventListener('click', function(e) {
+                const link = e.target.closest('.pagination a');
+                if (link) {
+                    e.preventDefault();
+                    const url = link.href;
+                    window.history.pushState({}, '', url);
+                    fetchTable(url);
+                    tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                searchInput.value = '';
+                document.getElementById('role_input').value = '';
+                
+                const rDropdown = document.getElementById('roleDropdown');
+                if (rDropdown.querySelector('span')) rDropdown.querySelector('span').textContent = 'Semua Role';
+
+                document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelectorAll('.dropdown-menu li:first-child .dropdown-item').forEach(item => {
+                    item.classList.add('active');
+                });
+                
+                resetContainer.classList.add('d-none');
+                const url = this.href;
+                window.history.pushState({}, '', url);
+                fetchTable(url);
+            });
+
             // Reset password modal setup
             const resetPasswordModal = document.getElementById('resetPasswordModal');
             const resetPasswordForm = document.getElementById('resetPasswordForm');
@@ -343,30 +363,33 @@
             const validateSubmitBtn = document.getElementById('validateSubmitBtn');
 
             if (validateUserModal) {
-                validateUserModal.addEventListener('show.bs.modal', function(event) {
-                    const button = event.relatedTarget;
-                    const userId = button.getAttribute('data-user-id');
-                    const userName = button.getAttribute('data-user-name');
-                    const isValidated = button.getAttribute('data-is-validated') === '1';
+                // Use event delegation for dynamic content
+                document.body.addEventListener('show.bs.modal', function(event) {
+                    if (event.target.id === 'validateUserModal') {
+                        const button = event.relatedTarget;
+                        const userId = button.getAttribute('data-user-id');
+                        const userName = button.getAttribute('data-user-name');
+                        const isValidated = button.getAttribute('data-is-validated') === '1';
 
-                    validateUserNameDisplay.textContent = `Pengguna: ${userName}`;
+                        validateUserNameDisplay.textContent = `Pengguna: ${userName}`;
 
-                    const validateUrl = `{{ route('users.validate', '__ID__') }}`.replace('__ID__',
-                        userId);
-                    const rejectUrl = `{{ route('users.reject', '__ID__') }}`.replace('__ID__', userId);
+                        const validateUrl = `{{ route('users.validate', '__ID__') }}`.replace('__ID__',
+                            userId);
+                        const rejectUrl = `{{ route('users.reject', '__ID__') }}`.replace('__ID__', userId);
 
-                    if (isValidated) {
-                        validateMessage.innerHTML =
-                            '<p>Apakah Anda yakin ingin <strong>membatalkan validasi</strong> akun ini? Pengguna tidak akan dapat login ke sistem.</p>';
-                        validateSubmitBtn.textContent = 'Batalkan Validasi';
-                        validateSubmitBtn.className = 'btn btn-warning';
-                        validateUserForm.action = rejectUrl;
-                    } else {
-                        validateMessage.innerHTML =
-                            '<p>Apakah Anda yakin ingin <strong>memvalidasi</strong> akun ini? Pengguna akan dapat login ke sistem.</p>';
-                        validateSubmitBtn.textContent = 'Validasi Akun';
-                        validateSubmitBtn.className = 'btn btn-success';
-                        validateUserForm.action = validateUrl;
+                        if (isValidated) {
+                            validateMessage.innerHTML =
+                                '<p>Apakah Anda yakin ingin <strong>membatalkan validasi</strong> akun ini? Pengguna tidak akan dapat login ke sistem.</p>';
+                            validateSubmitBtn.textContent = 'Batalkan Validasi';
+                            validateSubmitBtn.className = 'btn btn-warning';
+                            validateUserForm.action = rejectUrl;
+                        } else {
+                            validateMessage.innerHTML =
+                                '<p>Apakah Anda yakin ingin <strong>memvalidasi</strong> akun ini? Pengguna akan dapat login ke sistem.</p>';
+                            validateSubmitBtn.textContent = 'Validasi Akun';
+                            validateSubmitBtn.className = 'btn btn-success';
+                            validateUserForm.action = validateUrl;
+                        }
                     }
                 });
             }

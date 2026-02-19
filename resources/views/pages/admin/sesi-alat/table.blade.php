@@ -10,16 +10,24 @@
         <table class="table table-hover mb-0">
           <thead class="table-light">
             <tr>
-              <th style="width: 15%;">Perusahaan</th>
-              <th style="width: 20%;">Kendaraan</th>
-              <th style="width: 15%;">Alat</th>
-              <th style="width: 15%;">Status</th>
-              <th style="width: 25%;">Waktu Track Terakhir</th>
-              <th style="width: 10%;" class="text-center">Aksi</th>
+              <th style="min-width: 150px;">Perusahaan</th>
+              <th style="min-width: 150px;">Kendaraan</th>
+              <th style="min-width: 120px;">Alat</th>
+              <th style="min-width: 100px;">Status</th>
+              <th style="min-width: 150px;">Baterai</th>
+              <th style="min-width: 180px;">Waktu Track Terakhir</th>
+              <th style="min-width: 100px;" class="text-center">Aksi</th>
             </tr>
           </thead>
           <tbody>
             @foreach ($sesiAlat as $item)
+              @php
+                $lastTrack = $item->riwayatPerjalanan->sortByDesc('created_at')->first();
+                $battery = $lastTrack ? (int)$lastTrack->battery : 0;
+                $batteryColor = 'bg-danger';
+                if ($battery > 70) $batteryColor = 'bg-success';
+                elseif ($battery > 30) $batteryColor = 'bg-warning';
+              @endphp
               <tr>
                 <td data-label="Perusahaan">
                   <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan?->nama : '-' }}</small>
@@ -37,12 +45,16 @@
                   </span>
                 </td>
 
+                <td data-label="Baterai">
+                  <x-battery-circle :level="$battery" size="48px" />
+                </td>
+
                 <td data-label="Tanggal Track">
-                  @if ($item->riwayatPerjalanan?->isEmpty())
+                  @if (!$lastTrack)
                     <small class="text-muted">Belum ada track</small>
                   @else
                     <small class="text-muted local-date">
-                      {{ \Carbon\Carbon::parse($item->riwayatPerjalanan()->max('created_at'))->toIso8601String() }}
+                      {{ $lastTrack->created_at->toIso8601String() }}
                     </small>
                   @endif
                 </td>

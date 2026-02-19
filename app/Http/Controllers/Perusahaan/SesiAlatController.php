@@ -49,6 +49,10 @@ class SesiAlatController extends Controller
             ->paginate(10)
             ->appends(request()->query());
 
+        if ($request->ajax()) {
+            return view('pages.perusahaan.sesi-alat.table', compact('sesiAlat'))->render();
+        }
+
         return view('pages.perusahaan.sesi-alat.index', compact('sesiAlat', 'search', 'filter_status'));
     }
 

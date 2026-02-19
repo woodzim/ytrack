@@ -140,7 +140,7 @@ class SesiAlatController extends Controller
         
         // Cache history for 30 seconds to prevent heavy DB load on refresh
         $riwayatPerjalanan = Cache::remember($cacheKey, 10, function () use ($sesiAlat) {
-            return $sesiAlat->riwayatPerjalanan()->orderBy('created_at')->get();
+            return $sesiAlat->riwayatPerjalanan()->orderBy('created_at', 'desc')->get();
         });
 
         return view('pages.admin.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));

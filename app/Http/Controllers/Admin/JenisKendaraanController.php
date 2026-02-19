@@ -21,6 +21,10 @@ class JenisKendaraanController extends Controller
         $jenisKendaraan->orderBy('nama', 'asc');
         $jenisKendaraan = $jenisKendaraan->paginate(10)->appends(request()->query());
         
+        if ($request->ajax()) {
+            return view('pages.admin.jenis-kendaraan.table', compact('jenisKendaraan', 'search'))->render();
+        }
+
         return view('pages.admin.jenis-kendaraan.index', compact('jenisKendaraan', 'search'));
     }
 

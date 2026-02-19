@@ -104,24 +104,8 @@
                                             <td>
                                                 @php
                                                     $batLevel = (int) ($item->battery ?? 0);
-                                                    $batColor = 'bg-danger';
-                                                    if ($batLevel > 70) {
-                                                        $batColor = 'bg-success';
-                                                    } elseif ($batLevel >= 30) {
-                                                        $batColor = 'bg-warning';
-                                                    }
                                                 @endphp
-                                                <div class="d-flex align-items-center" style="min-width: 100px;">
-                                                    <div class="progress flex-grow-1"
-                                                        style="height: 6px; background-color: #e9ecef;">
-                                                        <div class="progress-bar {{ $batColor }}" role="progressbar"
-                                                            style="width: {{ $batLevel }}%"
-                                                            aria-valuenow="{{ $batLevel }}" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                    <span class="ms-2"
-                                                        style="font-size: 11px; font-weight: 600;">{{ $batLevel }}%</span>
-                                                </div>
+                                                <x-battery-circle :level="$batLevel" size="32px" />
                                             </td>
                                             <td>
                                                 <div class="action-buttons">
@@ -176,14 +160,15 @@
 
             // Initialize map
             const map = L.map('map-container', {
-                maxZoom: 14,
-                minZoom: 4
+                maxZoom: 18,
+                minZoom: 4,
+                attributionControl: false
             });
 
             // CartoDB Positron layer
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 attribution: '© OpenStreetMap contributors, © CARTO',
-                maxZoom: 14
+                maxZoom: 18
             }).addTo(map);
 
             // Get coordinates from table

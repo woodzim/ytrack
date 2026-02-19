@@ -87,6 +87,7 @@
 
 
   @yield('styles')
+  @stack('styles')
 
 </head>
 

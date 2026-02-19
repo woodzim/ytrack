@@ -65,6 +65,11 @@
   </div>
   <!-- End::page-header -->
 
+  <!-- Alert Section -->
+  <div id="low-bat-alert-container">
+    {{-- Diisi via JS Realtime jika ada --}}
+  </div>
+
   <!-- Start::app-content -->
   <div class="row g-2">
     <!-- Statistics Cards -->
@@ -74,7 +79,7 @@
           <div class="d-flex align-items-center justify-content-between">
             <div>
               <h6 class="card-title text-muted mb-2">Sesi Aktif</h6>
-              <h3 class="mb-0">{{ $totalSesiAlatAktif }}</h3>
+              <h3 class="mb-0" id="stat-active-sessions">{{ $totalSesiAlatAktif }}</h3>
             </div>
             <div class="stats-icon bg-success-transparent">
               <i class="ri-check-double-line fs-24 text-success"></i>
@@ -227,7 +232,7 @@
     </div>
 
     <!-- Activity Logs -->
-    <div class="col-xl-6 col-lg-12">
+    <div class="col-12">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
           <div class="card-title mb-0">Log Aktivitas Terbaru</div>
@@ -279,11 +284,11 @@
     </div>
 
     <!-- Error Tracking (Incomplete) -->
-    <div class="col-xl-6 col-lg-12">
+    <div class="col-12">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
           <div class="card-title mb-0">Tracking Tidak Lengkap</div>
-          <a href="{{ route('tracking-tidak-lengkap.index') }}" class="btn btn-sm btn-danger-transparent">
+          <a href="{{ route('tracking-tidak-lengkap.index') }}" class="btn btn-sm btn-primary-transparent">
             Lihat Semua <i class="ri-arrow-right-line ms-1"></i>
           </a>
         </div>
@@ -334,16 +339,17 @@
 
       const streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; CARTO',
-        maxZoom: 19
+        maxZoom: 18
       });
 
       map = L.map('map-admin', {
         center: [-2.5489, 118.0149],
-        zoom: 5,
+        zoom: 4,
         layers: [streets],
         gestureHandling: true,
         fullscreenControl: true,
-        preferCanvas: true
+        preferCanvas: true,
+        attributionControl: false
       });
 
       markerCluster = L.markerClusterGroup({
@@ -369,20 +375,36 @@
         });
       };
 
+      const getBatteryHtml = (level) => {
+        const levelInt = parseInt(level || 0);
+        let color = '#be1e2d';
+        if (levelInt > 70) color = '#10b981';
+        else if (levelInt > 30) color = '#f59e0b';
+        
+        return `<div class="d-flex align-items-center gap-2">
+                  <div style="position: relative; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(closest-side, white calc(100% - 3px), transparent calc(100% - 3px + 0.5px)), conic-gradient(${color} ${levelInt}%, #e9ecef 0);">
+                    <span style="font-size: 8px; font-weight: 700; color: ${color}; z-index: 1;">${levelInt}%</span>
+                  </div>
+                </div>`;
+      };
+
+      const lowBatSessions = new Set();
       locations.forEach(function(loc) {
+        if (loc.is_low_bat && loc.id_sesi) lowBatSessions.add(String(loc.id_sesi));
+
         if (loc.lat && loc.long) {
           const marker = L.marker([loc.lat, loc.long], {
               icon: getMarkerIcon(loc.status === 'Aktif')
             })
-            .bindPopup(`<div class="p-1">
+            .bindPopup(`<div class="p-1" id="popup-${loc.id_sesi}">
                           <div class="fw-bold mb-1">${loc.nama_alat}</div>
                           <div class="badge bg-primary-transparent text-primary mb-2">${loc.perusahaan}</div>
                           <div class="text-muted small mb-2">Kendaraan: ${loc.kendaraan}</div>
-                          <div class="d-flex justify-content-between border-top pt-2">
+                          <div class="d-flex justify-content-between align-items-center border-top pt-2">
                             <span class="small">Baterai:</span>
-                            <span class="fw-bold small ${loc.battery > 70 ? 'text-success' : (loc.battery >= 30 ? 'text-warning' : 'text-danger')}">${loc.battery}%</span>
+                            <div class="battery-popup-container">${getBatteryHtml(loc.battery)}</div>
                           </div>
-                          <div class="text-muted text-end mt-1" style="font-size: 9px;">
+                          <div class="text-muted text-end mt-1 last-update-text" style="font-size: 9px;">
                             ${loc.last_update}
                           </div>
                         </div>`, {
@@ -390,13 +412,68 @@
             });
 
           markerCluster.addLayer(marker);
-          markers[loc.id_sesi] = marker;
+          if (loc.id_sesi) markers[loc.id_sesi] = marker;
+        }
+
+        // --- REALTIME ECHO LISTENER ---
+        if (loc.id_sesi && loc.status === 'Aktif' && window.Echo) {
+          window.Echo.channel(`tracking.sesi.${loc.id_sesi}`)
+            .listen('.LokasiBaru', (e) => {
+              const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
+              const battery = parseInt(e.battery || 0);
+              const isLowBat = battery <= 20;
+
+              // 1. Update Map Marker
+              if (markers[loc.id_sesi]) {
+                const marker = markers[loc.id_sesi];
+                marker.setLatLng(latLng);
+                if (typeof markerCluster.refreshClusters === 'function') {
+                  markerCluster.refreshClusters(marker);
+                }
+
+                // Update popup if open
+                const popup = marker.getPopup();
+                if (popup && popup.isOpen()) {
+                  const popupElement = popup.getElement();
+                  if (popupElement) {
+                    const batContainer = popupElement.querySelector('.battery-popup-container');
+                    const updateText = popupElement.querySelector('.last-update-text');
+                    if (batContainer) batContainer.innerHTML = getBatteryHtml(battery);
+                    if (updateText) updateText.innerText = 'Sesaat lalu';
+                  }
+                }
+              }
+
+              // 2. Update Low Bat Logic
+              const sesiIdStr = String(loc.id_sesi);
+              if (isLowBat) lowBatSessions.add(sesiIdStr);
+              else lowBatSessions.delete(sesiIdStr);
+
+              updateLowBatAlert(lowBatSessions.size);
+            });
         }
       });
 
+      function updateLowBatAlert(count) {
+        const container = document.getElementById('low-bat-alert-container');
+        if (count > 0) {
+          container.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-3 shadow-sm border-0" role="alert">
+            <i class="ri-error-warning-fill fs-20 me-2"></i>
+            <div>
+              <strong>Peringatan!</strong> Terdapat <b>${count}</b> perangkat dengan baterai lemah (<20%).
+            </div>
+          </div>`;
+        } else {
+          container.innerHTML = '';
+        }
+      }
+
+      // Initial check
+      if (lowBatSessions.size > 0) updateLowBatAlert(lowBatSessions.size);
+
       if (Object.keys(markers).length > 0) {
         map.fitBounds(markerCluster.getBounds().pad(0.1), {
-          maxZoom: 6
+          maxZoom: 18
         });
       }
 
@@ -455,7 +532,10 @@
         },
         xaxis: {
           type: 'category',
-          categories: travelData.map(d => new Date(d.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })),
+          categories: travelData.map(d => new Date(d.date).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'short'
+          })),
           axisBorder: {
             show: false
           },

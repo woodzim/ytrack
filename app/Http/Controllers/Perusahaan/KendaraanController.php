@@ -19,6 +19,7 @@ class KendaraanController extends Controller
     {
         $idPerusahaan = Auth::user()->id_perusahaan;
         $search = $request->input('search');
+        $filter_status = $request->input('status');
 
         $query = Kendaraan::where('id_perusahaan', $idPerusahaan)
             ->with('jenisKendaraan')
@@ -33,13 +34,28 @@ class KendaraanController extends Controller
             });
         }
 
+        if ($request->has('status') && $request->input('status') !== null && $request->input('status') !== '') {
+            $filter_status = $request->input('status');
+            if ($filter_status == '1') {
+                // Sedang Digunakan (punya sesi aktif)
+                $query->whereHas('sesiAlat', function($q) {
+                    $q->where('aktif', true);
+                });
+            } elseif ($filter_status == '0') {
+                // Standby (tidak punya sesi aktif)
+                $query->whereDoesntHave('sesiAlat', function($q) {
+                    $q->where('aktif', true);
+                });
+            }
+        }
+
         $kendaraan = $query->latest()->paginate(10)->withQueryString();
 
         if ($request->ajax()) {
-            return view('pages.perusahaan.kendaraan.table', compact('kendaraan', 'search'))->render();
+            return view('pages.perusahaan.kendaraan.table', compact('kendaraan', 'search', 'filter_status'))->render();
         }
 
-        return view('pages.perusahaan.kendaraan.index', compact('kendaraan', 'search'));
+        return view('pages.perusahaan.kendaraan.index', compact('kendaraan', 'search', 'filter_status'));
     }
 
     /**

@@ -185,7 +185,7 @@
                     </div>
                 </a>
                 <!-- End::header-link|dropdown-toggle -->
-                <div class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" style="--bs-dropdown-padding-y: 0.5rem; margin-top: 0.5rem;"
+                <div class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" style="--bs-dropdown-padding-y: 0.5rem; margin-top: 0.5rem; min-width: 260px;"
                     aria-labelledby="mainHeaderProfile">
                     {{-- <div class="p-3 bg-primary text-fixed-white">
                         <div class="d-flex align-items-center justify-content-between">

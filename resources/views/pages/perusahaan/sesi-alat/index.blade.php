@@ -2,11 +2,47 @@
 
 @section('styles')
   <style>
-    /* Force parent containers to allow overflow so dropdowns aren't cut off */
-    .custom-card,
-    .custom-card .card-body,
+    /* Memberikan ruang di bawah tabel agar dropdown tidak terpotong */
     .table-responsive {
+        padding-bottom: 80px !important;
+        margin-bottom: -80px !important;
+        overflow-x: auto !important;
+        overflow-y: visible !important;
+    }
+    /* Memastikan card tidak memotong konten yang keluar (seperti dropdown) */
+    .custom-card {
         overflow: visible !important;
+    }
+    .custom-card .card-body {
+        overflow: visible !important;
+    }
+
+    /* Hide the default Bootstrap caret */
+    .hide-arrow::after {
+        display: none !important;
+    }
+
+    /* Standardize the custom dropdown button layout */
+    .custom-filter-dropdown {
+        height: 38px;
+        border: 1px solid #dee2e6;
+        background-color: #fff;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        width: 100%;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        text-align: left;
+    }
+    .custom-filter-dropdown:hover {
+        border-color: #b1b5b9;
+    }
+    .custom-filter-dropdown:focus {
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
   </style>
 @endsection
@@ -29,40 +65,48 @@
 
       <div class="card mb-4 custom-card">
         <div class="card-body">
-          <form action="{{ route('perusahaan.sesi-alat.index') }}" method="GET"
+          <form action="{{ route('perusahaan.sesi-alat.index') }}" method="GET" id="filterForm"
             class="d-flex gap-3 flex-wrap align-items-end">
 
             {{-- SEARCH INPUT --}}
-            <div class="grow" style="min-width: 200px;">
-              <label for="searchInput" class="form-label fw-medium mb-1">Cari Sesi</label>
+            <div class="grow" style="min-width: 250px;">
+              <label for="searchInput" class="form-label fw-medium mb-2">Cari Sesi</label>
               <div class="input-group">
-                <span class="input-group-text bg-light border-end-0"><i class="ri-search-line text-muted"></i></span>
+                <span class="input-group-text bg-white border-end-0" style="height: 38px;"><i class="ri-search-line text-muted"></i></span>
                 {{-- Input pencarian --}}
-                <input type="text" id="searchInput" name="search" class="form-control border-start-0 ps-0"
-                  placeholder="Cari nama sesi, serial number alat, atau kendaraan..." value="{{ request('search') }}">
+                <input type="text" id="searchInput" name="search" class="form-control border-start-0 ps-1"
+                  placeholder="Cari nama sesi, serial number alat, atau kendaraan..." value="{{ request('search') }}" autocomplete="off" style="height: 38px;">
               </div>
             </div>
 
             {{-- FILTER STATUS --}}
-            <div style="min-width: 150px;">
-              <label for="statusFilter" class="form-label fw-medium mb-1">Status</label>
-              <select id="statusFilter" name="status" class="form-select">
-                <option value="">Semua Status</option>
-                <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Aktif</option>
-                <option value="0" {{ request('status') === '0' ? 'selected' : '' }}>Nonaktif</option>
-              </select>
+            <div style="min-width: 180px;">
+              <label class="form-label fw-medium mb-2">Status</label>
+              <input type="hidden" name="status" id="status_input" value="{{ request('status') }}">
+              <div class="dropdown">
+                <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown">
+                  <div class="d-flex align-items-center">
+                    <i class="ri-checkbox-circle-line me-2 text-muted"></i>
+                    <span>
+                      @if(request('status') === '1') Aktif
+                      @elseif(request('status') === '0') Nonaktif
+                      @else Semua Status @endif
+                    </span>
+                  </div>
+                  <i class="ri-arrow-down-s-line text-muted"></i>
+                </button>
+                <ul class="dropdown-menu w-100 shadow-sm">
+                  <li><a class="dropdown-item {{ request('status') === null || request('status') === '' ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'status', '', 'Semua Status')">Semua Status</a></li>
+                  <li><a class="dropdown-item {{ request('status') === '1' ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'status', '1', 'Aktif')">Aktif</a></li>
+                  <li><a class="dropdown-item {{ request('status') === '0' ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'status', '0', 'Nonaktif')">Nonaktif</a></li>
+                </ul>
+              </div>
             </div>
 
-            <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-primary btn-wave">
-                Cari
-              </button>
-              {{-- Reset hanya muncul jika ada query parameter --}}
-              @if (request('search') || request('status') !== null)
-                <a href="{{ route('perusahaan.sesi-alat.index') }}" class="btn btn-light btn-wave">
-                  Reset
-                </a>
-              @endif
+            <div id="reset-container" class="{{ request()->filled('search') || request()->has('status') && request('status') !== '' ? '' : 'd-none' }}">
+              <a href="{{ route('perusahaan.sesi-alat.index') }}" class="btn btn-outline-secondary btn-wave d-flex align-items-center" id="resetBtn" style="height: 38px;">
+                <i class="ri-close-line me-2"></i>Reset
+              </a>
             </div>
 
           </form>
@@ -72,163 +116,12 @@
       <div class="card custom-card">
         <div class="card-header justify-content-between">
           <div class="card-title">
-            Daftar Perjalanan ({{ $sesiAlat->total() }})
+            Daftar Perjalanan
           </div>
         </div>
 
-        <div class="card-body p-0">
-          @if ($sesiAlat->count() > 0)
-            <div class="table-responsive">
-              <table class="table table-hover text-nowrap mb-0">
-                <thead class="table-light">
-                  <tr>
-                    <th scope="col">Nama Sesi</th>
-                    <th scope="col">Kendaraan</th>
-                    <th scope="col">Alat GPS (SN)</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Battery</th>
-                    <th scope="col">Update Terakhir</th>
-                    <th scope="col" class="text-center" style="width: 150px;">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @foreach ($sesiAlat as $item)
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="avatar avatar-sm me-2 text-primary">
-                            <i class="ri-route-line fs-5"></i>
-                          </div>
-                          <span class="fw-medium {{ empty($item->nama) ? 'fst-italic text-muted' : '' }}">
-                            {{ $item->nama ?? '(Sesi Tanpa Nama)' }}
-                          </span>
-                        </div>
-                      </td>
-
-                      <td>
-                        @if ($item->kendaraan)
-                          <div>{{ $item->kendaraan->nama }}</div>
-                          <small class="text-muted" style="font-size: 0.75rem;">{{ $item->kendaraan->plat }}</small>
-                        @else
-                          <span class="text-muted fst-italic">-</span>
-                        @endif
-                      </td>
-
-                      <td>
-                        @if ($item->alat)
-                          <span class="badge bg-light text-dark border">
-                            <i class="ri-cpu-line me-1"></i>
-                            {{-- PERUBAHAN DI SINI: Menggunakan ID (Serial Number) --}}
-                            {{ $item->alat->id }}
-                          </span>
-                        @else
-                          <span class="text-muted">-</span>
-                        @endif
-                      </td>
-
-                      <td>
-                        @if ($item->aktif)
-                          <span class="badge bg-success-transparent">Aktif</span>
-                        @else
-                          <span class="badge bg-secondary-transparent">Nonaktif</span>
-                        @endif
-                      </td>
-
-                      <td>
-                        @php
-                          $lastRiwayat = $item->riwayatPerjalanan?->sortByDesc('created_at')->first();
-                          $batLevel = (int) ($lastRiwayat?->battery ?? 0);
-                          $batColor = 'bg-danger';
-                          if ($batLevel > 70) {
-                              $batColor = 'bg-success';
-                          } elseif ($batLevel >= 30) {
-                              $batColor = 'bg-warning';
-                          }
-                        @endphp
-                        @if($lastRiwayat && $lastRiwayat->battery !== null)
-                          <div class="d-flex align-items-center" style="min-width: 80px;">
-                            <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
-                              <div class="progress-bar {{ $batColor }}" role="progressbar"
-                                style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
-                                aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <span class="ms-2" style="font-size: 11px; font-weight: 600;">{{ $batLevel }}%</span>
-                          </div>
-                        @else
-                          <small class="text-muted">-</small>
-                        @endif
-                      </td>
-
-                      <td>
-                        {{-- Output Tanggal ISO --}}
-                        <small class="text-muted local-date">
-                          {{ $item->updated_at ? $item->updated_at->toIso8601String() : '' }}
-                        </small>
-                      </td>
-
-                      <td class="text-center">
-                        <div class="dropdown">
-                          <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button"
-                            data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
-                            <i class="ri-more-2-fill"></i>
-                          </button>
-                          <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                              <a class="dropdown-item" href="{{ route('perusahaan.sesi-alat.show', $item->id) }}">
-                                <i class="ri-eye-line me-2 align-middle text-info"></i>Lihat Tracking
-                              </a>
-                            </li>
-                            <li>
-                              <form action="{{ route('perusahaan.sesi-alat.toggle', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Ubah status sesi ini?')">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="dropdown-item">
-                                  <i
-                                    class="ri-{{ $item->aktif ? 'stop-circle-line text-warning' : 'play-circle-line text-success' }} me-2 align-middle"></i>
-                                  {{ $item->aktif ? 'Matikan Sesi' : 'Aktifkan Sesi' }}
-                                </button>
-                              </form>
-                            </li>
-                            <li>
-                              <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                              <form action="{{ route('perusahaan.sesi-alat.destroy', $item->id) }}" method="POST"
-                                onsubmit="return confirm('Hapus sesi ini? Data tracking mungkin akan hilang.')">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="dropdown-item text-danger">
-                                  <i class="ri-delete-bin-line me-2 align-middle"></i>Hapus
-                                </button>
-                              </form>
-                            </li>
-                          </ul>
-                        </div>
-                      </td>
-                    </tr>
-                  @endforeach
-                </tbody>
-              </table>
-            </div>
-
-            <div class="d-flex justify-content-end border-top p-3">
-              {{ $sesiAlat->links() }}
-            </div>
-          @else
-            <div class="p-5 text-center">
-              <div class="mb-3">
-                <div class="avatar avatar-xxl bg-light text-muted">
-                  <i class="ri-route-line display-5"></i>
-                </div>
-              </div>
-              <h5 class="fw-bold">Belum Ada Perjalanan</h5>
-              <p class="text-muted mb-4">Buat sesi baru untuk mulai menghubungkan Alat GPS dengan Kendaraan.</p>
-              <a href="{{ route('perusahaan.sesi-alat.create') }}" class="btn btn-primary btn-wave">
-                <i class="ri-add-line me-2"></i>Buat Sesi Sekarang
-              </a>
-            </div>
-          @endif
+        <div class="card-body p-0" id="table-container">
+          @include('pages.perusahaan.sesi-alat.table')
         </div>
       </div>
 
@@ -239,28 +132,125 @@
 @section('scripts')
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const dateElements = document.querySelectorAll('.local-date');
+      const filterForm = document.getElementById('filterForm');
+      const tableContainer = document.getElementById('table-container');
+      const searchInput = document.getElementById('searchInput');
+      const resetContainer = document.getElementById('reset-container');
+      const resetBtn = document.getElementById('resetBtn');
+      let debounceTimer;
 
-      dateElements.forEach(el => {
-        const rawDate = el.textContent.trim();
-        if (rawDate) {
-          const date = new Date(rawDate);
+      const formatDates = () => {
+        const dateElements = document.querySelectorAll('.local-date');
+        dateElements.forEach(el => {
+          const rawDate = el.textContent.trim();
+          if (rawDate && rawDate !== '-') {
+            const date = new Date(rawDate);
+            if (!isNaN(date.getTime())) {
+              const formatted = new Intl.DateTimeFormat('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              }).format(date);
+              el.textContent = formatted;
+            }
+          } else {
+            el.textContent = '-';
+          }
+        });
+      };
 
-          const formatted = new Intl.DateTimeFormat('id-ID', {
-            day: 'numeric',
-            month: 'short', // 'Des'
-            year: 'numeric', // '2023'
-            hour: '2-digit', // '14'
-            minute: '2-digit', // '30'
-            hour12: false // Format 24 Jam
-          }).format(date);
+      const fetchTable = (url) => {
+        tableContainer.style.opacity = '0.5';
+        fetch(url, {
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          })
+          .then(res => res.text())
+          .then(html => {
+            tableContainer.innerHTML = html;
+            tableContainer.style.opacity = '1';
+            formatDates();
+            if (typeof Waves !== 'undefined') Waves.init();
+          });
+      };
 
-          // Hasil contoh: "31 Des 2024 14:30"
-          el.textContent = formatted;
+      const triggerFetch = () => {
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams(formData).toString();
+        const url = `${filterForm.action}?${params}`;
+
+        const search = formData.get('search');
+        const status = formData.get('status');
+
+        if ((search && search.trim() !== "") || (status !== null && status !== "")) {
+          resetContainer.classList.remove('d-none');
         } else {
-          el.textContent = '-';
+          resetContainer.classList.add('d-none');
+        }
+
+        window.history.pushState({}, '', url);
+        fetchTable(url);
+      };
+
+      window.selectFilter = function(el, type, value, label) {
+        document.getElementById(type + '_input').value = value;
+        const btn = document.getElementById(type + 'Dropdown');
+        
+        const labelContainer = btn.querySelector('span');
+        if (labelContainer) {
+            labelContainer.textContent = label;
+        }
+
+        const dropdownMenu = el.closest('.dropdown-menu');
+        dropdownMenu.querySelectorAll('.dropdown-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        el.classList.add('active');
+        
+        triggerFetch();
+      };
+
+      searchInput.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(triggerFetch, 500);
+      });
+
+      resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        searchInput.value = '';
+        document.getElementById('status_input').value = '';
+        
+        const sDropdown = document.getElementById('statusDropdown');
+        if (sDropdown.querySelector('span')) sDropdown.querySelector('span').textContent = 'Semua Status';
+
+        document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        document.querySelectorAll('.dropdown-menu li:first-child .dropdown-item').forEach(item => {
+            item.classList.add('active');
+        });
+        
+        resetContainer.classList.add('d-none');
+        const url = resetBtn.href;
+        window.history.pushState({}, '', url);
+        fetchTable(url);
+      });
+
+      tableContainer.addEventListener('click', (e) => {
+        const link = e.target.closest('.pagination a');
+        if (link) {
+          e.preventDefault();
+          window.history.pushState({}, '', link.href);
+          fetchTable(link.href);
+          tableContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       });
+
+      formatDates();
     });
   </script>
 @endsection

@@ -67,6 +67,12 @@ class AlatController extends Controller
             ['path' => request()->url(), 'query' => request()->query()]
         );
 
+        if ($request->ajax()) {
+            return view('pages.perusahaan.alat.table', [
+                'alatList' => $paginatedData,
+            ])->render();
+        }
+
         return view('pages.perusahaan.alat.index', [
             'alatList' => $paginatedData,
             'search' => $search,

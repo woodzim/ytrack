@@ -9,6 +9,20 @@
     .table-responsive {
         overflow: visible !important;
     }
+    
+    /* Hide the default Bootstrap caret (down arrow) */
+    .hide-arrow::after {
+        display: none !important;
+    }
+
+    /* Standardize the custom dropdown button layout */
+    .custom-filter-dropdown {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        width: 100%;
+        text-align: left;
+    }
   </style>
 @endsection
 
@@ -32,49 +46,62 @@
           <form action="{{ route('kendaraan.index') }}" method="GET" id="filterForm" class="d-flex gap-2 flex-wrap align-items-end">
             <div class="grow" style="min-width: 250px;">
               <label for="searchInput" class="form-label mb-2">Cari Kendaraan</label>
-              <input type="text" id="searchInput" name="search" class="form-control"
-                placeholder="Cari berdasarkan nama atau plat nomor..." value="{{ $search }}" autocomplete="off" style="height: 38px;">
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0" style="height: 38px;">
+                  <i class="ri-search-line text-muted"></i>
+                </span>
+                <input type="text" id="searchInput" name="search" class="form-control border-start-0 ps-1"
+                  placeholder="Cari berdasarkan nama atau plat nomor..." value="{{ $search }}" autocomplete="off" style="height: 38px;">
+              </div>
             </div>
 
             <!-- Custom Dropdown Perusahaan -->
-            <div style="min-width: 180px;">
+            <div style="min-width: 200px;">
               <label class="form-label mb-2">Perusahaan</label>
               <input type="hidden" name="id_perusahaan" id="id_perusahaan_input" value="{{ $id_perusahaan }}">
               <div class="dropdown">
-                <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="perusahaanDropdown">
-                  <span class="text-truncate">
-                    @php
-                        $selectedP = $perusahaan->firstWhere('id', $id_perusahaan);
-                    @endphp
-                    {{ $selectedP ? $selectedP->nama : 'Semua Perusahaan' }}
-                  </span>
+                <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="id_perusahaanDropdown">
+                  <div class="d-flex align-items-center text-truncate">
+                    <i class="ri-building-line me-2 text-muted"></i>
+                    <span class="text-truncate">
+                      @php
+                          $selectedP = $perusahaan->firstWhere('id', $id_perusahaan);
+                      @endphp
+                      {{ $selectedP ? $selectedP->nama : 'Semua Perusahaan' }}
+                    </span>
+                  </div>
+                  <i class="ri-arrow-down-s-line text-muted"></i>
                 </button>
                 <ul class="dropdown-menu w-100 shadow-sm" style="max-height: 300px; overflow-y: auto;">
-                  <li><a class="dropdown-item {{ !$id_perusahaan ? 'active' : '' }}" href="#" onclick="selectFilter('id_perusahaan', '', 'Semua Perusahaan')">Semua Perusahaan</a></li>
+                  <li><a class="dropdown-item {{ !$id_perusahaan ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'id_perusahaan', '', 'Semua Perusahaan')">Semua Perusahaan</a></li>
                   <li><hr class="dropdown-divider"></li>
                   @foreach ($perusahaan as $p)
-                    <li><a class="dropdown-item {{ $id_perusahaan == $p->id ? 'active' : '' }}" href="#" onclick="selectFilter('id_perusahaan', '{{ $p->id }}', '{{ $p->nama }}')">{{ $p->nama }}</a></li>
+                    <li><a class="dropdown-item {{ $id_perusahaan == $p->id ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'id_perusahaan', '{{ $p->id }}', '{{ $p->nama }}')">{{ $p->nama }}</a></li>
                   @endforeach
                 </ul>
               </div>
             </div>
 
             <!-- Custom Dropdown Status -->
-            <div style="min-width: 150px;">
+            <div style="min-width: 180px;">
               <label class="form-label mb-2">Status</label>
               <input type="hidden" name="status" id="status_input" value="{{ $status }}">
               <div class="dropdown">
                 <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown">
-                  <span>
-                    @if($status === 'tersedia') Tersedia
-                    @elseif($status === 'digunakan') Digunakan
-                    @else Semua Status @endif
-                  </span>
+                  <div class="d-flex align-items-center">
+                    <i class="ri-checkbox-circle-line me-2 text-muted"></i>
+                    <span>
+                      @if($status === 'tersedia') Tersedia
+                      @elseif($status === 'digunakan') Digunakan
+                      @else Semua Status @endif
+                    </span>
+                  </div>
+                  <i class="ri-arrow-down-s-line text-muted"></i>
                 </button>
                 <ul class="dropdown-menu w-100 shadow-sm">
-                  <li><a class="dropdown-item {{ !$status ? 'active' : '' }}" href="#" onclick="selectFilter('status', '', 'Semua Status')">Semua Status</a></li>
-                  <li><a class="dropdown-item {{ $status === 'tersedia' ? 'active' : '' }}" href="#" onclick="selectFilter('status', 'tersedia', 'Tersedia')">Tersedia</a></li>
-                  <li><a class="dropdown-item {{ $status === 'digunakan' ? 'active' : '' }}" href="#" onclick="selectFilter('status', 'digunakan', 'Digunakan')">Digunakan</a></li>
+                  <li><a class="dropdown-item {{ !$status ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'status', '', 'Semua Status')">Semua Status</a></li>
+                  <li><a class="dropdown-item {{ $status === 'tersedia' ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'status', 'tersedia', 'Tersedia')">Tersedia</a></li>
+                  <li><a class="dropdown-item {{ $status === 'digunakan' ? 'active' : '' }}" href="#" onclick="selectFilter(this, 'status', 'digunakan', 'Digunakan')">Digunakan</a></li>
                 </ul>
               </div>
             </div>
@@ -142,10 +169,23 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchTable(url);
     };
 
-    window.selectFilter = function(type, value, label) {
+    window.selectFilter = function(el, type, value, label) {
         document.getElementById(type + '_input').value = value;
         const btn = document.getElementById(type + 'Dropdown');
-        btn.querySelector('span').textContent = label;
+        
+        // Find the span/span within the flex container inside the button
+        const labelContainer = btn.querySelector('span');
+        if (labelContainer) {
+            labelContainer.textContent = label;
+        }
+
+        // Update active class in dropdown items
+        const dropdownMenu = el.closest('.dropdown-menu');
+        dropdownMenu.querySelectorAll('.dropdown-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        el.classList.add('active');
+        
         triggerFetch();
     };
 
@@ -171,8 +211,21 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('id_perusahaan_input').value = '';
         document.getElementById('status_input').value = '';
         
-        document.getElementById('perusahaanDropdown').querySelector('span').textContent = 'Semua Perusahaan';
-        document.getElementById('statusDropdown').querySelector('span').textContent = 'Semua Status';
+        // Reset label texts
+        const pDropdown = document.getElementById('id_perusahaanDropdown');
+        if (pDropdown.querySelector('span')) pDropdown.querySelector('span').textContent = 'Semua Perusahaan';
+        
+        const sDropdown = document.getElementById('statusDropdown');
+        if (sDropdown.querySelector('span')) sDropdown.querySelector('span').textContent = 'Semua Status';
+
+        // Reset active classes in dropdowns
+        document.querySelectorAll('.dropdown-menu .dropdown-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        // Set "Semua ..." as active
+        document.querySelectorAll('.dropdown-menu li:first-child .dropdown-item').forEach(item => {
+            item.classList.add('active');
+        });
         
         resetContainer.classList.add('d-none');
         const url = this.href;

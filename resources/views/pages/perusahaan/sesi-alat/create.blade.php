@@ -2,18 +2,13 @@
 
 @section('styles')
   <style>
-    /* CSS Tambahan agar tinggi input pas dengan konten custom */
-    .select2-container .select2-selection--single {
-      height: 48px !important;
-      /* Dipertinggi */
-      display: flex;
-      align-items: center;
+    /* Choices.js custom styling for better list visibility */
+    .choices__list--dropdown .choices__item--selectable {
+      padding-right: 10px;
     }
-
-    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
-      display: block;
-      width: 100%;
-      padding-top: 4px;
+    .choices__list--dropdown .choices__item--disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   </style>
 @endsection
@@ -53,7 +48,7 @@
                 <label for="id_kendaraan" class="form-label">
                   Kendaraan <span class="text-danger">*</span>
                 </label>
-                <select class="form-select select2-custom @error('id_kendaraan') is-invalid @enderror" id="id_kendaraan"
+                <select class="form-select select-choices @error('id_kendaraan') is-invalid @enderror" id="id_kendaraan"
                   name="id_kendaraan" required>
                   <option value="">-- Pilih Kendaraan --</option>
 
@@ -84,14 +79,13 @@
                 <label for="id_alat" class="form-label">
                   Serial Number Alat (ID) <span class="text-danger">*</span>
                 </label>
-                <select class="form-select select2-custom @error('id_alat') is-invalid @enderror" id="id_alat"
+                <select class="form-select select-choices @error('id_alat') is-invalid @enderror" id="id_alat"
                   name="id_alat" required>
                   <option value="">-- Pilih Alat --</option>
 
                   @foreach ($alat as $a)
                     @php
                       $isActive = $a->sesiAlat->isNotEmpty();
-                      // Info logic: Jika aktif tampilkan dipakai dimana, jika tidak tampilkan status siap
                       $usedBy =
                           $isActive && $a->sesiAlat->first()->kendaraan
                               ? 'Dipakai di: ' . $a->sesiAlat->first()->kendaraan->nama
@@ -181,68 +175,56 @@
 
 @section('scripts')
   <script>
-    $(document).ready(function() {
-
-      // Fungsi Formatter (Untuk isi Dropdown & Box Terpilih)
-      function formatOption(state) {
-        if (!state.id) {
-          return state.text; // Placeholder
-        }
-
-        // Ambil data atribut dari element <option> asli
-        const element = state.element;
-        const isActive = $(element).data('active') === true || $(element).data('active') === "true";
-        const info = $(element).data('info');
-
-        let $container = $('<div></div>');
-
-        if (isActive) {
-          // Style untuk ITEM YANG DISABLED
-          $container.addClass('text-muted opacity-75');
-          $container.append(
-            `<div class="d-flex justify-content-between align-items-center">
-                <strong>${state.text}</strong>
-                <span class="badge bg-danger-transparent text-danger border border-danger border-opacity-25">
-                    <i class="ri-lock-line me-1"></i> Digunakan
-                </span>
-            </div>`
-          );
-          if (info) {
-            $container.append(
-              `<small class="d-block mt-1 text-danger fst-italic" style="font-size:11px;">
-                 <i class="ri-information-line me-1"></i>${info}
-              </small>`
-            );
-          }
-        } else {
-          // Style untuk ITEM YANG AVAILABLE
-          $container.append(
-            `<div class="d-flex justify-content-between align-items-center">
-                <strong>${state.text}</strong>
-                <span class="badge bg-success-transparent text-success border border-success border-opacity-25">
-                    <i class="ri-check-line me-1"></i> Tersedia
-                </span>
-            </div>`
-          );
-          if (info) {
-            $container.append(`<small class="d-block mt-1 text-muted" style="font-size:11px;">${info}</small>`);
-          }
-        }
-
-        return $container;
-      }
-
-      // Inisialisasi Select2
-      $('.select2-custom').select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        templateResult: formatOption, // Mengatur tampilan LIST dropdown
-        templateSelection: formatOption, // Mengatur tampilan KOTAK INPUT setelah dipilih
-        escapeMarkup: function(m) {
-          return m; // Izinkan render HTML
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+      const elements = document.querySelectorAll('.select-choices');
+      
+      elements.forEach(element => {
+        new Choices(element, {
+          allowHTML: true,
+          placeholder: true,
+          searchEnabled: true,
+          itemSelectText: '',
+          callbackOnCreateTemplates: function(strToEl) {
+            return {
+              item: ({ classNames }, data) => {
+                return strToEl(`
+                  <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : classNames.itemSelectable}" 
+                    data-item 
+                    data-id="${data.id}" 
+                    data-value="${data.value}" 
+                    ${data.active ? 'aria-selected="true"' : ''} 
+                    ${data.disabled ? 'aria-disabled="true"' : ''}>
+                    <span class="fw-bold">${data.label}</span>
+                  </div>
+                `);
+              },
+              choice: ({ classNames }, data) => {
+                const isActive = data.customProperties && (data.customProperties.active === 'true' || data.customProperties.active === true);
+                const info = data.customProperties ? data.customProperties.info : '';
+                
+                return strToEl(`
+                  <div class="${classNames.item} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable} ${isActive ? 'text-muted opacity-75' : ''}" 
+                    data-select-text="${this.config.itemSelectText}" 
+                    data-choice 
+                    ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'} 
+                    data-id="${data.id}" 
+                    data-value="${data.value}" 
+                    role="option">
+                    <div class="d-flex justify-content-between align-items-center w-100">
+                      <strong>${data.label}</strong>
+                      ${isActive 
+                        ? '<span class="badge bg-danger-transparent text-danger border border-danger border-opacity-25"><i class="ri-lock-line me-1"></i> Digunakan</span>' 
+                        : '<span class="badge bg-success-transparent text-success border border-success border-opacity-25"><i class="ri-check-line me-1"></i> Tersedia</span>'
+                      }
+                    </div>
+                    ${info ? `<small class="d-block mt-1 ${isActive ? 'text-danger fst-italic' : 'text-muted'}" style="font-size:11px;"><i class="ri-information-line me-1"></i>${info}</small>` : ''}
+                  </div>
+                `);
+              },
+            };
+          },
+        });
       });
-
     });
   </script>
 @endsection
