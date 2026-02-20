@@ -121,7 +121,7 @@
             }
         },
 
-        colors: ["var(--primary-color)", 'rgb(255, 73, 205)', "rgb(50, 212, 132)"],
+        colors: ["var(--primary-color)", 'var(--secondary-color)', "var(--accent-color)"],
     };
     var chart2 = new ApexCharts(document.querySelector("#sales-overview"), options);
     chart2.render();
@@ -146,7 +146,7 @@
                 show: false,
             },
         },
-        colors: ["var(--primary-color)", "rgb(50, 212, 132)", "rgb(253, 175, 34)"],
+        colors: ["var(--primary-color)", "var(--secondary-color)", "var(--accent-color)"],
         stroke: {
             width: 1,
         },

@@ -46,11 +46,9 @@
               </li>
               <li class="slide">
                 <a href="{{ route('sesi-alat.index') }}"
-                  class="side-menu__item d-flex align-items-center justify-content-between {{ Route::is('sesi-alat.*') ? 'active' : '' }}">
-                  <div class="d-flex align-items-center">
-                    <i class="ri-road-map-line me-2"></i>
-                    Perjalanan
-                  </div>
+                  class="side-menu__item {{ Route::is('sesi-alat.*') ? 'active' : '' }}">
+                  <i class="ri-road-map-line side-menu__icon"></i>
+                  <span class="side-menu__label">Perjalanan</span>
                   @php
                     $activeSesiAlatCount = \App\Models\SesiAlat::where('aktif', true)->count();
                   @endphp
@@ -128,11 +126,9 @@
 
               <li class="slide">
                 <a href="{{ route('tracking-tidak-lengkap.index') }}"
-                  class="side-menu__item d-flex align-items-center justify-content-between {{ Route::is('tracking-tidak-lengkap.*') ? 'active' : '' }}">
-                  <div class="d-flex align-items-center">
-                    <i class="ri-error-warning-line me-2 text-danger"></i>
-                    Error Tracking
-                  </div>
+                  class="side-menu__item {{ Route::is('tracking-tidak-lengkap.*') ? 'active' : '' }}">
+                  <i class="ri-error-warning-line side-menu__icon text-danger"></i>
+                  <span class="side-menu__label">Error Tracking</span>
                   @php $errorTracking = \App\Models\RiwayatPerjalanan::uncompleted()->count(); @endphp
                   @if ($errorTracking > 0)
                     <span class="badge bg-white text-primary ms-2">{{ $errorTracking }}</span>

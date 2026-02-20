@@ -362,7 +362,7 @@
       const locations = @json($lokasiAlat);
 
       const getMarkerIcon = (isActive = true) => {
-        const color = isActive ? '#be1e2d' : '#64748b';
+        const color = isActive ? '#09637E' : '#64748b';
         const html = `<div style="background: white; border-radius: 50%; padding: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 2px solid ${color}; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;">
                         <i class="ri-map-pin-line" style="color: ${color}; font-size: 20px;"></i>
                       </div>`;
@@ -377,7 +377,7 @@
 
       const getBatteryHtml = (level) => {
         const levelInt = parseInt(level || 0);
-        let color = '#be1e2d';
+        let color = '#be1e2d'; // Keeping low battery red for danger indication
         if (levelInt > 70) color = '#10b981';
         else if (levelInt > 30) color = '#f59e0b';
         
@@ -514,7 +514,7 @@
         stroke: {
           curve: 'smooth',
           width: 3,
-          colors: ['#be1e2d']
+          colors: ['#09637E']
         },
         fill: {
           type: 'gradient',
@@ -525,7 +525,7 @@
             stops: [0, 90, 100],
             colorStops: [{
               offset: 0,
-              color: '#be1e2d',
+              color: '#09637E',
               opacity: 0.4
             }]
           }
@@ -591,7 +591,7 @@
           parentHeightOffset: 0
         },
         labels: @json($perusahaanChart->pluck('nama')),
-        colors: ['#be1e2d', '#28a745', '#ffc107', '#17a2b8', '#6610f2'],
+        colors: ['#09637E', '#088395', '#7AB2B2', '#28a745', '#ffc107'],
         legend: {
           show: true,
           position: 'bottom',

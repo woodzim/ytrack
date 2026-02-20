@@ -13,6 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
+        then: function () {
+            Route::middleware(['web', 'auth', 'role:admin'])
+                ->group(base_path('routes/admin/index.php'));
+
+            Route::middleware(['web', 'auth', 'role:perusahaan', 'verified', 'validated'])
+                ->prefix('perusahaan')
+                ->name('perusahaan.')
+                ->group(base_path('routes/perusahaan/index.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
