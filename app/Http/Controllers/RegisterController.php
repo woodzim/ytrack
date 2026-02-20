@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
@@ -68,6 +69,9 @@ class RegisterController extends Controller
         // Assign perusahaan role to user
         $user->assignRole('perusahaan');
 
+        // Trigger email verification
+        event(new Registered($user));
+
         // Send email to perusahaan
         try {
             Mail::to($user->email)->send(new NewCompanyRegistration($user));
@@ -83,8 +87,8 @@ class RegisterController extends Controller
             Log::error('Failed to send registration notification to admin: ' . $e->getMessage());
         }
 
-        return redirect()
-            ->route('login')
-            ->with('success', 'Pendaftaran berhasil! Silakan tunggu verifikasi dari admin sebelum mengakses dashboard.');
+        Auth::login($user);
+
+        return redirect()->route('verification.notice');
     }
 }

@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
+            'validated' => \App\Http\Middleware\EnsureUserIsValidated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
