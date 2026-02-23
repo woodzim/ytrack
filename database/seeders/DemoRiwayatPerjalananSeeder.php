@@ -8,6 +8,7 @@ use App\Models\Kendaraan;
 use App\Models\Perusahaan;
 use App\Models\RiwayatPerjalanan;
 use App\Models\SesiAlat;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -19,11 +20,18 @@ class DemoRiwayatPerjalananSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Ambil atau buat Perusahaan dan JenisKendaraan
-        $perusahaan = Perusahaan::first() ?? Perusahaan::create([
-            'nama' => 'Perusahaan Demo',
-            'alamat' => 'Alamat Demo'
-        ]);
+        // 1. Ambil Perusahaan milik user 'perusahaan@dumeg.id'
+        $user = User::where('email', 'perusahaan@dumeg.id')->first();
+        
+        if ($user && $user->id_perusahaan) {
+            $perusahaan = Perusahaan::find($user->id_perusahaan);
+        } else {
+            // Fallback jika user belum ada (seharusnya dijalankan setelah VerifiedCompanySeeder)
+            $perusahaan = Perusahaan::firstOrCreate(
+                ['nama' => 'PT. Terverifikasi Abadi'],
+                ['alamat' => 'Jl. Merdeka No. 1, Jakarta Pusat']
+            );
+        }
         
         $jenisKendaraan = JenisKendaraan::first() ?? JenisKendaraan::create([
             'nama' => 'Truk Demo',

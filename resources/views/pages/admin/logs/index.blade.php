@@ -16,7 +16,7 @@
              table-striped: Opsional, agar baris selang-seling warnanya 
         --}}
         <table class="table table-hover align-middle">
-          <thead class="table-light">
+          <thead class="bg-light">
             <tr>
               <th style="width: 15%;">Waktu</th>
               <th style="width: 20%;">Pelaku (User)</th>

@@ -14,13 +14,13 @@
 
 @section('content')
   <!-- Start::page-header -->
-  <div class="page-header-section d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center justify-content-between mb-4 page-header-breadcrumb flex-wrap gap-2">
     <div>
-      <h1>Daftar Perusahaan</h1>
-      <p>Kelola semua perusahaan di sistem</p>
+      <h1 class="page-title fw-bold fs-24 mb-1">Daftar Perusahaan</h1>
+      <p class="text-muted mb-0">Kelola semua perusahaan di sistem</p>
     </div>
     <div class="ms-auto">
-      <a href="{{ route('perusahaan.create') }}" class="btn btn-light btn-wave">
+      <a href="{{ route('admin.perusahaan.create') }}" class="btn btn-primary btn-wave shadow-sm">
         <i class="ri-add-line me-2"></i>Tambah Perusahaan
       </a>
     </div>
@@ -31,16 +31,19 @@
   <div class="row">
     <div class="col-12">
       <!-- Search Section -->
-      <div class="card mb-3">
-        <div class="card-body">
-          <form action="{{ route('perusahaan.index') }}" method="GET" id="filterForm" class="d-flex gap-2 flex-wrap align-items-end">
+      <div class="card mb-3 border-0 shadow-none bg-transparent">
+        <div class="p-0">
+          <form action="{{ route('admin.perusahaan.index') }}" method="GET" id="filterForm" class="d-flex gap-2 flex-wrap align-items-end">
             <div class="grow" style="min-width: 250px;">
               <label for="searchInput" class="form-label mb-2">Cari Perusahaan</label>
-              <input type="text" id="searchInput" name="search" class="form-control"
-                placeholder="Cari berdasarkan nama atau alamat..." value="{{ $search }}" autocomplete="off">
+              <div class="input-group">
+                <span class="input-group-text bg-light"><i class="ri-search-line"></i></span>
+                <input type="text" id="searchInput" name="search" class="form-control"
+                  placeholder="Cari berdasarkan nama atau alamat..." value="{{ $search }}" autocomplete="off">
+              </div>
             </div>
             <div id="reset-container" class="{{ $search ? '' : 'd-none' }}">
-              <a href="{{ route('perusahaan.index') }}" class="btn btn-outline-secondary btn-wave" id="resetBtn">
+              <a href="{{ route('admin.perusahaan.index') }}" class="btn btn-outline-secondary btn-wave" id="resetBtn">
                 <i class="ri-close-line me-2"></i>Reset
               </a>
             </div>

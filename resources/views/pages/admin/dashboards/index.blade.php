@@ -59,7 +59,7 @@
   <!-- Start::page-header -->
   <div class="d-flex align-items-center justify-content-between mb-3 page-header-breadcrumb flex-wrap gap-2">
     <div>
-      <h1 class="page-title fw-medium fs-20 mb-0">Selamat datang, {{ auth()->user()->name }}.</h1>
+      <h1 class="page-title fw-medium fs-20 mb-0">Beranda Admin YA-Track</h1>
       <p class="text-muted mb-0">Dashboard Monitoring Seluruh Alat YA-Track</p>
     </div>
   </div>
@@ -141,8 +141,8 @@
   <!-- Map Section -->
   <div class="row g-2 mt-1">
     <div class="col-12">
-      <div class="card border-0 shadow-sm overflow-hidden">
-        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+      <div class="card overflow-hidden">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
           <div class="card-title mb-0 fw-bold fs-14 text-uppercase ls-1">
             <i class="ri-map-pin-2-fill me-2 text-primary"></i>Monitoring Lokasi Alat Terkini (Seluruh Perusahaan)
           </div>
@@ -160,15 +160,23 @@
     <!-- Active Sessions -->
     <div class="col-12">
       <div class="card h-100">
-        <div class="card-header border-bottom">
-          <div class="card-title mb-0">Sesi Perjalanan Aktif</div>
-          <p class="text-muted mb-0 small">Perangkat yang sedang aktif melacak secara real-time</p>
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="card-title mb-0">Sesi Perjalanan Aktif</h5>
+            <p class="text-muted mb-0 small">Perangkat yang sedang aktif melacak secara real-time</p>
+          </div>
+          <div class="card-footer border-top mt-auto">
+            <a href="{{ route('sesi-alat.index') }}" class="btn btn-sm btn-outline-primary">
+              Lihat Semua <i class="ri-arrow-right-line ms-1"></i>
+            </a>
+          </div>
+
         </div>
         <div class="card-body p-0">
           @if ($activeSessions->count() > 0)
             <div class="table-responsive mb-0">
               <table class="table table-hover mb-0">
-                <thead>
+                <thead class="bg-light">
                   <tr>
                     <th class="ps-4">Alat ID</th>
                     <th>Kendaraan</th>
@@ -201,32 +209,45 @@
             </div>
           @endif
         </div>
-        <div class="card-footer border-top mt-auto">
-          <a href="{{ route('sesi-alat.index') }}" class="btn btn-sm btn-outline-primary">
-            Lihat Semua <i class="ri-arrow-right-line ms-1"></i>
-          </a>
-        </div>
       </div>
     </div>
 
     <!-- Charts Section -->
-    <div class="col-xl-6 col-lg-6 col-md-12">
-      <div class="card h-100">
-        <div class="card-header">
-          <div class="card-title">Statistik Perjalanan (7 Hari Terakhir)</div>
-        </div>
-        <div class="card-body p-0 chart-container-fixed" id="travel-chart-container">
-          <div id="travel-chart"></div>
-        </div>
+    <div class="col-12">
+      <div class="mb-3">
+        <h5 class="fw-semibold mb-0">Statistik Perjalanan (7 Hari Terakhir)</h5>
+      </div>
+      <div class="chart-container-fixed" id="travel-chart-container">
+        <div id="travel-chart"></div>
       </div>
     </div>
-    <div class="col-xl-6 col-lg-6 col-md-12">
+    <div class="col-xl-4 col-lg-4 col-md-12">
       <div class="card h-100">
         <div class="card-header">
-          <div class="card-title">Distribusi Kendaraan per Perusahaan</div>
+          <h5 class="card-title fw-semibold mb-0">Distribusi Kendaraan per Perusahaan</h5>
         </div>
         <div class="card-body p-0 chart-container-fixed d-flex align-items-center justify-content-center">
           <div id="company-chart" class="w-100"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-12">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="card-title fw-semibold mb-0">Status Baterai Semua Alat</h5>
+        </div>
+        <div class="card-body p-0 chart-container-fixed d-flex align-items-center justify-content-center">
+          <div id="battery-chart" class="w-100"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-4 col-lg-4 col-md-12">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="card-title fw-semibold mb-0">Penggunaan Semua Alat</h5>
+        </div>
+        <div class="card-body p-0 chart-container-fixed d-flex align-items-center justify-content-center">
+          <div id="tool-usage-chart" class="w-100"></div>
         </div>
       </div>
     </div>
@@ -234,8 +255,8 @@
     <!-- Activity Logs -->
     <div class="col-12">
       <div class="card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <div class="card-title mb-0">Log Aktivitas Terbaru</div>
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Log Aktivitas Terbaru</h5>
           <a href="{{ route('logs.index') }}" class="btn btn-sm btn-primary-transparent">
             Lihat Semua <i class="ri-arrow-right-line ms-1"></i>
           </a>
@@ -243,7 +264,7 @@
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-hover mb-0">
-              <thead>
+              <thead class="bg-light">
                 <tr>
                   <th class="ps-4">User</th>
                   <th>Aksi</th>
@@ -295,7 +316,7 @@
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-hover mb-0">
-              <thead>
+              <thead class="bg-light">
                 <tr>
                   <th class="ps-4">Alat/Kendaraan</th>
                   <th>Perusahaan</th>
@@ -344,7 +365,7 @@
 
       map = L.map('map-admin', {
         center: [-2.5489, 118.0149],
-        zoom: 4,
+        zoom: 5,
         layers: [streets],
         gestureHandling: true,
         fullscreenControl: true,
@@ -380,7 +401,7 @@
         let color = '#be1e2d'; // Keeping low battery red for danger indication
         if (levelInt > 70) color = '#10b981';
         else if (levelInt > 30) color = '#f59e0b';
-        
+
         return `<div class="d-flex align-items-center gap-2">
                   <div style="position: relative; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(closest-side, white calc(100% - 3px), transparent calc(100% - 3px + 0.5px)), conic-gradient(${color} ${levelInt}%, #e9ecef 0);">
                     <span style="font-size: 8px; font-weight: 700; color: ${color}; z-index: 1;">${levelInt}%</span>
@@ -480,6 +501,29 @@
       setTimeout(() => {
         map.invalidateSize();
       }, 500);
+
+      // --- DATA CALCULATION FOR NEW CHARTS ---
+      let batteryStats = {
+        good: 0,
+        moderate: 0,
+        low: 0
+      };
+      let toolStatusStats = {
+        active: 0,
+        idle: 0
+      };
+
+      locations.forEach(loc => {
+        // Battery
+        let bat = parseInt(loc.battery || 0);
+        if (bat > 70) batteryStats.good++;
+        else if (bat > 30) batteryStats.moderate++;
+        else batteryStats.low++;
+
+        // Status
+        if (loc.status === 'Aktif') toolStatusStats.active++;
+        else toolStatusStats.idle++;
+      });
 
       // Travel History Chart
       const travelData = @json($last7Days);
@@ -629,6 +673,80 @@
       };
       var companyChart = new ApexCharts(document.querySelector("#company-chart"), companyOptions);
       companyChart.render();
+
+      // Battery Status Chart
+      var batteryOptions = {
+        series: [batteryStats.good, batteryStats.moderate, batteryStats.low],
+        chart: {
+          type: 'donut',
+          height: 280,
+          width: '100%'
+        },
+        labels: ['Bagus (>70%)', 'Cukup (30-70%)', 'Lemah (<30%)'],
+        colors: ['#10b981', '#f59e0b', '#ef4444'],
+        legend: {
+          position: 'bottom',
+          fontWeight: 600
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '65%',
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  label: 'Total',
+                  fontWeight: 700,
+                  color: '#1e293b',
+                  formatter: () => locations.length
+                }
+              }
+            }
+          }
+        },
+        dataLabels: {
+          enabled: false
+        }
+      };
+      var batteryChart = new ApexCharts(document.querySelector("#battery-chart"), batteryOptions);
+      batteryChart.render();
+
+      // Tool Usage Chart
+      var toolStatusOptions = {
+        series: [toolStatusStats.active, toolStatusStats.idle],
+        chart: {
+          type: 'donut',
+          height: 300,
+          width: '100%'
+        },
+        labels: ['Aktif', 'Nonaktif'],
+        colors: ['#f59e0b', '#cbd5e1'],
+        legend: {
+          position: 'bottom',
+          fontWeight: 600
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              size: '65%',
+              labels: {
+                show: true,
+                total: {
+                  show: true,
+                  label: 'Total',
+                  formatter: () => locations.length
+                }
+              }
+            }
+          }
+        },
+        dataLabels: {
+          enabled: false
+        }
+      };
+      var toolUsageChart = new ApexCharts(document.querySelector("#tool-usage-chart"), toolStatusOptions);
+      toolUsageChart.render();
     });
   </script>
 @endsection

@@ -251,6 +251,9 @@ class SesiAlatController extends Controller
                 ->first();
 
             if ($activeAlatSession) {
+                if (request()->wantsJson() || request()->ajax()) {
+                    return response()->json(['success' => false, 'message' => 'Alat ini sudah digunakan oleh sesi lain yang aktif.'], 422);
+                }
                 return back()->with('error', 'Alat ini sudah digunakan oleh sesi lain yang aktif.');
             }
 
@@ -259,6 +262,9 @@ class SesiAlatController extends Controller
                 ->first();
 
             if ($activeKendaraanSession) {
+                if (request()->wantsJson() || request()->ajax()) {
+                    return response()->json(['success' => false, 'message' => 'Kendaraan ini sudah digunakan oleh sesi lain yang aktif.'], 422);
+                }
                 return back()->with('error', 'Kendaraan ini sudah digunakan oleh sesi lain yang aktif.');
             }
         }
@@ -277,6 +283,14 @@ class SesiAlatController extends Controller
             'ip_address' => request()->ip(),
         ]);
         // -----------------------------
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'aktif' => $sesiAlat->aktif,
+                'message' => 'Perjalanan berhasil ' . ($sesiAlat->aktif ? 'diaktifkan' : 'dinonaktifkan')
+            ]);
+        }
 
         $status = $sesiAlat->aktif ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', 'Perjalanan berhasil ' . $status);

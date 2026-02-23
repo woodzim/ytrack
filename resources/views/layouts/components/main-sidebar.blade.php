@@ -53,28 +53,28 @@
                     $activeSesiAlatCount = \App\Models\SesiAlat::where('aktif', true)->count();
                   @endphp
                   @if ($activeSesiAlatCount > 0)
-                    <span class="badge bg-white text-primary ms-2">{{ $activeSesiAlatCount }}</span>
+                    <span class="badge bg-primary-transparent text-primary ms-2">{{ $activeSesiAlatCount }}</span>
                   @endif
                 </a>
               </li>
 
-              <li class="slide has-sub {{ Route::is('perusahaan.*', 'alat.*') ? 'active open' : '' }}">
+              <li class="slide has-sub {{ Route::is('admin.perusahaan.*', 'alat.*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);"
-                  class="side-menu__item {{ Route::is('perusahaan.*', 'alat.*') ? 'active' : '' }}">
+                  class="side-menu__item {{ Route::is('admin.perusahaan.*', 'alat.*') ? 'active' : '' }}">
                   <i
-                    class="ri-building-line side-menu__icon {{ Route::is('perusahaan.*', 'alat.*') ? 'text-primary' : '' }}"></i>
+                    class="ri-building-line side-menu__icon {{ Route::is('admin.perusahaan.*', 'alat.*') ? 'text-primary' : '' }}"></i>
                   <span class="side-menu__label">Aset & Mitra</span>
                   <i
-                    class="ri-arrow-right-s-line side-menu__angle {{ Route::is('perusahaan.*', 'alat.*') ? 'text-primary' : '' }}"></i>
+                    class="ri-arrow-right-s-line side-menu__angle {{ Route::is('admin.perusahaan.*', 'alat.*') ? 'text-primary' : '' }}"></i>
                 </a>
                 <ul class="slide-menu child2">
                   <li class="slide">
-                    <a href="{{ route('perusahaan.index') }}"
-                      class="side-menu__item d-flex align-items-center justify-content-between {{ Route::is('perusahaan.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.perusahaan.index') }}"
+                      class="side-menu__item d-flex align-items-center justify-content-between {{ Route::is('admin.perusahaan.*') ? 'active' : '' }}">
                       <span><i class="ri-community-line me-1"></i> Perusahaan</span>
                       @php $perusahaanCount = \App\Models\Perusahaan::count(); @endphp
                       @if ($perusahaanCount > 0)
-                        <span class="badge bg-white text-primary ms-2">{{ $perusahaanCount }}</span>
+                        <span class="badge bg-primary-transparent text-primary ms-2">{{ $perusahaanCount }}</span>
                       @endif
                     </a>
                   </li>
@@ -84,7 +84,7 @@
                       <span><i class="ri-rfid-line me-1"></i> Alat</span>
                       @php $alatCount = \App\Models\Alat::count(); @endphp
                       @if ($alatCount > 0)
-                        <span class="badge bg-white text-primary ms-2">{{ $alatCount }}</span>
+                        <span class="badge bg-primary-transparent text-primary ms-2">{{ $alatCount }}</span>
                       @endif
                     </a>
                   </li>
@@ -107,7 +107,7 @@
                       <span><i class="ri-steering-2-line me-1"></i> Daftar Kendaraan</span>
                       @php $kendaraanCount = \App\Models\Kendaraan::count(); @endphp
                       @if ($kendaraanCount > 0)
-                        <span class="badge bg-white text-primary ms-2">{{ $kendaraanCount }}</span>
+                        <span class="badge bg-primary-transparent text-primary ms-2">{{ $kendaraanCount }}</span>
                       @endif
                     </a>
                   </li>
@@ -117,7 +117,7 @@
                       <span><i class="ri-truck-line me-1"></i> Jenis Kendaraan</span>
                       @php $jenisKendaraan = \App\Models\JenisKendaraan::count(); @endphp
                       @if ($jenisKendaraan > 0)
-                        <span class="badge bg-white text-primary ms-2">{{ $jenisKendaraan }}</span>
+                        <span class="badge bg-primary-transparent text-primary ms-2">{{ $jenisKendaraan }}</span>
                       @endif
                     </a>
                   </li>
@@ -131,7 +131,7 @@
                   <span class="side-menu__label">Error Tracking</span>
                   @php $errorTracking = \App\Models\RiwayatPerjalanan::uncompleted()->count(); @endphp
                   @if ($errorTracking > 0)
-                    <span class="badge bg-white text-primary ms-2">{{ $errorTracking }}</span>
+                    <span class="badge bg-primary-transparent text-primary ms-2">{{ $errorTracking }}</span>
                   @endif
                 </a>
               </li>
@@ -172,7 +172,7 @@
             <a href="{{ route('perusahaan.sesi-alat.index') }}"
               class="side-menu__item {{ Route::is('perusahaan.sesi-alat.*') ? 'active' : '' }}">
               <i class="ri-map-pin-line side-menu__icon text-primary"></i>
-              <span class="side-menu__label">Riwayat Perjalanan</span>
+              <span class="side-menu__label">Perjalanan</span>
             </a>
           </li>
 

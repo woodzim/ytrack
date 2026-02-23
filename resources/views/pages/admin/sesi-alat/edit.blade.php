@@ -23,8 +23,10 @@
   <div class="row pb-3">
     <div class="col-12">
       <div class="form-card">
-        <div class="card-header">
-          <h5>Edit Sesi</h5>
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Edit Sesi</h5>
+          </div>
         </div>
         <div class="card-body">
           <div class="meta-info mb-4 p-3 bg-light rounded border">

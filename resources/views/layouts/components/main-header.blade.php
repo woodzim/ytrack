@@ -1,7 +1,7 @@
 <header class="app-header sticky" id="header">
 
     <!-- Start::main-header-container -->
-    <div class="main-header-container container-fluid">
+    <div class="main-header-container container-fluid px-sm-4 px-3">
 
         <!-- Start::header-content-left -->
         <div class="header-content-left">

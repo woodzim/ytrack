@@ -1,7 +1,7 @@
 @if ($sesiAlat->count() > 0)
   <div class="table-responsive">
     <table class="table table-hover mb-0">
-      <thead class="table-light">
+      <thead class="bg-light">
         <tr>
           <th scope="col">Nama Sesi</th>
           <th scope="col">Kendaraan</th>

@@ -28,7 +28,7 @@
 
 						<div class="header-element header-search d-md-block d-none">
 							<!-- Start::header-link -->
-							<input type="text" class="header-search-bar form-control bg-white" id="header-search" placeholder="Search" spellcheck=false autocomplete="off" autocapitalize="off">
+							<input type="text" class="header-search-bar form-control bg-light" id="header-search" placeholder="Search" spellcheck=false autocomplete="off" autocapitalize="off">
 							<a href="javascript:void(0);" class="header-search-icon border-0">
 								<i class="bi bi-search fs-12"></i>
 							</a>

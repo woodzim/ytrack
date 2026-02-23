@@ -29,22 +29,23 @@
 
     /* --- Enhanced Card Styles --- */
     .custom-card-enhanced {
-      border: 1px solid #e2e8f0 !important;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid var(--default-border) !important;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05) !important;
+      background: var(--custom-white) !important;
       border-radius: 12px !important;
     }
 
     .stats-card-enhanced {
-      background: #fff;
-      border: 1px solid #e2e8f0 !important;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+      background: var(--custom-white) !important;
+      border: 1px solid var(--default-border) !important;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05) !important;
       margin-bottom: 1.25rem;
       border-radius: 12px;
     }
 
     .stats-card-enhanced:hover {
       transform: translateY(-3px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
     }
 
     .icon-box {
@@ -57,12 +58,12 @@
     }
 
     .chart-container {
-      background: white;
+      background: var(--custom-white) !important;
       border-radius: 12px;
       padding: 1.5rem;
       margin-bottom: 1.5rem;
-      border: 1px solid #e2e8f0;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+      border: 1px solid var(--default-border) !important;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05) !important;
       position: relative;
     }
 
@@ -80,7 +81,7 @@
     .chart-title i {
       margin-right: 0.75rem;
       font-size: 1.25rem;
-      color: #be1e2d;
+      color: #09637E;
     }
 
     /* Pengaturan khusus Aktivitas Chart agar tidak overflow */
@@ -93,6 +94,13 @@
     .activity-chart-container .chart-title {
       margin-left: 1rem;
       margin-right: 1rem;
+    }
+
+    /* Fixed height for chart containers to match admin dashboard */
+    .chart-container-fixed {
+      min-height: 380px;
+      position: relative;
+      width: 100%;
     }
 
     @media (max-width: 991.98px) {
@@ -141,25 +149,23 @@
     <!-- Main Content (Left) -->
     <div class="col-lg-9">
       <!-- Map Section -->
-      <div class="card mb-4 border-0 shadow-sm custom-card-enhanced overflow-hidden">
+      <div class="card mb-4 custom-card-enhanced overflow-hidden">
         <div class="card-body p-0">
           <div id="map-dashboard"></div>
         </div>
       </div>
 
       <!-- Data Alat Table -->
-      <div class="card border-0 shadow-sm mb-4 custom-card-enhanced" id="daftar-alat-table">
-        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-          <div class="card-title mb-0 fw-bold fs-16 text-uppercase ls-1">
-            <i class="ri-list-check-2 me-2 text-primary"></i>Daftar Alat & Status Terbaru
-          </div>
+      <div class="card mb-4 custom-card-enhanced" id="daftar-alat-table">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Daftar Alat & Status Terbaru</h5>
           <span class="badge bg-primary-transparent text-primary px-3 rounded-pill">{{ count($lokasiAlat) }} Alat
             Terdeteksi</span>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-              <thead class="table-light text-uppercase fs-11 fw-bold text-muted">
+              <thead class="bg-light text-uppercase fs-11 fw-bold text-muted">
                 <tr>
                   <th class="ps-3 border-0">Nama Alat / No. Seri</th>
                   <th class="border-0">Kendaraan</th>
@@ -227,28 +233,26 @@
 
       <!-- Charts Row 1 -->
       <div class="row">
-        <div class="col-xl-8 mb-4">
-          <div class="chart-container custom-card-enhanced activity-chart-container h-100">
-            <div class="chart-title">
-              <i class="ri-pulse-line"></i> Grafik Aktivitas Pelacakan (7 Hari Terakhir)
-            </div>
+        <div class="col-12 mb-4">
+          <h5 class="fw-semibold mb-3">Grafik Aktivitas Pelacakan (7 Hari Terakhir)</h5>
+          <div class="activity-chart-container">
             <div id="activity-chart"></div>
-          </div>
-        </div>
-        <div class="col-xl-4 mb-4">
-          <div class="chart-container custom-card-enhanced h-100">
-            <div class="chart-title">
-              <i class="ri-battery-2-charge-line"></i> Status Baterai Alat
-            </div>
-            <div id="battery-chart"></div>
           </div>
         </div>
       </div>
 
       <!-- Charts Row 2 -->
       <div class="row">
+        <div class="col-12 mb-4">
+          <div class="chart-container custom-card-enhanced h-100">
+            <div class="chart-title">
+              <i class="ri-battery-2-charge-line"></i> Status Baterai Alat
+            </div>
+            <div id="battery-chart" class="d-flex justify-content-center"></div>
+          </div>
+        </div>
         <div class="col-xl-6 mb-4">
-          <div class="chart-container custom-card-enhanced text-center">
+          <div class="chart-container custom-card-enhanced text-center h-100">
             <div class="chart-title d-flex justify-content-between align-items-center text-start">
               <span><i class="ri-donut-chart-line"></i> Penggunaan Kendaraan</span>
               <span class="badge bg-light text-muted fw-normal">Bergerak dan Berhenti</span>
@@ -257,7 +261,7 @@
           </div>
         </div>
         <div class="col-xl-6 mb-4">
-          <div class="chart-container custom-card-enhanced text-center">
+          <div class="chart-container custom-card-enhanced text-center h-100">
             <div class="chart-title d-flex justify-content-between align-items-center text-start">
               <span><i class="ri-cpu-line"></i> Penggunaan Alat</span>
               <span class="badge bg-light text-muted fw-normal">Aktif dan Nonaktif</span>
@@ -268,11 +272,9 @@
       </div>
 
       <!-- Aktivitas Terakhir -->
-      <div class="card border-0 shadow-sm mb-4 custom-card-enhanced">
-        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
-          <h6 class="card-title mb-0 fw-bold fs-16 text-uppercase ls-1">
-            <i class="ri-history-line me-2 text-primary"></i>Riwayat Perjalanan Terakhir
-          </h6>
+      <div class="card mb-4 custom-card-enhanced">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Riwayat Perjalanan Terakhir</h5>
           <a href="{{ route('perusahaan.sesi-alat.index') }}"
             class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold">
             LIHAT SEMUA
@@ -402,7 +404,7 @@
           <div class="mb-3">
             <i class="ri-information-fill text-primary fs-32"></i>
           </div>
-          <h6 class="fw-bold mb-2 fs-14">Tips Pemantauan</h6>
+          <h6 class="page-title fw-medium fs-20 mb-0">Tips Pemantauan</h6>
           <p class="text-muted small mb-0 fst-italic">Klik baris pada tabel "Daftar Alat & Status Terbaru" untuk
             memfokuskan peta ke lokasi unit tersebut secara otomatis.</p>
         </div>
@@ -476,7 +478,7 @@
 
       map = L.map('map-dashboard', {
         center: [-2.5489, 118.0149],
-        zoom: 22,
+        zoom: 5,
         layers: [streets],
         gestureHandling: true,
         fullscreenControl: true,
@@ -684,7 +686,7 @@
 
               if (currentCount > 0) {
                 if (!document.getElementById('alert-low-bat-count')) {
-                  alertContainer.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-4 shadow-sm border-0" role="alert" style="cursor: pointer; border-left: 5px solid #dc3545 !important;"
+                  alertContainer.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-4 border-0" role="alert" style="cursor: pointer; border-left: 5px solid #dc3545 !important;"
                     onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
                     <i class="ri-error-warning-fill fs-24 me-3"></i>
                     <div class="flex-grow-1">
@@ -692,7 +694,7 @@
                       Terdapat <b id="alert-low-bat-count">${currentCount}</b> perangkat yang memerlukan pengisian daya segera.
                     </div>
                     <div class="ms-auto text-end d-none d-sm-block">
-                      <span class="badge bg-white-transparent text-white border-0 py-2">Klik untuk Lihat <i class="ri-arrow-right-line ms-1"></i></span>
+                      <span class="badge bg-primary-transparent text-primary border-0 py-2">Klik untuk Lihat <i class="ri-arrow-right-line ms-1"></i></span>
                     </div>
                   </div>`;
                 } else {
@@ -721,7 +723,7 @@
           data: @json(collect($last7Days)->pluck('count'))
         }],
         chart: {
-          height: 350,
+          height: 380,
           type: 'area',
           width: '100%',
           toolbar: {
@@ -745,7 +747,7 @@
         stroke: {
           curve: 'smooth',
           width: 3,
-          colors: ['#be1e2d']
+          colors: ['#09637E']
         },
         fill: {
           type: 'gradient',

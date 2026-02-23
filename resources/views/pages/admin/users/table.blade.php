@@ -1,4 +1,4 @@
-<div class="card-header border-bottom-0 bg-white py-3">
+<div class="card-header py-3">
     <div class="d-flex justify-content-between align-items-center">
         <h5 class="card-title mb-0">Daftar Pengguna ({{ $users->total() }})</h5>
     </div>
@@ -7,7 +7,7 @@
     @if ($users->count() > 0)
         <div class="table-responsive">
             <table class="table table-hover mb-0">
-                <thead class="table-light">
+                <thead class="bg-light">
                     <tr>
                         <th style="width: 18%;">Nama</th>
                         <th style="width: 18%;">Email</th>
@@ -112,7 +112,7 @@
 </div>
 
 @if ($users->hasPages())
-    <div class="card-footer bg-white border-top">
+    <div class="card-footer border-top">
         <nav aria-label="Page navigation">
             {{ $users->links() }}
         </nav>

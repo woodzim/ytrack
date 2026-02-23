@@ -1,5 +1,5 @@
 <div class="card table-wrapper">
-  <div class="card-header border-bottom-0 bg-white py-3">
+  <div class="card-header py-3">
     <div class="d-flex justify-content-between align-items-center">
       <h5 class="card-title mb-0">Daftar Perjalanan ({{ $sesiAlat->total() }})</h5>
     </div>
@@ -7,10 +7,10 @@
   <div class="card-body p-0">
     @if ($sesiAlat->count() > 0)
       <div class="table-responsive">
-        <table class="table table-hover mb-0">
-          <thead class="table-light">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light text-uppercase fs-11 fw-bold text-muted border-bottom">
             <tr>
-              <th style="min-width: 150px;">Perusahaan</th>
+              <th class="ps-3" style="min-width: 150px;">Perusahaan</th>
               <th style="min-width: 150px;">Kendaraan</th>
               <th style="min-width: 120px;">Alat</th>
               <th style="min-width: 100px;">Status</th>
@@ -24,50 +24,50 @@
               @php
                 $lastTrack = $item->riwayatPerjalanan->sortByDesc('created_at')->first();
                 $battery = $lastTrack ? (int)$lastTrack->battery : 0;
-                $batteryColor = 'bg-danger';
-                if ($battery > 70) $batteryColor = 'bg-success';
-                elseif ($battery > 30) $batteryColor = 'bg-warning';
               @endphp
               <tr>
-                <td data-label="Perusahaan">
-                  <small class="text-muted">{{ $item->perusahaan ? $item->perusahaan?->nama : '-' }}</small>
+                <td class="ps-3" data-label="Perusahaan">
+                  <div class="fw-semibold text-dark">{{ $item->perusahaan ? $item->perusahaan?->nama : '-' }}</div>
                 </td>
                 <td data-label="Kendaraan">
-                  <small class="text-muted">{{ $item->kendaraan ? $item->kendaraan?->nama : '-' }}</small>
+                  <div class="d-flex align-items-center">
+                    <i class="ri-truck-line me-2 text-primary"></i>
+                    <span class="fw-medium text-muted small">{{ $item->kendaraan ? $item->kendaraan?->nama : '-' }}</span>
+                  </div>
                 </td>
                 <td data-label="Alat">
-                  <span class="badge bg-light text-dark">{{ $item->alat ? $item->alat?->id : '-' }}</span>
+                  <span class="badge bg-primary-transparent text-primary">{{ $item->alat ? $item->alat?->id : '-' }}</span>
                 </td>
                 <td data-label="Status">
-                  <span class="status-badge"
-                    style="background-color: {{ $item->aktif ? '#10b981' : '#6b7280' }}; color: white;">
-                    {{ $item->aktif ? 'Aktif' : 'Nonaktif' }}
+                  <span class="badge rounded-pill {{ $item->aktif ? 'bg-success-transparent text-success' : 'bg-secondary-transparent text-muted' }}">
+                    <i class="ri-checkbox-blank-circle-fill fs-8 me-1"></i> {{ $item->aktif ? 'Aktif' : 'Nonaktif' }}
                   </span>
                 </td>
 
                 <td data-label="Baterai">
-                  <x-battery-circle :level="$battery" size="48px" />
+                  <x-battery-circle :level="$battery" size="40px" />
                 </td>
 
                 <td data-label="Tanggal Track">
                   @if (!$lastTrack)
-                    <small class="text-muted">Belum ada track</small>
+                    <span class="text-muted small italic">Belum ada track</span>
                   @else
-                    <small class="text-muted local-date">
-                      {{ $lastTrack->created_at->toIso8601String() }}
-                    </small>
+                    <div class="d-flex align-items-center text-muted small">
+                      <i class="ri-time-line me-1"></i>
+                      <span class="local-date">{{ $lastTrack->created_at->toIso8601String() }}</span>
+                    </div>
                   @endif
                 </td>
 
                 <td data-label="Aksi" class="text-center">
                   <div class="dropdown">
-                    <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-sm btn-icon btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="ri-more-2-fill"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                       <li>
                         <a class="dropdown-item" href="{{ route('sesi-alat.show', $item->id) }}">
-                          <i class="ri-eye-line me-2 align-middle text-info"></i>Lihat Tracking
+                          <i class="ri-map-2-line me-2 align-middle text-info"></i>Lihat Tracking
                         </a>
                       </li>
                       <li>
@@ -100,20 +100,21 @@
         </table>
       </div>
     @else
-      <div class="p-4 text-center">
+      <div class="p-5 text-center">
         <div class="mb-3">
-          <i class="ri-bluetooth-connect-line" style="font-size: 48px; color: #ddd;"></i>
+          <i class="ri-route-line text-muted opacity-25" style="font-size: 64px;"></i>
         </div>
-        <h5 class="text-muted mb-2">Belum ada perjalanan</h5>
+        <h5 class="text-muted mb-2 fw-medium">Belum ada perjalanan tercatat</h5>
+        <p class="text-muted small">Data perjalanan akan muncul di sini setelah alat GPS diaktifkan.</p>
       </div>
     @endif
   </div>
 
   @if ($sesiAlat->hasPages())
-    <div class="card-footer bg-white border-top">
-      <nav aria-label="Page navigation">
+    <div class="card-footer border-top py-3">
+      <div class="d-flex justify-content-end">
         {{ $sesiAlat->links('pagination::bootstrap-5') }}
-      </nav>
+      </div>
     </div>
   @endif
 </div>

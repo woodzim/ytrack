@@ -35,7 +35,10 @@ class JenisKendaraanSeeder extends Seeder
         ];
 
         foreach ($data as $item) {
-            JenisKendaraan::create($item);
+            JenisKendaraan::firstOrCreate(
+                ['nama' => $item['nama']],
+                ['kategori' => $item['kategori']]
+            );
         }
     }
 }

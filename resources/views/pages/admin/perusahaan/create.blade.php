@@ -3,7 +3,7 @@
 @section('content')
   <!-- Start::page-header -->
   <div class="page-title-section">
-    <h1 class="fw-bold mb-2">Tambah Perusahaan Baru</h1>
+    <h1 class="page-title fw-medium fs-20 mb-0">Tambah Perusahaan Baru</h1>
     <p class="text-muted">Isikan informasi lengkap untuk menambahkan perusahaan baru</p>
   </div>
   <!-- End::page-header -->
@@ -13,7 +13,7 @@
     <div class="col-12">
       <div class="card form-card">
         <div class="card-body">
-          <form action="{{ route('perusahaan.store') }}" method="POST">
+          <form action="{{ route('admin.perusahaan.store') }}" method="POST">
             @csrf
 
             <div class="form-group-wrapper">
@@ -43,7 +43,7 @@
               <button type="submit" class="btn btn-primary btn-wave flex-sm-grow-1">
                 <i class="ri-save-line me-2"></i>Simpan Perusahaan
               </button>
-              <a href="{{ route('perusahaan.index') }}" class="btn btn-outline-secondary btn-wave flex-sm-grow-1">
+              <a href="{{ route('admin.perusahaan.index') }}" class="btn btn-outline-secondary btn-wave flex-sm-grow-1">
                 <i class="ri-arrow-left-line me-2"></i>Kembali
               </a>
             </div>

@@ -1,5 +1,5 @@
 <div class="card table-wrapper">
-  <div class="card-header border-bottom-0 bg-white py-3">
+  <div class="card-header py-3">
     <div class="d-flex justify-content-between align-items-center">
       <h5 class="card-title mb-0">Daftar Kendaraan ({{ $kendaraan->total() }})</h5>
       @if ($search)
@@ -9,11 +9,10 @@
   </div>
   <div class="card-body p-0">
     @if ($kendaraan->count() > 0)
-      <div class="table-responsive">
-        <table class="table table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th style="width: 5%;">No</th>
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="bg-light">
+              <tr>              <th style="width: 5%;">No</th>
               <th>Nama Kendaraan</th>
               <th>Plat Nomor</th>
               <th>Jenis</th>
@@ -121,7 +120,7 @@
   </div>
 
   @if ($kendaraan->hasPages())
-    <div class="card-footer bg-white border-top py-3">
+    <div class="card-footer border-top py-3">
       <div class="d-flex justify-content-end">
         {{ $kendaraan->links('pagination::bootstrap-5') }}
       </div>

@@ -2,7 +2,7 @@
 
 @section('content')
   <div class="page-title-section">
-    <h1 class="fw-bold mb-2">Edit Data Kendaraan</h1>
+    <h1 class="page-title fw-medium fs-20 mb-0">Edit Data Kendaraan</h1>
     <p class="text-muted">Perbarui informasi kendaraan yang terdaftar</p>
   </div>
   <div class="row">

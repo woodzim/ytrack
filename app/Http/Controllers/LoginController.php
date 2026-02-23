@@ -48,6 +48,13 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             // LOGIKA REDIRECT
+            // Prioritaskan Admin
+            if (Auth::user()->hasRole('admin')) {
+                return redirect()
+                    ->intended(route('dashboard'))
+                    ->with('success', 'Login berhasil!');
+            }
+
             if (Auth::user()->hasRole('perusahaan')) {
                 if (!Auth::user()->isValidated()) {
                     Auth::logout();
@@ -64,7 +71,7 @@ class LoginController extends Controller
                     ->with('success', 'Login berhasil!');
             }
 
-            // Redirect Default (Admin)
+            // Fallback (jika ada role lain atau default)
             return redirect()
                 ->intended(route('dashboard'))
                 ->with('success', 'Login berhasil!');

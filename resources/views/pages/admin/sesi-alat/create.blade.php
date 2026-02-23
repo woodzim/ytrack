@@ -25,8 +25,10 @@
     {{-- KOLOM KIRI: FORM --}}
     <div class="col-lg-8 col-12">
       <div class="card custom-card">
-        <div class="card-header">
-          <div class="card-title">Informasi Sesi</div>
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Informasi Sesi</h5>
+          </div>
         </div>
         <div class="card-body">
           <form action="{{ route('sesi-alat.store') }}" method="POST">

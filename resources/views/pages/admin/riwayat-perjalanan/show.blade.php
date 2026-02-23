@@ -36,8 +36,10 @@
             <div class="col-12">
                 <!-- Map Section -->
                 <div class="detail-card">
-                    <div class="card-header">
-                        <h5><i class="ri-map-line me-2"></i>Visualisasi Rute</h5>
+                    <div class="card-header py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0"><i class="ri-map-line me-2"></i>Visualisasi Rute</h5>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div id="map-container"></div>
@@ -57,9 +59,9 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-sm table-hover">
-                                <thead>
-                                    <tr style="background-color: #f8f9fa;">
+                            <table class="table table-hover">
+                                <thead class="bg-light">
+                                    <tr>
                                         <th style="width: 40px;">No</th>
                                         <th>Waktu</th>
                                         <th>Latitude</th>
@@ -162,7 +164,8 @@
             const map = L.map('map-container', {
                 maxZoom: 18,
                 minZoom: 4,
-                attributionControl: false
+                attributionControl: false,
+                gestureHandling: true
             });
 
             // CartoDB Positron layer

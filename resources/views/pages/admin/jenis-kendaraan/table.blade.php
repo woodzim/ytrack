@@ -1,4 +1,4 @@
-<div class="card-header border-bottom-0 bg-white py-3">
+<div class="card-header py-3">
   <div class="d-flex justify-content-between align-items-center">
     <h5 class="card-title mb-0">Daftar Jenis ({{ $jenisKendaraan->total() }})</h5>
     @if ($search)
@@ -10,7 +10,7 @@
   @if ($jenisKendaraan->count() > 0)
     <div class="table-responsive">
       <table class="table table-hover mb-0">
-        <thead class="table-light">
+        <thead class="bg-light">
           <tr>
             <th style="width: 5%;">No</th>
             <th>Nama Jenis</th>
@@ -89,7 +89,7 @@
 </div>
 
 @if ($jenisKendaraan->hasPages())
-  <div class="card-footer bg-white border-top py-3">
+  <div class="card-footer border-top py-3">
     <div class="d-flex justify-content-end">
       {{ $jenisKendaraan->links('pagination::bootstrap-5') }}
     </div>

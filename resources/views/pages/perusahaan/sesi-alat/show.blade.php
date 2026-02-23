@@ -127,6 +127,20 @@
         opacity: 0;
       }
     }
+
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 @endsection
 
@@ -214,16 +228,17 @@
             <div class="flex-fill d-flex flex-column align-items-center justify-content-center">
               <label class="detail-label mb-3 d-block text-uppercase text-center text-nowrap">Kontrol Daya</label>
               <div class="my-auto d-flex flex-column align-items-center">
-                <form action="{{ route('perusahaan.sesi-alat.toggle', $sesiAlat->id) }}" method="POST">
+                <form id="toggle-power-form" action="{{ route('perusahaan.sesi-alat.toggle', $sesiAlat->id) }}"
+                  method="POST">
                   @csrf
                   @method('PUT')
-                  <button type="submit"
+                  <button type="submit" id="toggle-power-btn"
                     class="btn btn-icon btn-lg rounded-circle shadow-lg {{ $sesiAlat->aktif ? 'btn-success pulse-active' : 'btn-danger' }}"
                     style="width: 80px; height: 80px;" title="{{ $sesiAlat->aktif ? 'Matikan Sesi' : 'Aktifkan Sesi' }}">
-                    <i class="ri-shut-down-line fs-40"></i>
+                    <i id="toggle-power-icon" class="ri-shut-down-line fs-40"></i>
                   </button>
                 </form>
-                <span
+                <span id="power-status-badge"
                   class="badge rounded-pill mt-3 {{ $sesiAlat->aktif ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} px-3">
                   {{ $sesiAlat->aktif ? 'SESI AKTIF' : 'SESI NONAKTIF' }}
                 </span>
@@ -239,15 +254,15 @@
     <div class="col-12">
       <div class="detail-card">
         <div class="card-header">
-          <h5><i class="ri-map-pin-line me-2"></i>Riwayat Perjalanan</h5>
+          <h5><i class="ri-map-pin-line me-2"></i>Perjalanan</h5>
         </div>
         <div class="card-body">
           <div id="map-container" style="height: 400px; width: 100%; border-radius: 8px; margin-bottom: 20px;"></div>
 
           <div class="table-responsive" id="table-wrapper">
-            <table class="table table-sm table-hover" id="history-table">
-              <thead>
-                <tr style="background-color: #f8f9fa;">
+            <table class="table table-hover" id="history-table">
+              <thead class="bg-light">
+                <tr>
                   <th style="font-size: 12px; font-weight: 600; color: #666;">No</th>
                   <th style="font-size: 12px; font-weight: 600; color: #666;">Waktu</th>
                   <th style="font-size: 12px; font-weight: 600; color: #666;">Latitude</th>
@@ -317,14 +332,14 @@
     const formatDateJS = (d) => {
       const dateObj = parseDateSafe(d);
       if (isNaN(dateObj.getTime())) return '-';
-      
+
       const day = String(dateObj.getDate()).padStart(2, '0');
       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
       const year = dateObj.getFullYear();
       const hours = String(dateObj.getHours()).padStart(2, '0');
       const minutes = String(dateObj.getMinutes()).padStart(2, '0');
       const seconds = String(dateObj.getSeconds()).padStart(2, '0');
-      
+
       const offset = -dateObj.getTimezoneOffset();
       let zona = '';
       if (offset === 420) zona = 'WIB';
@@ -337,7 +352,7 @@
         const m = String(absOffset % 60).padStart(2, '0');
         zona = `UTC${sign}${h}:${m}`;
       }
-      
+
       return `${day}-${month}-${year} ${hours}:${minutes}:${seconds} ${zona}`;
     };
 
@@ -434,7 +449,8 @@
     document.addEventListener('DOMContentLoaded', function() {
       // A. INIT MAP
       map = L.map('map-container', {
-        attributionControl: false
+        attributionControl: false,
+        gestureHandling: true
       }).setView([-2.5489, 118.0149], 4);
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap, © CARTO',
@@ -599,6 +615,69 @@
       setTimeout(() => {
         map.invalidateSize();
       }, 500);
+
+      // E. AJAX POWER TOGGLE
+      const powerForm = document.getElementById('toggle-power-form');
+      const powerBtn = document.getElementById('toggle-power-btn');
+      const powerIcon = document.getElementById('toggle-power-icon');
+      const statusBadge = document.getElementById('power-status-badge');
+
+      if (powerForm) {
+        powerForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          const originalIconClass = powerIcon.className;
+          const url = powerForm.action;
+          const token = document.querySelector('input[name="_token"]').value;
+
+          // Start Loading: Change icon to spinner (no text)
+          powerIcon.className = 'ri-loader-4-line fs-40 spin';
+          powerBtn.disabled = true;
+
+          fetch(url, {
+              method: 'POST',
+              headers: {
+                'X-CSRF-TOKEN': token,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                _method: 'PUT'
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const isActive = data.aktif;
+
+                // Update Button
+                powerBtn.className =
+                  `btn btn-icon btn-lg rounded-circle shadow-lg ${isActive ? 'btn-success pulse-active' : 'btn-danger'}`;
+                powerBtn.title = isActive ? 'Matikan Sesi' : 'Aktifkan Sesi';
+
+                // Update Icon
+                powerIcon.className = 'ri-shut-down-line fs-40';
+
+                // Update Badge
+                statusBadge.className =
+                  `badge rounded-pill mt-3 ${isActive ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger'} px-3`;
+                statusBadge.textContent = isActive ? 'SESI AKTIF' : 'SESI NONAKTIF';
+              } else {
+                // Rollback on failure
+                powerIcon.className = originalIconClass;
+                alert(data.message || 'Gagal mengubah status daya.');
+              }
+            })
+            .catch(error => {
+              console.error('Error toggling power:', error);
+              powerIcon.className = originalIconClass;
+              alert('Terjadi kesalahan sistem.');
+            })
+            .finally(() => {
+              powerBtn.disabled = false;
+            });
+        });
+      }
 
       formatAllLocalDates();
     });

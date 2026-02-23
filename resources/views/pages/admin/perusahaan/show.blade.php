@@ -10,8 +10,10 @@
     {{-- Kolom Kiri: Informasi Perusahaan --}}
     <div class="col-12 col-lg-8">
       <div class="card card-detail">
-        <div class="card-header border-bottom bg-white">
-          <h5 class="card-title mb-0"><i class="ri-information-line me-2"></i>Informasi Lengkap</h5>
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0"><i class="ri-information-line me-2"></i>Informasi Lengkap</h5>
+          </div>
         </div>
         <div class="card-body">
           <div class="detail-row">
@@ -65,10 +67,10 @@
         {{-- Tombol Aksi Perusahaan --}}
         <div style="padding: 16px; background: #f9f9f9; border-top: 1px solid #f0f0f0; border-radius: 0 0 8px 8px;">
           <div class="btn-action-group">
-            <a href="{{ route('perusahaan.edit', $perusahaan->id) }}" class="btn btn-primary btn-wave">
+            <a href="{{ route('admin.perusahaan.edit', $perusahaan->id) }}" class="btn btn-primary btn-wave">
               <i class="ri-edit-line me-2"></i>Edit Perusahaan
             </a>
-            <a href="{{ route('perusahaan.index') }}" class="btn btn-outline-secondary btn-wave">
+            <a href="{{ route('admin.perusahaan.index') }}" class="btn btn-outline-secondary btn-wave">
               <i class="ri-arrow-left-line me-2"></i>Kembali
             </a>
           </div>
@@ -79,8 +81,10 @@
     {{-- Kolom Kanan: Statistik & Daftar Aset (Dihapus sesuai permintaan) --}}
     <div class="col-12 col-lg-4">
       <div class="card card-detail">
-        <div class="card-header border-bottom bg-white">
-          <h5 class="card-title mb-0"><i class="ri-history-line me-2"></i>Aktivitas Terakhir</h5>
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0"><i class="ri-history-line me-2"></i>Aktivitas Terakhir</h5>
+          </div>
         </div>
         <div class="card-body">
             <p class="text-muted small mb-0">Fitur aktivitas akan segera hadir.</p>

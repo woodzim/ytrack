@@ -1,4 +1,4 @@
-<div class="card-header border-bottom-0 bg-white py-3">
+<div class="card-header py-3">
   <div class="d-flex justify-content-between align-items-center w-100">
     <h5 class="card-title mb-0">Daftar Kendaraan ({{ $kendaraan->total() }})</h5>
     @if ($search)
@@ -25,7 +25,7 @@
   @if ($kendaraan->count() > 0)
     <div class="table-responsive">
       <table class="table table-hover text-nowrap mb-0">
-        <thead class="table-light">
+        <thead class="bg-light">
           <tr>
             <th width="5%">No</th>
             <th width="25%">Nama Kendaraan</th>
@@ -130,7 +130,7 @@
 </div>
 
 @if ($kendaraan->hasPages())
-  <div class="card-footer bg-white border-top-0 d-flex justify-content-end py-3">
+  <div class="card-footer border-top-0 d-flex justify-content-end py-3">
     {{ $kendaraan->links() }}
   </div>
 @endif

@@ -208,6 +208,14 @@ class SesiAlatController extends Controller
         ]);
         // -----------------------------
 
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'aktif' => $sesi->aktif,
+                'message' => 'Sesi berhasil ' . ($sesi->aktif ? 'diaktifkan' : 'dinonaktifkan') . '.'
+            ]);
+        }
+
         $statusMsg = $sesi->aktif ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', 'Sesi berhasil ' . $statusMsg . '.');
     }

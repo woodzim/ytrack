@@ -1,5 +1,5 @@
 <div class="card table-wrapper">
-  <div class="card-header border-bottom-0 bg-white py-3">
+  <div class="card-header py-3">
     <div class="d-flex justify-content-between align-items-center">
       <h5 class="card-title mb-0">Daftar Alat ({{ $alat->total() }})</h5>
       @if ($search)
@@ -121,7 +121,7 @@
   </div>
 
   @if ($alat->hasPages())
-    <div class="card-footer bg-white border-top-0 py-3">
+    <div class="card-footer border-top-0 py-3">
       <div class="d-flex justify-content-between align-items-center">
         <div class="text-muted small">
           Menampilkan {{ $alat->firstItem() }} sampai {{ $alat->lastItem() }} dari {{ $alat->total() }} alat

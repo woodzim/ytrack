@@ -58,7 +58,7 @@ class PerusahaanController extends Controller
 
         Perusahaan::create($validated);
 
-        return redirect()->route('perusahaan.index')->with('success', 'Perusahaan berhasil ditambahkan');
+        return redirect()->route('admin.perusahaan.index')->with('success', 'Perusahaan berhasil ditambahkan');
     }
 
     /**
@@ -96,7 +96,7 @@ class PerusahaanController extends Controller
 
         $perusahaan->update($validated);
 
-        return redirect()->route('perusahaan.index')->with('success', 'Perusahaan berhasil diperbarui');
+        return redirect()->route('admin.perusahaan.index')->with('success', 'Perusahaan berhasil diperbarui');
     }
 
     /**
@@ -107,9 +107,9 @@ class PerusahaanController extends Controller
         try {
             $perusahaanNama = $perusahaan->nama;
             $perusahaan->delete();
-            return redirect()->route('perusahaan.index')->with('success', "Perusahaan '$perusahaanNama' berhasil dihapus beserta semua data terkait.");
+            return redirect()->route('admin.perusahaan.index')->with('success', "Perusahaan '$perusahaanNama' berhasil dihapus beserta semua data terkait.");
         } catch (\Exception $e) {
-            return redirect()->route('perusahaan.index')->with('error', 'Gagal menghapus perusahaan. Silakan coba lagi.');
+            return redirect()->route('admin.perusahaan.index')->with('error', 'Gagal menghapus perusahaan. Silakan coba lagi.');
         }
     }
 }

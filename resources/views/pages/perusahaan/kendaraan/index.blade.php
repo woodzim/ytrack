@@ -54,8 +54,8 @@
   <div class="row">
     <div class="col-12">
 
-      <div class="card custom-card mb-3">
-        <div class="card-body">
+      <div class="card border-0 shadow-none mb-3 bg-transparent">
+        <div class="p-0">
           <form action="{{ route('perusahaan.kendaraan.index') }}" method="GET" id="filterForm"
             class="d-flex gap-3 flex-wrap align-items-end">
             <div class="grow" style="min-width: 250px;">

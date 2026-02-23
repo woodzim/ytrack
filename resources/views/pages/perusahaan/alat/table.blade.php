@@ -72,6 +72,6 @@
   </table>
 </div>
 
-<div class="card-footer bg-white border-top-0 py-3">
+<div class="card-footer border-top-0 py-3">
   {{ $alatList->links() }}
 </div>

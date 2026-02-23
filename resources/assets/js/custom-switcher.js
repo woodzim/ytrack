@@ -6,7 +6,7 @@ import {ResizeMenu, toggleSidemenu, closedSidemenuFn, detachedFn, iconTextFn, do
 let mainContent;
 (function () {
     let html = document.querySelector('html');
-    mainContent = document.querySelector('.main-content');
+    mainContent = (document.querySelector('.main-content') || document.querySelector('.content-center-wrapper'));
     if (document.querySelector("#switcher-canvas")) {
         localStorageBackup2();
         switcherClick();
@@ -561,7 +561,7 @@ function switcherClick() {
 
     /* Sidemenu start*/
     let verticalVar = verticalBtn.addEventListener('click', () => {
-        let mainContent = document.querySelector('.main-content');
+        let mainContent = (document.querySelector('.main-content') || document.querySelector('.content-center-wrapper'));
         // local storage
         localStorage.removeItem("vyzorlayout");
         localStorage.setItem("vyzorverticalstyles", 'default');
@@ -586,7 +586,7 @@ function switcherClick() {
 
     /* horizontal start*/
     let horiVar = horiBtn.addEventListener('click', () => {
-        let mainContent = document.querySelector('.main-content');
+        let mainContent = (document.querySelector('.main-content') || document.querySelector('.content-center-wrapper'));
         html.removeAttribute('data-vertical-style');
         //    local storage
         localStorage.setItem("vyzorlayout", 'horizontal');

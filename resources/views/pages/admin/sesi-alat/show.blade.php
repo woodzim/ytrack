@@ -119,6 +119,20 @@
         opacity: 0;
       }
     }
+
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 @endsection
 
@@ -140,8 +154,10 @@
   <div class="row mb-4">
     <div class="col-xl-8 col-lg-7">
       <div class="detail-card h-100 mb-0">
-        <div class="card-header">
-          <h5>Informasi Sesi</h5>
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Informasi Sesi</h5>
+          </div>
         </div>
         <div class="card-body">
           <div class="row">
@@ -187,8 +203,10 @@
     </div>
     <div class="col-xl-4 col-lg-5">
       <div class="detail-card h-100 mb-0 d-flex flex-column">
-        <div class="card-header">
-          <h5>Status & Kontrol Sesi</h5>
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Status & Kontrol Sesi</h5>
+          </div>
         </div>
         <div class="d-flex align-items-center justify-content-center py-4 flex-grow-1">
           @php
@@ -213,16 +231,16 @@
             <div class="flex-fill d-flex flex-column align-items-center justify-content-center">
               <label class="detail-label mb-3 d-block text-uppercase text-center text-nowrap">Kontrol Daya</label>
               <div class="my-auto d-flex flex-column align-items-center">
-                <form action="{{ route('sesi-alat.toggle', $sesiAlat->id) }}" method="POST">
+                <form id="toggle-power-form" action="{{ route('sesi-alat.toggle', $sesiAlat->id) }}" method="POST">
                   @csrf
                   @method('PUT')
-                  <button type="submit"
+                  <button type="submit" id="toggle-power-btn"
                     class="btn btn-icon btn-lg rounded-circle shadow-lg {{ $sesiAlat->aktif ? 'btn-success pulse-active' : 'btn-danger' }}"
                     style="width: 80px; height: 80px;" title="{{ $sesiAlat->aktif ? 'Matikan Sesi' : 'Aktifkan Sesi' }}">
-                    <i class="ri-shut-down-line fs-40"></i>
+                    <i id="toggle-power-icon" class="ri-shut-down-line fs-40"></i>
                   </button>
                 </form>
-                <span
+                <span id="power-status-badge"
                   class="badge rounded-pill mt-3 {{ $sesiAlat->aktif ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} px-3">
                   {{ $sesiAlat->aktif ? 'SESI AKTIF' : 'SESI NONAKTIF' }}
                 </span>
@@ -238,15 +256,15 @@
     <div class="col-12">
       <div class="detail-card">
         <div class="card-header">
-          <h5><i class="ri-map-pin-line me-2"></i>Riwayat Perjalanan</h5>
+          <h5><i class="ri-map-pin-line me-2"></i>Perjalanan</h5>
         </div>
         <div class="card-body">
           <div id="map-container"></div>
 
           <div class="table-responsive" id="table-wrapper">
-            <table class="table table-sm table-hover" id="history-table">
-              <thead>
-                <tr style="background-color: #f8f9fa;">
+            <table class="table table-hover" id="history-table">
+              <thead class="bg-light">
+                <tr>
                   <th style="font-size: 12px; font-weight: 600; color: #666;">No</th>
                   <th style="font-size: 12px; font-weight: 600; color: #666;">Waktu</th>
                   <th style="font-size: 12px; font-weight: 600; color: #666;">Latitude</th>
@@ -410,7 +428,8 @@
     document.addEventListener('DOMContentLoaded', function() {
       // A. INIT MAP
       map = L.map('map-container', {
-        attributionControl: false
+        attributionControl: false,
+        gestureHandling: true
       }).setView([-2.5489, 118.0149], 4);
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '© OpenStreetMap, © CARTO',
@@ -575,6 +594,69 @@
       setTimeout(() => {
         map.invalidateSize();
       }, 500);
+
+      // E. AJAX POWER TOGGLE
+      const powerForm = document.getElementById('toggle-power-form');
+      const powerBtn = document.getElementById('toggle-power-btn');
+      const powerIcon = document.getElementById('toggle-power-icon');
+      const statusBadge = document.getElementById('power-status-badge');
+
+      if (powerForm) {
+        powerForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          const originalIconClass = powerIcon.className;
+          const url = powerForm.action;
+          const token = document.querySelector('input[name="_token"]').value;
+
+          // Start Loading: Change icon to spinner (no text)
+          powerIcon.className = 'ri-loader-4-line fs-40 spin';
+          powerBtn.disabled = true;
+
+          fetch(url, {
+              method: 'POST',
+              headers: {
+                'X-CSRF-TOKEN': token,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                _method: 'PUT'
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const isActive = data.aktif;
+
+                // Update Button
+                powerBtn.className =
+                  `btn btn-icon btn-lg rounded-circle shadow-lg ${isActive ? 'btn-success pulse-active' : 'btn-danger'}`;
+                powerBtn.title = isActive ? 'Matikan Sesi' : 'Aktifkan Sesi';
+
+                // Update Icon
+                powerIcon.className = 'ri-shut-down-line fs-40';
+
+                // Update Badge
+                statusBadge.className =
+                  `badge rounded-pill mt-3 ${isActive ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger'} px-3`;
+                statusBadge.textContent = isActive ? 'SESI AKTIF' : 'SESI NONAKTIF';
+              } else {
+                // Rollback on failure
+                powerIcon.className = originalIconClass;
+                alert(data.message || 'Gagal mengubah status daya.');
+              }
+            })
+            .catch(error => {
+              console.error('Error toggling power:', error);
+              powerIcon.className = originalIconClass;
+              alert('Terjadi kesalahan sistem.');
+            })
+            .finally(() => {
+              powerBtn.disabled = false;
+            });
+        });
+      }
 
       formatAllLocalDates();
     });

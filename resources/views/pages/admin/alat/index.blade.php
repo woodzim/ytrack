@@ -27,8 +27,8 @@
 
   <div class="row">
     <div class="col-12">
-      <div class="card mb-3">
-        <div class="card-body">
+      <div class="card mb-3 border-0 shadow-none bg-transparent">
+        <div class="p-0">
           <form action="{{ route('alat.index') }}" method="GET" id="filterForm" class="d-flex gap-2 flex-wrap align-items-end">
             <div class="grow" style="min-width: 250px;">
               <label for="searchInput" class="form-label mb-2">Cari Alat</label>
