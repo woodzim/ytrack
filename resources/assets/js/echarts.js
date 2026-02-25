@@ -1640,7 +1640,7 @@
         },
         series: [
             {
-                name: 'Budget vs spending',
+                name: 'Budget dan spending',
                 type: 'radar',
                 data: [
                     {

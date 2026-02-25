@@ -2,14 +2,14 @@
     "use strict";
 
     /* default map */
-    var map = L.map('map').setView([51.505, -0.09], 13);
+    var map = L.map('map', { attributionControl: false }).setView([51.505, -0.09], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
     /* maps with markers circles and polygons */
-    var shapesmap = L.map('map1').setView([51.505, -0.09], 13);
+    var shapesmap = L.map('map1', { attributionControl: false }).setView([51.505, -0.09], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
@@ -31,7 +31,7 @@
     }).addTo(shapesmap);
 
     /* maps with popup */
-    var popupmap = L.map('map-popup').setView([51.505, -0.09], 13);
+    var popupmap = L.map('map-popup', { attributionControl: false }).setView([51.505, -0.09], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
@@ -60,7 +60,7 @@
         .openOn(popupmap);
 
     /* maps with custom icon */
-    var customicon = L.map('map-custom-icon').setView([51.505, -0.09], 13);
+    var customicon = L.map('map-custom-icon', { attributionControl: false }).setView([51.505, -0.09], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '© OpenStreetMap'
@@ -74,7 +74,7 @@
     L.marker([51.5, -0.09], { icon: greenIcon }).addTo(customicon);
 
     /* interactive chloropleth map */
-    var geomap = L.map('interactive-map').setView([37.8, -96], 4);
+    var geomap = L.map('interactive-map', { attributionControl: false }).setView([37.8, -96], 4);
     var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'

@@ -3,7 +3,7 @@
 @section('content')
   <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h1 class="fw-bold mb-2">Profil Perusahaan</h1>
+      <h1 class="page-title fw-medium fs-20 mb-0">Profil Perusahaan</h1>
       <p class=" mb-0">Kelola informasi akun dan data perusahaan Anda</p>
     </div>
   </div>
@@ -11,7 +11,7 @@
   <div class="row">
     <div class="col-lg-8">
       <div class="card custom-card">
-        <div class="card-header border-bottom">
+        <div class="card-header">
           <div class="card-title mb-0">Edit Profil</div>
         </div>
         <div class="card-body">
@@ -87,7 +87,7 @@
 
     <div class="col-lg-4">
       <div class="card custom-card">
-        <div class="card-header border-bottom">
+        <div class="card-header">
           <div class="card-title mb-0">Informasi Akun</div>
         </div>
         <div class="card-body">

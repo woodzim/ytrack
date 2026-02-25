@@ -18,22 +18,47 @@ class AlatController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search', '');
-        $alat = Alat::with(['sesiAlat', 'perusahaan']);
+        $id_perusahaan = $request->input('id_perusahaan', '');
+        $status = $request->input('status', ''); // 1: digunakan, 0: tersedia
 
-        if ($search) {
-            $alat->where(function($query) use ($search) {
-                // Cari berdasarkan ID Alat atau Nama Perusahaan
-                $query->where('id', 'like', '%' . $search . '%')      
-                    ->orWhereHas('perusahaan', function($q) use ($search) {
-                        $q->where('nama', 'like', '%' . $search . '%');
+        $query = Alat::with(['sesiAlat', 'perusahaan'])
+            ->withExists(['sesiAlat as sedang_digunakan' => function ($q) {
+                $q->where('aktif', true);
+            }]);
+
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('alat.id', 'like', '%' . $search . '%')      
+                    ->orWhereHas('perusahaan', function($sq) use ($search) {
+                        $sq->where('nama', 'like', '%' . $search . '%');
                     });
             });
         }
-        
-        // Urutkan berdasarkan data terbaru (created_at desc)
-        $alat = $alat->latest()->paginate(10);
 
-        return view('pages.admin.alat.index', compact('alat', 'search'));
+        if ($request->filled('id_perusahaan')) {
+            $query->where('id_perusahaan', $id_perusahaan);
+        }
+
+        if ($request->filled('status')) {
+            if ($status == '1') {
+                $query->whereHas('sesiAlat', function($q) {
+                    $q->where('aktif', true);
+                });
+            } else {
+                $query->whereDoesntHave('sesiAlat', function($q) {
+                    $q->where('aktif', true);
+                });
+            }
+        }
+        
+        $alat = $query->latest()->paginate(10)->appends($request->query());
+        $perusahaan = Perusahaan::all();
+
+        if ($request->ajax()) {
+            return view('pages.admin.alat.table', compact('alat', 'search', 'perusahaan', 'id_perusahaan', 'status'))->render();
+        }
+
+        return view('pages.admin.alat.index', compact('alat', 'search', 'perusahaan', 'id_perusahaan', 'status'));
     }
 
     /**

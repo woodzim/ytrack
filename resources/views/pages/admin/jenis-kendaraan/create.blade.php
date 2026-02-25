@@ -2,7 +2,7 @@
 
 @section('content')
   <div class="page-title-section">
-    <h1 class="fw-bold mb-2">Tambah Jenis Kendaraan Baru</h1>
+    <h1 class="page-title fw-medium fs-20 mb-0">Tambah Jenis Kendaraan Baru</h1>
     <p class="text-muted">Isikan informasi untuk mengkategorikan tipe kendaraan</p>
   </div>
   <div class="row">

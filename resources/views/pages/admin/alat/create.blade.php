@@ -8,8 +8,10 @@
   <div class="row">
     <div class="col-12 col-lg-8">
       <div class="card form-card">
-        <div class="card-header border-bottom bg-white">
-          <h5 class="card-title mb-0"><i class="ri-information-line me-2"></i>Informasi Alat</h5>
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0"><i class="ri-information-line me-2"></i>Informasi Alat</h5>
+          </div>
         </div>
         <div class="card-body p-4">
           <form action="{{ route('alat.store') }}" method="POST">

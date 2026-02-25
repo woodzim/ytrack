@@ -13,8 +13,10 @@ use Illuminate\Queue\SerializesModels;
 
 class RiwayatPerjalananCreated implements ShouldBroadcast, ShouldQueue
 {
+    use Dispatchable, InteractsWithSockets, SerializesModels;
+
     public function __construct(
-        public int $sesiAlatId,
+        public string $sesiAlatId,
         public float $lat,
         public float $lng,
         public string $waktu,
@@ -28,6 +30,7 @@ class RiwayatPerjalananCreated implements ShouldBroadcast, ShouldQueue
     {
         return new Channel('tracking.sesi.' . $this->sesiAlatId);
     }
+
     public function broadcastAs()
     {
         return 'LokasiBaru';

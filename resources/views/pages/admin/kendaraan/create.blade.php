@@ -1,14 +1,16 @@
 @extends('layouts.master')
 
 @section('content')
-  <div class="page-title-section">
-    <h1 class="fw-bold mb-2">Tambah Kendaraan Baru</h1>
-    <p class="text-muted">Daftarkan aset kendaraan ke dalam sistem</p>
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="page-title fw-medium fs-20 mb-0">Tambah Kendaraan Baru</h1>
+      <p class="">Daftarkan aset kendaraan ke dalam sistem</p>
+    </div>
   </div>
   <div class="row">
     <div class="col-12">
-      <div class="card form-card">
-        <div class="card-body">
+      <div class="">
+        <div class="">
           <form action="{{ route('kendaraan.store') }}" method="POST">
             @csrf
 

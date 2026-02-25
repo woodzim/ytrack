@@ -2,11 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use App\Models\Perusahaan;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 
 use function Symfony\Component\String\u;
 
@@ -22,6 +19,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,       
             PerusahaanSeeder::class, 
             KendaraanSeeder::class,
+            VerifiedCompanySeeder::class,
+            DemoRiwayatPerjalananSeeder::class,
         ]);
     }
 }

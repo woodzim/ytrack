@@ -12,12 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('riwayat_perjalanan', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
 
             // Foreign keys
-            $table->unsignedBigInteger('id_sesi_alat')->nullable();
-            $table->unsignedBigInteger('id_perusahaan')->nullable();
-            $table->unsignedBigInteger('id_kendaraan')->nullable();
+            $table->uuid('id_sesi_alat')->nullable();
+            $table->uuid('id_perusahaan')->nullable();
+            $table->uuid('id_kendaraan')->nullable();
             $table->string('id_alat')->nullable();
 
             // GPS data

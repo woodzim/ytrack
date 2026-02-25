@@ -1,7 +1,6 @@
 @extends('layouts.master')
 
 @section('styles')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <style>
         #map-container {
             height: 400px;
@@ -37,8 +36,10 @@
             <div class="col-12">
                 <!-- Map Section -->
                 <div class="detail-card">
-                    <div class="card-header">
-                        <h5><i class="ri-map-line me-2"></i>Visualisasi Rute</h5>
+                    <div class="card-header py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0"><i class="ri-map-line me-2"></i>Visualisasi Rute</h5>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div id="map-container"></div>
@@ -58,9 +59,9 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-sm table-hover">
-                                <thead>
-                                    <tr style="background-color: #f8f9fa;">
+                            <table class="table table-hover">
+                                <thead class="bg-light">
+                                    <tr>
                                         <th style="width: 40px;">No</th>
                                         <th>Waktu</th>
                                         <th>Latitude</th>
@@ -105,31 +106,15 @@
                                             <td>
                                                 @php
                                                     $batLevel = (int) ($item->battery ?? 0);
-                                                    $batColor = 'bg-danger';
-                                                    if ($batLevel > 70) {
-                                                        $batColor = 'bg-success';
-                                                    } elseif ($batLevel >= 30) {
-                                                        $batColor = 'bg-warning';
-                                                    }
                                                 @endphp
-                                                <div class="d-flex align-items-center" style="min-width: 100px;">
-                                                    <div class="progress flex-grow-1"
-                                                        style="height: 6px; background-color: #e9ecef;">
-                                                        <div class="progress-bar {{ $batColor }}" role="progressbar"
-                                                            style="width: {{ $batLevel }}%"
-                                                            aria-valuenow="{{ $batLevel }}" aria-valuemin="0"
-                                                            aria-valuemax="100"></div>
-                                                    </div>
-                                                    <span class="ms-2"
-                                                        style="font-size: 11px; font-weight: 600;">{{ $batLevel }}%</span>
-                                                </div>
+                                                <x-battery-circle :level="$batLevel" size="32px" />
                                             </td>
                                             <td>
                                                 <div class="action-buttons">
                                                     <a href="{{ route('riwayat-perjalanan.edit', $item->id) }}" class="btn btn-warning btn-sm">
                                                         <i class="ri-edit-line"></i> Edit
                                                     </a>
-                                                    <form action="{{ route('riwayat-perjalanan.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Hapus data ini?');">
+                                                    <form action="{{ route('riwayat-perjalanan.destroy', $item->id) }}" method="POST" style="display: inline;" data-confirm="Hapus data ini?">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-primary btn-sm w-100">
@@ -169,7 +154,6 @@
 @endsection
 
 @section('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Check if map container exists
@@ -178,14 +162,16 @@
 
             // Initialize map
             const map = L.map('map-container', {
-                maxZoom: 14,
-                minZoom: 4
+                maxZoom: 18,
+                minZoom: 4,
+                attributionControl: false,
+                gestureHandling: true
             });
 
             // CartoDB Positron layer
             L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                 attribution: '© OpenStreetMap contributors, © CARTO',
-                maxZoom: 14
+                maxZoom: 18
             }).addTo(map);
 
             // Get coordinates from table

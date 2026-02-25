@@ -1,7 +1,7 @@
 <header class="app-header sticky" id="header">
 
     <!-- Start::main-header-container -->
-    <div class="main-header-container container-fluid">
+    <div class="main-header-container container-fluid px-sm-4 px-3">
 
         <!-- Start::header-content-left -->
         <div class="header-content-left">
@@ -10,10 +10,10 @@
             <div class="header-element">
                 <div class="horizontal-logo">
                     <a href="{{ url('dashboard') }}" class="header-logo">
-                        <img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-logo">
-                        <img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-logo">
-                        <img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-dark">
-                        <img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-dark">
+                        <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-logo">
+                        <img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-logo">
+                        <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-dark">
+                        <img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-dark">
                     </a>
                 </div>
             </div>
@@ -23,7 +23,10 @@
             <div class="header-element mx-lg-0 mx-2">
                 <a aria-label="Hide Sidebar"
                     class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle"
-                    data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
+                    data-bs-toggle="sidebar" href="javascript:void(0);">
+                    <i class="ri-menu-line header-link-icon side-menu__icon-hamburger"></i>
+                    <i class="ri-close-line header-link-icon side-menu__icon-close"></i>
+                </a>
             </div>
             <!-- End::header-element -->
         </div>
@@ -182,7 +185,7 @@
                     </div>
                 </a>
                 <!-- End::header-link|dropdown-toggle -->
-                <div class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" style="--bs-dropdown-padding-y: 0.5rem; margin-top: 0.5rem;"
+                <div class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" style="--bs-dropdown-padding-y: 0.5rem; margin-top: 0.5rem; min-width: 260px;"
                     aria-labelledby="mainHeaderProfile">
                     {{-- <div class="p-3 bg-primary text-fixed-white">
                         <div class="d-flex align-items-center justify-content-between">
@@ -206,6 +209,16 @@
                                 <li>
                                     <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile.index') }}"><i
                                             class="ti ti-user-circle me-2 fs-18"></i>Profil</a>
+                                </li>
+                            </ul>
+                        </li>
+                        @endrole
+                        @role('perusahaan')
+                        <li>
+                            <ul class="list-unstyled mb-0 sub-list">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('perusahaan.profile.index') }}"><i
+                                            class="ti ti-building me-2 fs-18"></i>Informasi Profil Perusahaan</a>
                                 </li>
                             </ul>
                         </li>

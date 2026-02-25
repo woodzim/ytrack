@@ -47,7 +47,19 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
+            // Cek verifikasi email
+            if (!Auth::user()->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
+
             // LOGIKA REDIRECT
+            // Prioritaskan Admin
+            if (Auth::user()->hasRole('admin')) {
+                return redirect()
+                    ->intended(route('dashboard'))
+                    ->with('success', 'Login berhasil!');
+            }
+
             if (Auth::user()->hasRole('perusahaan')) {
                 if (!Auth::user()->isValidated()) {
                     Auth::logout();
@@ -64,7 +76,7 @@ class LoginController extends Controller
                     ->with('success', 'Login berhasil!');
             }
 
-            // Redirect Default (Admin)
+            // Fallback (jika ada role lain atau default)
             return redirect()
                 ->intended(route('dashboard'))
                 ->with('success', 'Login berhasil!');
@@ -81,15 +93,11 @@ class LoginController extends Controller
     /**
      * Handle logout.
      */
-    public function logout(Request $request)
-    {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()
-            ->route('login')
-            ->with('success', 'Logout berhasil!');
-    }
+        public function logout(Request $request)
+        {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect()->route('login');
+        }
 }

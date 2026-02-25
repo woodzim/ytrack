@@ -11,10 +11,10 @@
 						<div class="header-element">
 							<div class="horizontal-logo">
 								<a href="{{url('index')}}" class="header-logo">
-									<img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-logo">
-									<img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-logo">
-									<img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-dark">
-									<img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-dark">
+									<img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-logo">
+									<img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-logo">
+									<img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-dark">
+									<img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-dark">
 								</a>
 							</div>
 						</div>
@@ -28,7 +28,7 @@
 
 						<div class="header-element header-search d-md-block d-none">
 							<!-- Start::header-link -->
-							<input type="text" class="header-search-bar form-control bg-white" id="header-search" placeholder="Search" spellcheck=false autocomplete="off" autocapitalize="off">
+							<input type="text" class="header-search-bar form-control bg-light" id="header-search" placeholder="Search" spellcheck=false autocomplete="off" autocapitalize="off">
 							<a href="javascript:void(0);" class="header-search-icon border-0">
 								<i class="bi bi-search fs-12"></i>
 							</a>

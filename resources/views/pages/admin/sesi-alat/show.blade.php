@@ -1,9 +1,13 @@
 @extends('layouts.master')
 
 @section('styles')
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
   <style>
-    /* Wrapper Utama Marker */
+    /* --- Styling Map Icon (Sesuai Desain Anda) --- */
+    .custom-pin-icon {
+      background: transparent;
+      border: none;
+    }
+
     .pin-wrapper {
       position: relative;
       width: 50px;
@@ -13,54 +17,49 @@
       justify-content: center;
     }
 
-    /* Icon Utama (Mobil/Bendera) */
     .pin-wrapper i {
-      position: relative;
-      font-size: 32px;
-      z-index: 10;
-      filter: drop-shadow(0 5px 4px rgba(0, 0, 0, 0.3));
-      transition: all 0.3s ease;
+      font-size: 40px;
+      color: var(--primary-color);
+      /* Menggunakan warna palet */
+      filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.3));
+      z-index: 2;
     }
 
-    /* Warna Khusus */
-    .truck-icon i {
-      color: #be1e2d;
-    }
-
-    .start-icon i {
-      color: #be1e2d;
-    }
-
-    /* Animasi Denyut (Pulse) di Bawah */
+    /* Animasi Pulse */
     .pin-pulse {
       position: absolute;
-      width: 40px;
-      height: 15px;
-      background: rgba(0, 0, 0, 0.2);
+      width: 100%;
+      height: 100%;
+      background: rgba(var(--primary-rgb), 0.4);
       border-radius: 50%;
-      bottom: 5px;
       z-index: 1;
-      animation: pulse-ring 2s infinite;
+      animation: pulse-animation 2s infinite;
+      bottom: 3px;
+      transform: scaleX(1) scaleY(0.5);
     }
 
-    .truck-icon .pin-pulse {
-      background: rgba(190, 30, 45, 0.4);
-    }
-
-    .start-icon .pin-pulse {
-      background: rgba(16, 185, 129, 0.4);
-    }
-
-    @keyframes pulse-ring {
+    @keyframes pulse-animation {
       0% {
         transform: scale(0.5);
         opacity: 1;
       }
 
       100% {
-        transform: scale(2.5);
+        transform: scale(1.5);
         opacity: 0;
       }
+    }
+
+    /* --- Style Interaksi Tabel --- */
+    .clickable-row {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .table-active-row {
+      background-color: #e0f2fe !important;
+      /* Biru muda */
+      border-left: 4px solid #0ea5e9;
     }
 
     #map-container {
@@ -68,186 +67,183 @@
       width: 100%;
       border-radius: 8px;
       margin-bottom: 20px;
-
-      /* --- KUNCI PERBAIKAN --- */
       position: relative;
-      /* Pastikan posisi relative */
       z-index: 1;
-      /* Angka kecil (0 atau 1) agar kalah tinggi dari Navbar (biasanya 1000+) */
     }
 
-    /* OPSI TAMBAHAN: Jika tombol zoom (+ -) leaflet masih menembus navbar */
     .leaflet-top,
     .leaflet-bottom {
       z-index: 400 !important;
-      /* Default leaflet kadang 1000, kita turunkan */
     }
 
-
-    /* --- TAMBAHAN GAYA UNTUK INTERAKSI TABEL --- */
-    /* Ubah kursor jadi telunjuk saat hover baris tabel */
-    .table-hover tbody tr {
-      cursor: pointer;
-      transition: background-color 0.2s;
+    /* Animasi Radar Wave untuk Tombol Power Aktif */
+    .pulse-active {
+      position: relative;
+      z-index: 1;
     }
 
-    /* Warna highlight saat baris dipilih */
-    .table-active-row {
-      background-color: #e0f2fe !important;
-      /* Biru muda */
-      border-left: 4px solid #0ea5e9;
+    .pulse-active::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #10b981;
+      /* Warna hijau success */
+      opacity: 0.15;
+      z-index: -1;
+      animation: radar-wave 2s linear infinite;
+    }
+
+    .pulse-active::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #10b981;
+      opacity: 0.15;
+      z-index: -1;
+      animation: radar-wave 2s linear infinite;
+      animation-delay: 1s;
+    }
+
+    @keyframes radar-wave {
+      0% {
+        transform: scale(1);
+        opacity: 0.15;
+      }
+
+      100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
     }
   </style>
 @endsection
 
 @section('content')
-  <div class="page-header-section">
+  <div class="page-header-section d-flex align-items-center justify-content-between">
     <div>
-      <h1>Detail Perjalanan</h1>
-      <p>Informasi lengkap sesi YA-Track</p>
+      <div>
+        <h1>Detail Perjalanan</h1>
+        <p>Informasi lengkap sesi GPS tracking (Admin View)</p>
+      </div>
     </div>
-    <div>
-      <span class="status-badge-large mt-3"
-        style="background-color: {{ $sesiAlat->aktif ? '#10b981' : '#6b7280' }}; color: white;">
-        <i class="ri-{{ $sesiAlat->aktif ? 'check-double' : 'close' }}-line me-1"></i>
-        {{ $sesiAlat->aktif ? 'AKTIF' : 'NONAKTIF' }}
-      </span>
+    <div class="ms-auto">
+      <a href="{{ route('sesi-alat.index') }}" class="btn btn-light btn-wave">
+        <i class="ri-arrow-left-line me-2"></i>Kembali
+      </a>
     </div>
   </div>
-  <div class="row mb-12">
-    <div class="col-12">
-      <div class="detail-container">
-        <div class="detail-card">
-          <div class="card-header">
-            <h5>Informasi Sesi</h5>
+
+  <div class="row mb-4">
+    <div class="col-xl-8 col-lg-7">
+      <div class="detail-card h-100 mb-0">
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Informasi Sesi</h5>
           </div>
-          <div class="card-body">
-            <div class="detail-group">
-              <div class="detail-label" style="margin-bottom: 10px;">ID Sesi</div>
-              <div class="detail-value">{{ $sesiAlat->id }}</div>
-            </div>
-
-            <div class="detail-group">
-              <div class="detail-label" style="margin-bottom: 10px;">ID Alat GPS</div>
-              <div class="detail-value">
-                <span class="badge-alat">{{ $sesiAlat->alat ? $sesiAlat->alat->id : '-' }}</span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="detail-group mb-3 d-flex flex-column">
+                <span class="detail-label mb-1">Nama Sesi</span>
+                <span class="detail-value fw-bold text-dark">{{ $sesiAlat->nama ?? '-' }}</span>
+              </div>
+              <div class="detail-group mb-3 d-flex flex-column">
+                <span class="detail-label mb-1">Kendaraan</span>
+                <span class="detail-value">
+                  <i class="ri-truck-line me-1 text-primary"></i>
+                  {{ $sesiAlat->kendaraan?->nama ?? '-' }} ({{ $sesiAlat->kendaraan?->plat ?? '-' }})
+                </span>
+              </div>
+              <div class="detail-group mb-3 d-flex flex-column">
+                <span class="detail-label mb-1">Perusahaan Pemilik</span>
+                <span class="detail-value">
+                  <i class="ri-building-line me-1 text-info"></i>
+                  {{ $sesiAlat->perusahaan?->nama ?? '-' }}
+                </span>
               </div>
             </div>
-
-            <div class="detail-group">
-              <div class="detail-label" style="margin-bottom: 10px;">Kendaraan</div>
-              <div class="detail-value">{{ $sesiAlat->kendaraan ? $sesiAlat->kendaraan->nama : '-' }}</div>
-            </div>
-
-            <div class="detail-group">
-              <div class="detail-label" style="margin-bottom: 10px;">Status Baterai Alat</div>
-              @php
-                $lastRiwayat = $riwayatPerjalanan->sortByDesc('created_at')->first();
-                $batLevel = (int) ($lastRiwayat?->battery ?? 0);
-                $batColor = 'bg-danger';
-                if ($batLevel > 70) {
-                    $batColor = 'bg-success';
-                } elseif ($batLevel >= 30) {
-                    $batColor = 'bg-warning';
-                }
-              @endphp
-              <div class="detail-value">
-                @if ($lastRiwayat && $lastRiwayat->battery !== null)
-                  <div class="d-flex align-items-center" style="max-width: 200px;">
-                    <div class="progress flex-grow-1" style="height: 8px; background-color: #e9ecef;">
-                      <div class="progress-bar {{ $batColor }}" role="progressbar" style="width: {{ $batLevel }}%"
-                        aria-valuenow="{{ $batLevel }}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <span class="ms-2" style="font-size: 13px; font-weight: 700;">{{ $batLevel }}%</span>
-                  </div>
-                @else
-                  <span class="text-muted">-</span>
-                @endif
+            <div class="col-md-6">
+              <div class="detail-group mb-3 d-flex flex-column">
+                <span class="detail-label mb-1">Serial Number (SN)</span>
+                <span class="detail-value">
+                  <span class="badge bg-primary-transparent text-primary">
+                    <i class="ri-cpu-line me-1"></i>{{ $sesiAlat->alat?->id ?? '-' }}
+                  </span>
+                </span>
               </div>
-            </div>
-
-            <div class="detail-group">
-              <div class="detail-label" style="margin-bottom: 10px;">Perusahaan</div>
-              <div class="detail-value">
-                {{ $sesiAlat->perusahaan ? $sesiAlat->perusahaan->nama : '-' }}
-              </div>
-              @if ($sesiAlat->perusahaan)
-                <div class="detail-value secondary">
-                  <small class="text-muted">
-                    <i class="ri-map-pin-line me-1"></i>{{ $sesiAlat->perusahaan ? $sesiAlat->perusahaan->alamat : '-' }}
-                  </small>
-                </div>
-              @endif
-            </div>
-
-            <div class="detail-group">
-              <div class="detail-label" style="margin-bottom: 10px;">Timeline</div>
-              <div class="timeline">
-                <div class="timeline-item">
-                  <strong>Dibuat</strong>
-                  <span>{{ $sesiAlat->created_at->translatedFormat('d F Y') }}</span>
-                  <small class="text-muted">{{ $sesiAlat->created_at->translatedFormat('H:i') }}</small>
-                </div>
-                <div class="timeline-item">
-                  <strong>Diperbarui</strong>
-                  <span>{{ $sesiAlat->updated_at->translatedFormat('d F Y') }}</span>
-                  <small class="text-muted">{{ $sesiAlat->updated_at->translatedFormat('H:i') }}</small>
-                </div>
+              <div class="detail-group mb-3 d-flex flex-column">
+                <label class="detail-label mb-1">Waktu Pembaruan Terakhir</label>
+                <span class="detail-value text-muted local-date">
+                  {{ $sesiAlat->updated_at ? $sesiAlat->updated_at->toIso8601String() : '-' }}
+                </span>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="side-card">
-          <div class="card-header">
-            <h5>Aksi</h5>
+      </div>
+    </div>
+    <div class="col-xl-4 col-lg-5">
+      <div class="detail-card h-100 mb-0 d-flex flex-column">
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Status & Kontrol Sesi</h5>
           </div>
-          <div class="card-body">
-            <form action="{{ route('sesi-alat.toggle', $sesiAlat->id) }}" method="POST" style="margin-bottom: 12px;">
-              @csrf
-              @method('PUT')
-              <button type="submit" class="btn-toggle-large {{ $sesiAlat->aktif ? 'active' : 'inactive' }}">
-                <i class="ri-{{ $sesiAlat->aktif ? 'pause' : 'play' }}-line me-2"></i>
-                {{ $sesiAlat->aktif ? 'Nonaktifkan' : 'Aktifkan' }}
-              </button>
-            </form>
+        </div>
+        <div class="d-flex align-items-center justify-content-center py-4 flex-grow-1">
+          @php
+            $lastRiwayat = $riwayatPerjalanan->sortByDesc('created_at')->first();
+            $batLevel = (int) ($lastRiwayat?->battery ?? 0);
+          @endphp
 
-            <a href="{{ route('sesi-alat.edit', $sesiAlat->id) }}" class="btn btn-primary btn-sm w-100 mb-2">
-              <i class="ri-edit-line me-2"></i>Edit
-            </a>
-
-            <form action="{{ route('sesi-alat.destroy', $sesiAlat->id) }}" method="POST"
-              onsubmit="return confirm('Hapus sesi ini secara permanen? Tindakan ini tidak dapat dibatalkan.');">
-              @csrf
-              @method('DELETE')
-              <button type="submit" class="btn btn-primary btn-sm w-100 mb-2">
-                <i class="ri-delete-bin-line me-2"></i>Hapus Sesi
-              </button>
-            </form>
-
-            <a href="{{ route('sesi-alat.index') }}" class="btn btn-outline-secondary btn-sm w-100">
-              <i class="ri-arrow-left-line me-2"></i>Kembali
-            </a>
-
-            <hr class="my-3">
-
-            <div class="p-3 rounded" style="background-color: #f8f9fa; border: 1px solid #e0e0e0;">
-              <div class="mb-3">
-                <strong style="font-size: 12px; color: #666;">Status Saat Ini</strong>
-                <div style="margin-top: 8px;">
-                  <span class="badge"
-                    style="background-color: {{ $sesiAlat->aktif ? '#10b981' : '#6b7280' }}; color: white;">
-                    {{ $sesiAlat->aktif ? 'Aktif' : 'Nonaktif' }}
-                  </span>
-                </div>
-              </div>
-              <div style="font-size: 12px; line-height: 1.6; color: #666;">
-                @if ($sesiAlat->aktif)
-                  <strong>Sesi aktif.</strong> Alat GPS sedang tracking kendaraan ini.
+          <div class="d-flex w-100 align-items-stretch">
+            {{-- KOLOM BATERAI --}}
+            <div class="flex-fill d-flex flex-column align-items-center justify-content-center border-end">
+              <span class="detail-label mb-3 d-block text-center text-uppercase text-nowrap">Baterai Alat</span>
+              <div class="my-auto">
+                @if ($lastRiwayat && $lastRiwayat->battery !== null)
+                  <x-battery-circle :level="$batLevel" size="85px" />
                 @else
-                  <strong>Sesi nonaktif.</strong> Alat GPS tidak sedang tracking. Klik tombol <strong>Aktifkan</strong>
-                  untuk memulai.
+                  <div class="text-muted small">Tidak ada data</div>
                 @endif
+              </div>
+            </div>
+
+            {{-- KOLOM KONTROL --}}
+            <div class="flex-fill d-flex flex-column align-items-center justify-content-center">
+              <label class="detail-label mb-3 d-block text-uppercase text-center text-nowrap">Kontrol Daya</label>
+              <div class="my-auto d-flex flex-column align-items-center">
+                <form id="toggle-power-form" action="{{ route('sesi-alat.toggle', $sesiAlat->id) }}" method="POST">
+                  @csrf
+                  @method('PUT')
+                  <button type="submit" id="toggle-power-btn"
+                    class="btn btn-icon btn-lg rounded-circle shadow-lg {{ $sesiAlat->aktif ? 'btn-success pulse-active' : 'btn-danger' }}"
+                    style="width: 80px; height: 80px;" title="{{ $sesiAlat->aktif ? 'Matikan Sesi' : 'Aktifkan Sesi' }}">
+                    <i id="toggle-power-icon" class="ri-shut-down-line fs-40"></i>
+                  </button>
+                </form>
+                <span id="power-status-badge"
+                  class="badge rounded-pill mt-3 {{ $sesiAlat->aktif ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} px-3">
+                  {{ $sesiAlat->aktif ? 'SESI AKTIF' : 'SESI NONAKTIF' }}
+                </span>
               </div>
             </div>
           </div>
@@ -260,102 +256,40 @@
     <div class="col-12">
       <div class="detail-card">
         <div class="card-header">
-          <h5><i class="ri-map-pin-line me-2"></i>Riwayat Perjalanan</h5>
+          <h5><i class="ri-map-pin-line me-2"></i>Perjalanan</h5>
         </div>
         <div class="card-body">
-          <div id="map-container" style="height: 400px; width: 100%; border-radius: 8px; margin-bottom: 20px;"></div>
+          <div id="map-container"></div>
 
-          <div id="table-wrapper">
-            @if ($riwayatPerjalanan->count() > 0)
-              <div class="table-responsive">
-                <table class="table table-sm table-hover" id="gps-table">
-                  <thead>
-                    <tr style="background-color: #f8f9fa;">
-                      <th style="font-size: 12px; font-weight: 600; color: #666;">No</th>
-                      <th style="font-size: 12px; font-weight: 600; color: #666;">Waktu</th>
-                      <th style="font-size: 12px; font-weight: 600; color: #666;">Latitude</th>
-                      <th style="font-size: 12px; font-weight: 600; color: #666;">Longitude</th>
-                      <th style="font-size: 12px; font-weight: 600; color: #666;">Ketinggian</th>
-                      <th style="font-size: 12px; font-weight: 600; color: #666;">Satelit</th>
-                      <th style="font-size: 12px; font-weight: 600; color: #666;">Kecepatan</th>
-                      <th style="font-size: 12px; font-weight: 600; color: #666;">Battery</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {{-- 1. Hitung total data dulu sebelum looping --}}
-                    @php $totalData = $riwayatPerjalanan->count(); @endphp
-
-                    {{-- 2. Loop data yang sudah dibalik (Terbaru di atas) --}}
-                    @foreach ($riwayatPerjalanan->sortByDesc('created_at') as $riwayat)
-                      <tr class="clickable-row" data-lat="{{ $riwayat->lat }}" data-lng="{{ $riwayat->long }}"
-                        data-time="{{ $riwayat->created_at?->translatedFormat('H:i:s') }}"
-                        data-speed="{{ $riwayat->speed ?? 0 }}">
-
-                        <td style="font-size: 12px; font-weight: 600;">
-                          <span class="rounded-circle py-1 px-2 bg-primary text-white number-badge">
-                            {{-- RUMUS MUNDUR: Total Data dikurangi Index saat ini --}}
-                            {{ $totalData - $loop->index }}
-                          </span>
-                        </td>
-
-                        <td style="font-size: 12px;">
-                          <i
-                            class="ri-time-line me-1"></i>{{ $riwayat->created_at?->translatedFormat('d-m-Y H:i:s') ?? '-' }}
-                        </td>
-
-                        <td style="font-size: 12px;">{{ $riwayat->lat }}</td>
-                        <td style="font-size: 12px;">{{ $riwayat->long }}</td>
-                        <td style="font-size: 12px;">{{ $riwayat->alt ? $riwayat->alt . ' m' : '-' }}</td>
-
-                        <td style="font-size: 12px;">
-                          @if ($riwayat->sat)
-                            <span class="badge bg-primary">{{ $riwayat->sat }}</span>
-                          @else
-                            -
-                          @endif
-                        </td>
-
-                        <td style="font-size: 12px;">
-                          @if ($riwayat->speed)
-                            <span style="color: #10b981; font-weight: 600;">{{ $riwayat->speed }} km/h</span>
-                          @else
-                            -
-                          @endif
-                        </td>
-
-                        <td style="font-size: 12px;">
-                          @php
-                            $batLevel = (int) ($riwayat->battery ?? 0);
-                            $batColor = 'bg-danger';
-                            if ($batLevel > 70) {
-                                $batColor = 'bg-success';
-                            } elseif ($batLevel >= 30) {
-                                $batColor = 'bg-warning';
-                            }
-                          @endphp
-                          <div class="d-flex align-items-center" style="min-width: 100px;">
-                            <div class="progress grow" style="height: 6px; background-color: #e9ecef;">
-                              <div class="progress-bar {{ $batColor }}" role="progressbar"
-                                style="width: {{ $batLevel }}%" aria-valuenow="{{ $batLevel }}"
-                                aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <span class="ms-2" style="font-size: 11px; font-weight: 600;">{{ $batLevel }}%</span>
-                          </div>
-                        </td>
-                      </tr>
-                    @endforeach
-                  </tbody>
-                </table>
-              </div>
-            @else
-              <div id="empty-state" style="text-align: center; padding: 40px 20px; color: #999;">
-                <i class="ri-map-pin-2-line"
-                  style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
-                <p style="margin: 0;">Belum ada data riwayat perjalanan</p>
-                <small>Data YA-Track akan muncul di sini</small>
-              </div>
-            @endif
+          <div class="table-responsive" id="table-wrapper">
+            <table class="table table-hover" id="history-table">
+              <thead class="bg-light">
+                <tr>
+                  <th style="font-size: 12px; font-weight: 600; color: #666;">No</th>
+                  <th style="font-size: 12px; font-weight: 600; color: #666;">Waktu</th>
+                  <th style="font-size: 12px; font-weight: 600; color: #666;">Latitude</th>
+                  <th style="font-size: 12px; font-weight: 600; color: #666;">Longitude</th>
+                  <th style="font-size: 12px; font-weight: 600; color: #666;">Ketinggian</th>
+                  <th style="font-size: 12px; font-weight: 600; color: #666;">Satelit</th>
+                  <th style="font-size: 12px; font-weight: 600; color: #666;">Kecepatan</th>
+                  <th style="font-size: 12px; font-weight: 600; color: #666;">Battery</th>
+                </tr>
+              </thead>
+              <tbody id="history-table-body">
+                <!-- Data akan dimuat via JavaScript -->
+              </tbody>
+            </table>
           </div>
+
+          <!-- Sentinel untuk Infinite Scroll -->
+          <div id="scroll-sentinel" style="height: 50px; margin-top: 10px;"
+            class="d-flex align-items-center justify-content-center">
+            <div class="spinner-border spinner-border-sm text-primary" role="status" id="loading-spinner"
+              style="display: none;">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -363,316 +297,377 @@
 @endsection
 
 @section('scripts')
-  {{-- 1. LOAD LIBRARY --}}
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-
   <script>
     // --- 2. CHECK ECHO ---
     if (typeof window.Echo === 'undefined') {
-      console.warn(
-        'Echo is not defined. Realtime updates might not work. Make sure Pusher keys are set in .env and VITE_PUSHER_APP_KEY is available.'
-        );
+      console.warn('Echo is not defined. Realtime updates might not work.');
     }
-  </script>
 
-  <script>
-    window.SESI_ALAT_ID = {{ $sesiAlat->id }};
+    window.SESI_ALAT_ID = "{{ $sesiAlat->id }}";
+
+    // Konversi Data PHP ke JS
+    const rawRiwayatData = @json($riwayatPerjalanan);
+    let currentIndex = 0;
+    const itemsPerPage = 100;
+    let isLoading = false;
 
     // --- VARIABEL GLOBAL ---
     let map = null;
+    let polyline = null;
     let startMarker = null;
     let truckMarker = null;
-    let polyline = null;
     let selectedMarker = null;
     let liveLatLngs = [];
-
-    // --- [UPDATE LOGIKA] STATUS AUTO FOLLOW ---
     let isAutoPan = true;
 
-    // --- 3. HELPER DATE (Updated) ---
+    // --- 3. HELPER: PARSE TANGGAL AMAN ---
     const parseDateSafe = (input) => {
       if (!input) return new Date();
       if (input instanceof Date) return input;
-
       let safeString = input.toString().replace(' ', 'T');
-      // Tambahkan Z jika tidak ada, agar dianggap UTC lalu dikonversi ke Lokal
-      if (!safeString.endsWith('Z') && !safeString.includes('+')) {
-        safeString += 'Z';
-      }
-
+      if (!safeString.endsWith('Z') && !safeString.includes('+')) safeString += 'Z';
       let d = new Date(safeString);
       return isNaN(d.getTime()) ? new Date() : d;
     };
 
-    // Format: 12-01-2026 14:45:06 WIB
+    // --- 4. FORMATTER DATE ---
     const formatDateJS = (d) => {
       const dateObj = parseDateSafe(d);
-
       const day = String(dateObj.getDate()).padStart(2, '0');
       const month = String(dateObj.getMonth() + 1).padStart(2, '0');
       const year = dateObj.getFullYear();
       const hours = String(dateObj.getHours()).padStart(2, '0');
       const minutes = String(dateObj.getMinutes()).padStart(2, '0');
       const seconds = String(dateObj.getSeconds()).padStart(2, '0');
-
-      // Deteksi Timezone
       const offset = -dateObj.getTimezoneOffset();
-      let zona = '';
-      if (offset === 420) zona = 'WIB';
-      else if (offset === 480) zona = 'WITA';
-      else if (offset === 540) zona = 'WIT';
-      else {
-        const jamOffset = offset / 60;
-        zona = `(UTC${jamOffset >= 0 ? '+' : ''}${jamOffset})`;
-      }
-
+      let zona = offset === 420 ? 'WIB' : (offset === 480 ? 'WITA' : (offset === 540 ? 'WIT' : ''));
       return `${day}-${month}-${year} ${hours}:${minutes}:${seconds} ${zona}`;
     };
 
-    // Icons
-    function createStartIcon() {
-      return L.divIcon({
-        html: `<div class="pin-wrapper start-icon"><i class="ri-map-pin-line"></i></div>`,
-        className: '',
-        iconSize: [50, 50],
-        iconAnchor: [25, 45]
-      });
-    }
+    const getBatteryHtml = (level, size = '32px', fontSize = '8px', maskSize = '3px') => {
+      const levelInt = parseInt(level || 0);
+      let color = '#be1e2d';
+      if (levelInt > 70) color = '#10b981';
+      else if (levelInt > 30) color = '#f59e0b';
 
-    function createTruckIcon() {
+      return `<div class="battery-circle-container d-flex align-items-center justify-content-center">
+                <div style="position: relative; width: ${size}; height: ${size}; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; background: radial-gradient(closest-side, white calc(100% - ${maskSize}), transparent calc(100% - ${maskSize} + 0.5px)), conic-gradient(${color} ${levelInt}%, #e9ecef 0);">
+                  <span style="font-size: ${fontSize}; font-weight: 700; color: ${color}; z-index: 1;">${levelInt}%</span>
+                </div>
+              </div>`;
+    };
+
+    const getRowHtml = (item, index) => {
+      const dateStr = formatDateJS(item.created_at);
+
+      return `
+            <tr class="clickable-row" data-lat="${item.lat}" data-lng="${item.long}" 
+                data-time="${item.created_at}" data-speed="${item.speed || 0}">
+                <td style="font-size: 12px; font-weight: 600;">
+                    <span class="rounded-circle py-1 px-2 bg-primary text-white number-badge">
+                        ${rawRiwayatData.length - index}
+                    </span>
+                </td>
+                <td style="font-size: 12px;"><i class="ri-time-line me-1"></i>${dateStr}</td>
+                <td style="font-size: 12px;">${item.lat}</td>
+                <td style="font-size: 12px;">${item.long}</td>
+                <td style="font-size: 12px;">${item.alt ? item.alt + ' m' : '-'}</td>
+                <td style="font-size: 12px;">${item.sat ? '<span class="badge bg-primary">' + item.sat + '</span>' : '-'}</td>
+                <td style="font-size: 12px;">${item.speed ? '<span style="color: #10b981; font-weight: 600;">' + item.speed + ' km/h</span>' : '-'}</td>
+                <td style="font-size: 12px;">
+                    ${getBatteryHtml(item.battery, '32px', '8px', '3px')}
+                </td>
+            </tr>
+        `;
+    };
+
+    const loadMoreData = () => {
+      if (isLoading || currentIndex >= rawRiwayatData.length) return;
+      isLoading = true;
+
+      const spinner = document.getElementById('loading-spinner');
+      if (spinner) spinner.style.display = 'block';
+
+      const tbody = document.getElementById('history-table-body');
+      const limit = Math.min(currentIndex + itemsPerPage, rawRiwayatData.length);
+
+      let chunkHtml = '';
+      for (let i = currentIndex; i < limit; i++) {
+        chunkHtml += getRowHtml(rawRiwayatData[i], i);
+      }
+
+      tbody.insertAdjacentHTML('beforeend', chunkHtml);
+      currentIndex = limit;
+
+      if (spinner) spinner.style.display = 'none';
+      isLoading = false;
+
+      const sentinel = document.getElementById('scroll-sentinel');
+      if (sentinel) {
+        const rect = sentinel.getBoundingClientRect();
+        if (currentIndex < rawRiwayatData.length && rect.top < window.innerHeight + 400) {
+          setTimeout(loadMoreData, 50);
+        } else if (currentIndex >= rawRiwayatData.length) {
+          sentinel.style.display = 'none';
+        }
+      }
+    };
+
+    // --- 5. CUSTOM ICON MAP ---
+    function createCustomIcon(type) {
+      let iconClass = type === 'start' ? 'ri-map-pin-line' : 'ri-map-pin-user-line';
+      let pulseHtml = type === 'end' ? '<div class="pin-pulse"></div>' : '';
       return L.divIcon({
-        html: `<div class="pin-wrapper truck-icon"><div class="pin-pulse"></div><i class="ri-map-pin-user-line"></i></div>`,
-        className: '',
+        html: `<div class="pin-wrapper">${pulseHtml}<i class="${iconClass}"></i></div>`,
+        className: 'custom-pin-icon',
         iconSize: [50, 50],
         iconAnchor: [25, 45]
       });
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-
       // A. INIT MAP
-      const mapContainer = document.getElementById('map-container');
-      if (!mapContainer) return;
-
-      map = L.map('map-container').setView([-2.548926, 118.0148634], 5);
+      map = L.map('map-container', {
+        attributionControl: false,
+        gestureHandling: true
+      }).setView([-2.5489, 118.0149], 4);
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap © CARTO',
-        maxZoom: 19
+        attribution: '© OpenStreetMap, © CARTO',
+        maxZoom: 18
       }).addTo(map);
 
-      // --- [UPDATE LOGIKA] RESUME TRACKING SAAT KLIK PETA KOSONG ---
-      map.on('click', function() {
+      map.on('click', () => {
         if (!isAutoPan) {
           isAutoPan = true;
           if (selectedMarker) {
             map.removeLayer(selectedMarker);
             selectedMarker = null;
           }
-          document.querySelectorAll('#gps-table tbody tr').forEach(r => r.classList.remove('table-active-row'));
-
+          document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
           if (truckMarker) {
             map.panTo(truckMarker.getLatLng());
             truckMarker.openPopup();
           }
-          console.log("🔄 Resume Auto Tracking");
         }
       });
 
-      // B. LOAD DATA LAMA & FORMAT TABEL
-      const rows = document.querySelectorAll('#gps-table tbody tr');
+      // B. INIT DATA TABEL & MAP
+      if (rawRiwayatData.length > 0) {
+        loadMoreData();
 
-      rows.forEach((row) => {
-        // 1. Ambil LatLong untuk Map
-        const lat = parseFloat(row.getAttribute('data-lat'));
-        const lng = parseFloat(row.getAttribute('data-lng'));
-        if (!isNaN(lat) && !isNaN(lng)) {
-          liveLatLngs.push([lat, lng]);
-        }
-
-        // 2. FORMAT ULANG WAKTU DI TABEL (Agar Data Lama Sesuai Format Baru)
-        // Ambil raw string dari atribut (misal: 2024-01-01 10:00:00)
-        const rawTime = row.getAttribute('data-time');
-        if (rawTime) {
-          const prettyTime = formatDateJS(rawTime);
-          // Update kolom ke-2 (index 1) di tabel HTML
-          if (row.cells[1]) {
-            row.cells[1].innerHTML = `<i class="ri-time-line me-1"></i>${prettyTime}`;
+        const observer = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && !isLoading) {
+            loadMoreData();
           }
-        }
-      });
-
-      // Reverse array agar [0] = Titik Awal (Lama), [Akhir] = Titik Truk (Baru)
-      liveLatLngs.reverse();
-
-      if (liveLatLngs.length > 0) {
-        startMarker = L.marker(liveLatLngs[0], {
-          icon: createStartIcon()
-        }).addTo(map);
-
-        truckMarker = L.marker(liveLatLngs[liveLatLngs.length - 1], {
-          icon: createTruckIcon(),
-          zIndexOffset: 1000
-        }).addTo(map);
-
-        polyline = L.polyline(liveLatLngs, {
-          color: '#be1e2d',
-          weight: 4,
-          dashArray: '10, 10'
-        }).addTo(map);
-
-        map.fitBounds(L.latLngBounds(liveLatLngs), {
-          padding: [50, 50]
+        }, {
+          rootMargin: '400px',
+          threshold: 0.01
         });
+
+        const sentinel = document.getElementById('scroll-sentinel');
+        if (sentinel) observer.observe(sentinel);
+
+        rawRiwayatData.forEach(item => {
+          const lat = parseFloat(item.lat);
+          const lng = parseFloat(item.long);
+          if (!isNaN(lat) && !isNaN(lng)) liveLatLngs.push([lat, lng]);
+        });
+
+        const pathLatLngs = [...liveLatLngs].reverse();
+        if (pathLatLngs.length > 0) {
+          startMarker = L.marker(pathLatLngs[0], {
+            icon: createCustomIcon('start')
+          }).addTo(map).bindPopup("Titik Awal");
+          truckMarker = L.marker(pathLatLngs[pathLatLngs.length - 1], {
+            icon: createCustomIcon('end'),
+            zIndexOffset: 1000
+          }).addTo(map).bindPopup("Lokasi Terkini");
+          polyline = L.polyline(pathLatLngs, {
+            color: '#be1e2d',
+            weight: 4,
+            dashArray: '5, 5'
+          }).addTo(map);
+          map.fitBounds(polyline.getBounds(), {
+            padding: [50, 50],
+            maxZoom: 18
+          });
+        }
+      } else {
+        const tbody = document.getElementById('history-table-body');
+        if (tbody) {
+          tbody.innerHTML = `
+                <tr id="empty-row">
+                    <td colspan="8">
+                        <div style="text-align: center; padding: 40px 20px; color: #999;">
+                            <i class="ri-map-pin-2-line" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                            <p style="margin: 0;">Belum ada data riwayat perjalanan</p>
+                        </div>
+                    </td>
+                </tr>`;
+        }
+        const sentinel = document.getElementById('scroll-sentinel');
+        if (sentinel) sentinel.style.display = 'none';
       }
 
-      // C. INTERAKSI TABEL
-      const tableWrapper = document.getElementById('table-wrapper');
-      if (tableWrapper) {
-        tableWrapper.addEventListener('click', function(e) {
-          const row = e.target.closest('tr');
-          if (row && row.dataset.lat && row.dataset.lng) {
+      // C. KLIK TABEL
+      document.querySelector('#history-table').addEventListener('click', (e) => {
+        const row = e.target.closest('tr.clickable-row');
+        if (row) {
+          isAutoPan = false;
+          const lat = parseFloat(row.dataset.lat);
+          const lng = parseFloat(row.dataset.lng);
+          const timeRaw = row.dataset.time;
+          const timeDisplay = formatDateJS(timeRaw);
+          const speed = row.dataset.speed;
 
-            isAutoPan = false;
-            console.log("⏸️ User clicked table. Auto Tracking Paused.");
+          document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+          row.classList.add('table-active-row');
 
-            const lat = parseFloat(row.dataset.lat);
-            const lng = parseFloat(row.dataset.lng);
+          if (selectedMarker) map.removeLayer(selectedMarker);
+          selectedMarker = L.circleMarker([lat, lng], {
+            radius: 8,
+            fillColor: "#0ea5e9",
+            color: "#fff",
+            weight: 2,
+            fillOpacity: 1
+          }).addTo(map);
+          selectedMarker.bindPopup(
+            `<div class="text-center"><strong>Riwayat</strong><br>${timeDisplay}<br><span style="color: #10b981;">${speed} km/h</span></div>`
+          ).openPopup();
+          map.panTo([lat, lng]);
 
-            // Gunakan formatJS untuk popup juga agar konsisten
-            const rawTime = row.dataset.time;
-            const timeDisplay = formatDateJS(rawTime);
-            const speed = row.dataset.speed || '0';
-
-            // 1. Highlight Baris Tabel
-            document.querySelectorAll('#gps-table tbody tr').forEach(r => r.classList.remove('table-active-row'));
-            row.classList.add('table-active-row');
-
-            // 2. Hapus Marker Seleksi Lama (Jika Ada)
+          selectedMarker.on('popupclose', function() {
             if (selectedMarker) {
               map.removeLayer(selectedMarker);
-              selectedMarker = null; // Reset variable
+              selectedMarker = null;
             }
+            document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove(
+              'table-active-row'));
+          });
 
-            // 3. Buat Marker Baru (Biru)
-            selectedMarker = L.circleMarker([lat, lng], {
-              radius: 8,
-              fillColor: "#0ea5e9",
-              color: "#fff",
-              weight: 2,
-              opacity: 1,
-              fillOpacity: 0.8
-            }).addTo(map);
+          // SCROLL KE PETA (Dengan offset navbar)
+          const mapEl = document.getElementById('map-container');
+          const navbarHeight = 80; // Estimasi tinggi navbar + margin
+          const elementPosition = mapEl.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
 
-            // 4. Bind Popup & Buka
-            selectedMarker.bindPopup(`
-                <div style="text-align:center;">
-                  <strong>Riwayat</strong><br><small>${timeDisplay}</small><br>
-                  <span style="color:#10b981; font-weight:bold">${speed} km/h</span><br>
-                  <em style="font-size:10px; color:#999;">Klik peta untuk kembali ke live</em>
-                </div>
-            `).openPopup();
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          });
+        }
+      });
 
-            // --- [TAMBAHAN BARU] HAPUS MARKER SAAT POPUP DITUTUP ---
-            selectedMarker.on('popupclose', function() {
-              // Hapus marker dari peta
-              if (selectedMarker) {
-                map.removeLayer(selectedMarker);
-                selectedMarker = null;
-              }
-              // Hapus highlight warna biru di tabel
-              document.querySelectorAll('#gps-table tbody tr').forEach(r => r.classList.remove(
-                'table-active-row'));
-
-              console.log("❌ Popup closed. Selection cleared.");
-            });
-            // -------------------------------------------------------
-
-            // 5. Geser Peta ke Titik Tersebut
-            map.panTo([lat, lng], {
-              animate: true
-            });
-          }
-        });
-      }
-
-      // D. REALTIME LISTENER
-      const channelName = `tracking.sesi.${window.SESI_ALAT_ID}`;
-      window.Echo.channel(channelName)
+      // D. REALTIME UPDATE
+      window.Echo.channel(`tracking.sesi.${window.SESI_ALAT_ID}`)
         .listen('.LokasiBaru', (e) => {
           const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
+          rawRiwayatData.unshift(e);
+          currentIndex++;
 
-          // Gunakan formatter baru untuk data realtime
-          const rawDate = e.created_at || new Date();
-          const fullDateStr = formatDateJS(rawDate);
-
-          // 1. Update Map Elements
           if (liveLatLngs.length === 0) {
             startMarker = L.marker(latLng, {
-              icon: createStartIcon()
+              icon: createCustomIcon('start')
             }).addTo(map);
             truckMarker = L.marker(latLng, {
-              icon: createTruckIcon(),
-              zIndexOffset: 1000
+              icon: createCustomIcon('end')
             }).addTo(map);
             polyline = L.polyline([latLng], {
               color: '#be1e2d',
               weight: 4
             }).addTo(map);
-            map.setView(latLng, 18);
           } else {
             if (truckMarker) truckMarker.setLatLng(latLng);
             if (polyline) polyline.addLatLng(latLng);
           }
           liveLatLngs.push(latLng);
+          if (isAutoPan) map.panTo(latLng);
 
-          if (isAutoPan) {
-            map.panTo(latLng);
-          }
+          const tbody = document.getElementById('history-table-body');
+          const emptyRow = document.getElementById('empty-row');
+          if (emptyRow) emptyRow.remove();
 
-          // 2. Update Tabel
-          let tbody = document.querySelector('#gps-table tbody');
-          if (tbody) {
-            const newIndex = tbody.rows.length + 1;
-
-            const rowHtml = `
-              <tr class="clickable-row" data-lat="${e.lat}" data-lng="${e.lng}" data-time="${rawDate}" data-speed="${e.speed || 0}">
-                  <td style="font-size: 12px; font-weight: 600; text-align:center;">
-                      <span class="number-badge" style="background-color: #be1e2d; color: white; padding: 2px 6px; border-radius: 50%; display: inline-block; min-width: 20px;">
-                          ${newIndex}
-                      </span>
-                  </td>
-                  <td style="font-size: 12px;"><i class="ri-time-line me-1"></i>${fullDateStr}</td>
-                  <td style="font-size: 12px;">${e.lat}</td>
-                  <td style="font-size: 12px;">${e.lng}</td>
-                  <td style="font-size: 12px;">${e.alt ? e.alt+' m' : '-'}</td>
-                  <td style="font-size: 12px;">${e.sat ? '<span class="badge bg-primary">'+e.sat+'</span>' : '-'}</td>
-                  <td style="font-size: 12px;">${e.speed ? '<span style="color:#10b981;font-weight:600">'+e.speed+' km/h</span>' : '-'}</td>
-                  <td style="font-size: 12px;">
-                    ${(() => {
-                        let bat = parseInt(e.battery || 0);
-                        let color = 'bg-danger';
-                        if(bat > 70) color = 'bg-success';
-                        else if(bat >= 30) color = 'bg-warning';
-                        return `
-                          <div class="d-flex align-items-center" style="min-width: 100px;">
-                              <div class="progress flex-grow-1" style="height: 6px; background-color: #e9ecef;">
-                                <div class="progress-bar ${color}" role="progressbar" style="width: ${bat}%"></div>
-                              </div>
-                              <span class="ms-2" style="font-size: 11px; font-weight: 600;">${bat}%</span>
-                          </div>`;
-                    })()}
-                  </td>
-              </tr>
-            `;
-
-            tbody.insertAdjacentHTML('afterbegin', rowHtml);
-          }
+          const rowHtml = getRowHtml(e, 0);
+          tbody.insertAdjacentHTML('afterbegin', rowHtml);
         });
 
-      // Fix map rendering issues (cut off)
-      setTimeout(function() {
-        if (map) map.invalidateSize();
+      setTimeout(() => {
+        map.invalidateSize();
       }, 500);
+
+      // E. AJAX POWER TOGGLE
+      const powerForm = document.getElementById('toggle-power-form');
+      const powerBtn = document.getElementById('toggle-power-btn');
+      const powerIcon = document.getElementById('toggle-power-icon');
+      const statusBadge = document.getElementById('power-status-badge');
+
+      if (powerForm) {
+        powerForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          const originalIconClass = powerIcon.className;
+          const url = powerForm.action;
+          const token = document.querySelector('input[name="_token"]').value;
+
+          // Start Loading: Change icon to spinner (no text)
+          powerIcon.className = 'ri-loader-4-line fs-40 spin';
+          powerBtn.disabled = true;
+
+          fetch(url, {
+              method: 'POST',
+              headers: {
+                'X-CSRF-TOKEN': token,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify({
+                _method: 'PUT'
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                const isActive = data.aktif;
+
+                // Update Button
+                powerBtn.className =
+                  `btn btn-icon btn-lg rounded-circle shadow-lg ${isActive ? 'btn-success pulse-active' : 'btn-danger'}`;
+                powerBtn.title = isActive ? 'Matikan Sesi' : 'Aktifkan Sesi';
+
+                // Update Icon
+                powerIcon.className = 'ri-shut-down-line fs-40';
+
+                // Update Badge
+                statusBadge.className =
+                  `badge rounded-pill mt-3 ${isActive ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger'} px-3`;
+                statusBadge.textContent = isActive ? 'SESI AKTIF' : 'SESI NONAKTIF';
+              } else {
+                // Rollback on failure
+                powerIcon.className = originalIconClass;
+                showAlertModal(data.message || 'Gagal mengubah status daya.', 'error', 'Gagal');
+              }
+            })
+            .catch(error => {
+              console.error('Error toggling power:', error);
+              powerIcon.className = originalIconClass;
+              showAlertModal('Terjadi kesalahan sistem.', 'error', 'Gagal');
+            })
+            .finally(() => {
+              powerBtn.disabled = false;
+            });
+        });
+      }
+
+      formatAllLocalDates();
     });
+
+    const formatAllLocalDates = () => {
+      document.querySelectorAll('.local-date').forEach(el => {
+        const raw = el.textContent.trim();
+        if (raw && raw !== '-') {
+          el.textContent = formatDateJS(raw);
+        }
+      });
+    };
   </script>
 @endsection

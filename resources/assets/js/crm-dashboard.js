@@ -26,7 +26,7 @@
             }
         },
         labels: ['Organic Search', 'Paid Search', 'Direct Traffic', 'Social Media', 'Referrals', "Others"],
-        colors: ["var(--primary-color)", "rgb(255, 73, 205)", "rgb(50, 212, 132)", "rgb(250, 129, 40)", "rgb(0, 201, 255)", "rgb(253, 175, 34)"],
+        colors: ["var(--primary-color)", "var(--secondary-color)", "var(--accent-color)", "rgba(var(--primary-rgb), 0.5)", "rgba(var(--secondary-rgb), 0.5)", "rgba(var(--accent-rgb), 0.5)"],
         // responsive: [{
         //     breakpoint: 480,
         //     options: {
@@ -63,7 +63,7 @@
                 show: false
             }
         },
-        colors: ["var(--primary-color)", "rgba(255, 73, 205)"],
+        colors: ["var(--primary-color)", "var(--secondary-color)"],
         dataLabels: {
             enabled: false
         },

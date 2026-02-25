@@ -21,37 +21,52 @@ class SesiAlatController extends Controller
     {
         $search = $request->input('search', '');
         $filter_status = $request->input('status', '');
+        $filter_perusahaan = $request->input('id_perusahaan', '');
 
         $sesiAlat = SesiAlat::with('alat', 'kendaraan', 'perusahaan', 'riwayatPerjalanan');
 
-        if ($search) {
+        if ($request->filled('search')) {
             $sesiAlat->where(function ($query) use ($search) {
-                // Cari berdasarkan ID Alat (Serial Number)
-                $query->whereHas('alat', function ($q) use ($search) {
-                    $q->where('id', 'like', '%' . $search . '%');
-                })
-                // Cari berdasarkan Nama Kendaraan
-                ->orWhereHas('kendaraan', function ($q) use ($search) {
-                    $q->where('nama', 'like', '%' . $search . '%');
-                })
-                // Cari berdasarkan Nama Perusahaan
-                ->orWhereHas('perusahaan', function ($q) use ($search) {
-                    $q->where('nama', 'like', '%' . $search . '%');
-                });
+                // Cari berdasarkan ID Sesi atau Nama Sesi
+                $query->where('id', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%")
+                    // Cari berdasarkan ID Alat (Serial Number)
+                    ->orWhereHas('alat', function ($q) use ($search) {
+                        $q->where('id', 'like', '%' . $search . '%');
+                    })
+                    // Cari berdasarkan Nama/Plat Kendaraan
+                    ->orWhereHas('kendaraan', function ($q) use ($search) {
+                        $q->where('nama', 'like', '%' . $search . '%')
+                            ->orWhere('plat', 'like', '%' . $search . '%');
+                    })
+                    // Cari berdasarkan Nama Perusahaan
+                    ->orWhereHas('perusahaan', function ($q) use ($search) {
+                        $q->where('nama', 'like', '%' . $search . '%');
+                    });
             });
         }
 
-        if ($filter_status !== '') {
-            $sesiAlat->where('aktif', (bool)$filter_status);
+        if ($request->filled('status')) {
+            $sesiAlat->where('aktif', (bool)$request->status);
+        }
+
+        if ($request->filled('id_perusahaan')) {
+            $sesiAlat->where('id_perusahaan', $request->id_perusahaan);
         }
 
         $sesiAlat = $sesiAlat
             ->orderBy('aktif', 'desc') // Prioritaskan sesi aktif di atas
             ->orderBy('created_at', 'desc') // Urutkan sesi terbaru
             ->paginate(10)
-            ->appends(request()->query());
+            ->appends($request->query());
 
-        return view('pages.admin.sesi-alat.index', compact('sesiAlat', 'search', 'filter_status'));
+        $perusahaan = Perusahaan::all();
+
+        if ($request->ajax()) {
+            return view('pages.admin.sesi-alat.table', compact('sesiAlat', 'search', 'filter_status', 'perusahaan', 'filter_perusahaan'))->render();
+        }
+
+        return view('pages.admin.sesi-alat.index', compact('sesiAlat', 'search', 'filter_status', 'perusahaan', 'filter_perusahaan'));
     }
 
     /**
@@ -125,7 +140,7 @@ class SesiAlatController extends Controller
         
         // Cache history for 30 seconds to prevent heavy DB load on refresh
         $riwayatPerjalanan = Cache::remember($cacheKey, 10, function () use ($sesiAlat) {
-            return $sesiAlat->riwayatPerjalanan()->orderBy('created_at')->get();
+            return $sesiAlat->riwayatPerjalanan()->orderBy('created_at', 'desc')->get();
         });
 
         return view('pages.admin.sesi-alat.show', compact('sesiAlat', 'riwayatPerjalanan'));
@@ -236,6 +251,9 @@ class SesiAlatController extends Controller
                 ->first();
 
             if ($activeAlatSession) {
+                if (request()->wantsJson() || request()->ajax()) {
+                    return response()->json(['success' => false, 'message' => 'Alat ini sudah digunakan oleh sesi lain yang aktif.'], 422);
+                }
                 return back()->with('error', 'Alat ini sudah digunakan oleh sesi lain yang aktif.');
             }
 
@@ -244,6 +262,9 @@ class SesiAlatController extends Controller
                 ->first();
 
             if ($activeKendaraanSession) {
+                if (request()->wantsJson() || request()->ajax()) {
+                    return response()->json(['success' => false, 'message' => 'Kendaraan ini sudah digunakan oleh sesi lain yang aktif.'], 422);
+                }
                 return back()->with('error', 'Kendaraan ini sudah digunakan oleh sesi lain yang aktif.');
             }
         }
@@ -262,6 +283,14 @@ class SesiAlatController extends Controller
             'ip_address' => request()->ip(),
         ]);
         // -----------------------------
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'aktif' => $sesiAlat->aktif,
+                'message' => 'Perjalanan berhasil ' . ($sesiAlat->aktif ? 'diaktifkan' : 'dinonaktifkan')
+            ]);
+        }
 
         $status = $sesiAlat->aktif ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', 'Perjalanan berhasil ' . $status);

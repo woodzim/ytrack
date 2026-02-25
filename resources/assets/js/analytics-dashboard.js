@@ -94,7 +94,7 @@
             borderColor: '#f1f1f1',
             strokeDashArray: 3
         },
-        colors: ["var(--primary-color)", "rgb(255, 73, 205)"],
+        colors: ["var(--primary-color)", "var(--secondary-color)"],
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
         dataLabels: {
             enabled: false
@@ -202,7 +202,7 @@
         dataLabels: {
             enabled: false,
         },
-        colors: ["#32d484"],
+        colors: ["var(--accent-color)"],
         grid: {
             borderColor: "#f2f5f7",
         },

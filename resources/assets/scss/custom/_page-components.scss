@@ -7,9 +7,10 @@
 .page-header-section {
     background: var(--primary-color);
     border-radius: 8px;
-    padding: 24px;
+    padding: 16px 24px; /* Dikurangi dari 24px total menjadi 16px atas-bawah */
     color: white;
     margin-bottom: 24px;
+    transition: all 0.2s ease-in-out;
 
     &.with-gradient {
         background: linear-gradient(135deg, var(--primary-color) 0%, #764ba2 100%);

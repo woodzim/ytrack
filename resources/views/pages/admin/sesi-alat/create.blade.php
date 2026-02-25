@@ -1,23 +1,14 @@
 @extends('layouts.master')
 
 @section('styles')
-  {{-- 1. Gunakan CDN agar Select2 & Style termuat sempurna --}}
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
-  <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
-
   <style>
-    /* Agar tinggi input Select2 pas dengan konten custom (badge) */
-    .select2-container .select2-selection--single {
-      height: 48px !important;
-      display: flex;
-      align-items: center;
+    /* Choices.js custom styling for better list visibility */
+    .choices__list--dropdown .choices__item--selectable {
+      padding-right: 10px;
     }
-
-    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
-      display: block;
-      width: 100%;
-      padding-top: 4px;
+    .choices__list--dropdown .choices__item--disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   </style>
 @endsection
@@ -34,8 +25,10 @@
     {{-- KOLOM KIRI: FORM --}}
     <div class="col-lg-8 col-12">
       <div class="card custom-card">
-        <div class="card-header">
-          <div class="card-title">Informasi Sesi</div>
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Informasi Sesi</h5>
+          </div>
         </div>
         <div class="card-body">
           <form action="{{ route('sesi-alat.store') }}" method="POST">
@@ -47,7 +40,7 @@
                 Perusahaan <span class="text-danger">*</span>
               </label>
               <select name="id_perusahaan" id="id_perusahaan"
-                class="form-select select2-custom @error('id_perusahaan') is-invalid @enderror" required>
+                class="form-select select-choices @error('id_perusahaan') is-invalid @enderror" required>
                 <option value="">-- Pilih Perusahaan --</option>
                 @foreach ($perusahaan as $item)
                   <option value="{{ $item->id }}" {{ old('id_perusahaan') == $item->id ? 'selected' : '' }}>
@@ -67,7 +60,7 @@
                   Kendaraan <span class="text-danger">*</span>
                 </label>
                 <select name="id_kendaraan" id="id_kendaraan"
-                  class="form-select select2-custom @error('id_kendaraan') is-invalid @enderror" required disabled>
+                  class="form-select select-choices-ajax @error('id_kendaraan') is-invalid @enderror" required disabled>
                   <option value="">-- Pilih Kendaraan --</option>
                 </select>
                 @error('id_kendaraan')
@@ -81,7 +74,7 @@
                   Serial Number Alat <span class="text-danger">*</span>
                 </label>
                 <select name="id_alat" id="id_alat"
-                  class="form-select select2-custom @error('id_alat') is-invalid @enderror" required disabled>
+                  class="form-select select-choices-ajax @error('id_alat') is-invalid @enderror" required disabled>
                   <option value="">-- Pilih Alat --</option>
                 </select>
                 @error('id_alat')
@@ -152,196 +145,137 @@
 @endsection
 
 @section('scripts')
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
   <script>
-    $(document).ready(function() {
+    document.addEventListener('DOMContentLoaded', function() {
       const oldKendaraan = "{{ old('id_kendaraan') }}";
       const oldAlat = "{{ old('id_alat') }}";
 
-      // ============================================
-      // 1. FORMATTER FUNCTION (Hanya untuk Kendaraan & Alat)
-      // ============================================
-      function formatOption(state) {
-        if (!state.id) return state.text;
+      const perusahaanSelect = document.getElementById('id_perusahaan');
+      const kendaraanSelect = document.getElementById('id_kendaraan');
+      const alatSelect = document.getElementById('id_alat');
 
-        const element = state.element;
-        const isActive = $(element).data('active') === true || $(element).data('active') === "true";
-        const info = $(element).data('info');
-
-        let $container = $('<div></div>');
-
-        if (isActive) {
-          // ITEM DIGUNAKAN
-          $container.addClass('text-muted opacity-75');
-          $container.append(
-            `<div class="d-flex justify-content-between align-items-center">
-                <strong>${state.text}</strong>
-                <span class="badge bg-danger-transparent text-danger border border-danger border-opacity-25">
-                    <i class="ri-lock-line me-1"></i>Digunakan
-                </span>
-            </div>`
-          );
-          if (info) {
-            $container.append(
-              `<small class="d-block mt-1 text-danger fst-italic" style="font-size:11px;"><i class="ri-information-line me-1"></i>${info}</small>`
-            );
-          }
-        } else {
-          // ITEM TERSEDIA
-          $container.append(
-            `<div class="d-flex justify-content-between align-items-center">
-                <strong>${state.text}</strong>
-                <span class="badge bg-success-transparent text-success border border-success border-opacity-25">
-                    <i class="ri-check-line me-1"></i>Tersedia
-                </span>
-            </div>`
-          );
-          if (info) {
-            $container.append(`<small class="d-block mt-1 text-muted" style="font-size:11px;">${info}</small>`);
-          }
-        }
-        return $container;
-      }
-
-      // ============================================
-      // 2. INIT SELECT2 (DIPISAH)
-      // ============================================
-
-      // A. Config Standar untuk PERUSAHAAN (Tanpa Badge Status)
-      $('#id_perusahaan').select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        placeholder: '-- Pilih Perusahaan --'
-      });
-
-      // B. Config Custom untuk KENDARAAN & ALAT (Dengan Badge Status)
-      const configWithStatus = {
-        theme: 'bootstrap-5',
-        width: '100%',
-        templateResult: formatOption, // Pakai formatter custom
-        templateSelection: formatOption, // Pakai formatter custom
-        escapeMarkup: function(m) {
-          return m;
-        }
+      const commonConfig = {
+        allowHTML: true,
+        placeholder: true,
+        itemSelectText: '',
       };
 
-      $('#id_kendaraan').select2({
-        ...configWithStatus,
-        placeholder: ' Pilih Kendaraan '
-      });
-      $('#id_alat').select2({
-        ...configWithStatus,
-        placeholder: ' Pilih Alat (Serial Number) '
-      });
+      const choicesConfigWithStatus = {
+        ...commonConfig,
+        callbackOnCreateTemplates: function(strToEl) {
+          return {
+            item: ({ classNames }, data) => {
+              return strToEl(`
+                <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : classNames.itemSelectable}" 
+                  data-item 
+                  data-id="${data.id}" 
+                  data-value="${data.value}" 
+                  ${data.active ? 'aria-selected="true"' : ''} 
+                  ${data.disabled ? 'aria-disabled="true"' : ''}>
+                  <span class="fw-bold">${data.label}</span>
+                </div>
+              `);
+            },
+            choice: ({ classNames }, data) => {
+              const isActive = data.customProperties && (data.customProperties.active === 'true' || data.customProperties.active === true);
+              const info = data.customProperties ? data.customProperties.info : '';
+              
+              return strToEl(`
+                <div class="${classNames.item} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable} ${isActive ? 'text-muted opacity-75' : ''}" 
+                  data-select-text="" 
+                  data-choice 
+                  ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'} 
+                  data-id="${data.id}" 
+                  data-value="${data.value}" 
+                  role="option">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <strong>${data.label}</strong>
+                    ${isActive 
+                      ? '<span class="badge bg-danger-transparent text-danger border border-danger border-opacity-25"><i class="ri-lock-line me-1"></i> Digunakan</span>' 
+                      : '<span class="badge bg-success-transparent text-success border border-success border-opacity-25"><i class="ri-check-line me-1"></i> Tersedia</span>'
+                    }
+                  </div>
+                  ${info ? `<small class="d-block mt-1 ${isActive ? 'text-danger fst-italic' : 'text-muted'}" style="font-size:11px;">${info}</small>` : ''}
+                </div>
+              `);
+            },
+          };
+        },
+      };
 
+      const choicesPerusahaan = new Choices(perusahaanSelect, commonConfig);
+      const choicesKendaraan = new Choices(kendaraanSelect, choicesConfigWithStatus);
+      const choicesAlat = new Choices(alatSelect, choicesConfigWithStatus);
 
-      // ============================================
-      // 3. LOGIC AJAX
-      // ============================================
-      $('#id_perusahaan').on('change', function() {
-        const idPerusahaan = $(this).val();
-        const $kendaraanSelect = $('#id_kendaraan');
-        const $alatSelect = $('#id_alat');
+      perusahaanSelect.addEventListener('change', function() {
+        const idPerusahaan = this.value;
 
-        // Reset Dropdowns
-        $kendaraanSelect.empty().append('<option value="">-- Loading... --</option>').prop('disabled', true)
-          .trigger('change');
-        $alatSelect.empty().append('<option value="">-- Loading... --</option>').prop('disabled', true).trigger(
-          'change');
+        // Reset and disable
+        choicesKendaraan.clearChoices();
+        choicesKendaraan.disable();
+        choicesKendaraan.setChoices([{ value: '', label: '-- Loading... --', selected: true, disabled: true }]);
+
+        choicesAlat.clearChoices();
+        choicesAlat.disable();
+        choicesAlat.setChoices([{ value: '', label: '-- Loading... --', selected: true, disabled: true }]);
 
         if (!idPerusahaan) {
-          $kendaraanSelect.empty().append('<option value="">-- Pilih Perusahaan Terlebih Dahulu --</option>');
-          $alatSelect.empty().append('<option value="">-- Pilih Perusahaan Terlebih Dahulu --</option>');
+          const placeholder = [{ value: '', label: '-- Pilih Perusahaan Terlebih Dahulu --', selected: true, disabled: true }];
+          choicesKendaraan.setChoices(placeholder);
+          choicesAlat.setChoices(placeholder);
           return;
         }
 
         // --- AJAX KENDARAAN ---
-        $.ajax({
-          url: `{{ url('/sesi-alat-kendaraan') }}/${idPerusahaan}`,
-          type: 'GET',
-          dataType: 'json',
-          success: function(data) {
-            $kendaraanSelect.empty().append('<option value="">-- Pilih Kendaraan --</option>');
-
+        fetch(`{{ url('/sesi-alat-kendaraan') }}/${idPerusahaan}`)
+          .then(res => res.json())
+          .then(data => {
+            choicesKendaraan.clearChoices();
             if (data.length > 0) {
-              $.each(data, function(key, item) {
-                let label = item.nama;
-                // if (item.plat) label += ` (${item.plat})`;
-
-                let info = item.is_active ? 'Kendaraan sedang dalam sesi aktif' : (
-                  `<i class="ri-info-card-line"></i> ${item.plat}` ||
-                  'Siap digunakan');
-
-                let newOption = new Option(label, item.id, false, false);
-
-                // Inject data attributes
-                $(newOption).attr('data-active', item.is_active);
-                $(newOption).attr('data-info', info);
-
-                if (item.is_active) {
-                  $(newOption).prop('disabled', true);
+              const options = data.map(item => ({
+                value: item.id,
+                label: item.nama,
+                selected: oldKendaraan == item.id && !item.is_active,
+                disabled: item.is_active,
+                customProperties: {
+                  active: item.is_active,
+                  info: item.is_active ? 'Kendaraan sedang dalam sesi aktif' : `<i class="ri-info-card-line"></i> ${item.plat}`
                 }
-
-                if (oldKendaraan == item.id && !item.is_active) {
-                  $(newOption).prop('selected', true);
-                }
-
-                $kendaraanSelect.append(newOption);
-              });
-              $kendaraanSelect.prop('disabled', false);
+              }));
+              choicesKendaraan.setChoices([{ value: '', label: '-- Pilih Kendaraan --', selected: true, disabled: false }, ...options], 'value', 'label', true);
+              choicesKendaraan.enable();
             } else {
-              $kendaraanSelect.append('<option value="">Tidak ada kendaraan tersedia</option>');
+              choicesKendaraan.setChoices([{ value: '', label: 'Tidak ada kendaraan tersedia', selected: true, disabled: true }]);
             }
-            $kendaraanSelect.trigger('change');
-          }
-        });
+          });
 
         // --- AJAX ALAT ---
-        $.ajax({
-          url: `{{ url('/sesi-alat-alat') }}/${idPerusahaan}`,
-          type: 'GET',
-          dataType: 'json',
-          success: function(data) {
-            $alatSelect.empty().append('<option value="">-- Pilih Alat --</option>');
-
+        fetch(`{{ url('/sesi-alat-alat') }}/${idPerusahaan}`)
+          .then(res => res.json())
+          .then(data => {
+            choicesAlat.clearChoices();
             if (data.length > 0) {
-              $.each(data, function(key, item) {
-                let info = item.is_active ?
-                  (item.current_vehicle ? `Sedang dipakai di: ${item.current_vehicle}` :
-                    'Sedang Aktif') :
-                  'Siap digunakan';
-
-                // UPDATE: Menggunakan item.id (Serial Number) sebagai teks tampilan
-                let newOption = new Option(item.id, item.id, false, false);
-
-                $(newOption).attr('data-active', item.is_active);
-                $(newOption).attr('data-info', info);
-
-                if (item.is_active) {
-                  $(newOption).prop('disabled', true);
+              const options = data.map(item => ({
+                value: item.id,
+                label: item.id,
+                selected: oldAlat == item.id && !item.is_active,
+                disabled: item.is_active,
+                customProperties: {
+                  active: item.is_active,
+                  info: item.is_active ? (item.current_vehicle ? `Sedang dipakai di: ${item.current_vehicle}` : 'Sedang Aktif') : 'Siap digunakan'
                 }
-
-                if (oldAlat == item.id && !item.is_active) {
-                  $(newOption).prop('selected', true);
-                }
-
-                $alatSelect.append(newOption);
-              });
-              $alatSelect.prop('disabled', false);
+              }));
+              choicesAlat.setChoices([{ value: '', label: '-- Pilih Alat --', selected: true, disabled: false }, ...options], 'value', 'label', true);
+              choicesAlat.enable();
             } else {
-              $alatSelect.append('<option value="">Tidak ada alat tersedia</option>');
+              choicesAlat.setChoices([{ value: '', label: 'Tidak ada alat tersedia', selected: true, disabled: true }]);
             }
-            $alatSelect.trigger('change');
-          }
-        });
+          });
       });
 
-      if ($('#id_perusahaan').val()) {
-        $('#id_perusahaan').trigger('change');
+      if (perusahaanSelect.value) {
+        perusahaanSelect.dispatchEvent(new Event('change'));
       }
-
     });
   </script>
 @endsection

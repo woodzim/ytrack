@@ -1,12 +1,14 @@
 :root {
-	--body-bg-rgb: 248, 249, 253;
-	--primary-rgb: 190, 30, 45;
-	--secondary-rgb: 134, 153, 163;
+	--body-bg-rgb: 235, 244, 246;
+	--primary-rgb: 15, 40, 84;
+	--secondary-rgb: 28, 77, 141;
+	--accent-rgb: 73, 136, 196;
+	--fourth-rgb: 189, 232, 245;
 	--warning-rgb: 253, 175, 34;
-	--info-rgb: 0, 201, 255;
+	--info-rgb: 122, 178, 178;
 	--success-rgb: 50, 212, 132;
 	--danger-rgb: 255, 103, 87;
-	--light-rgb: 250, 248, 253;
+	--light-rgb: 235, 244, 246;
 	--dark-rgb: 10, 10, 10;
 	--orange-rgb: 250, 129, 40;
 	--pink-rgb: 255, 105, 180;
@@ -15,6 +17,9 @@
 	--green-rgb: 0, 201, 167;
 	--default-body-bg-color: rgb(var(--body-bg-rgb));
 	--primary-color: rgb(var(--primary-rgb));
+	--secondary-color: rgb(var(--secondary-rgb));
+	--accent-color: rgb(var(--accent-rgb));
+	--fourth-color: rgb(var(--fourth-rgb));
 	--primary-border: rgb(var(--primary-rgb));
 	--primary01: rgba(var(--primary-rgb), 0.1);
 	--primary02: rgba(var(--primary-rgb), 0.2);
@@ -136,6 +141,8 @@ $primary-005: var(--primary005);
 $custom-white: var(--custom-white);
 $custom-black: var(--custom-black);
 $secondary: rgb(var(--secondary-rgb));
+$accent: rgb(var(--accent-rgb));
+$fourth: rgb(var(--fourth-rgb));
 $warning: rgb(var(--warning-rgb));
 $info: rgb(var(--info-rgb));
 $success: rgb(var(--success-rgb));

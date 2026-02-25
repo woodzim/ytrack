@@ -27,5 +27,40 @@
 
          <!-- Date & Time Picker JS -->
          <script src="{{asset('build/assets/libs/flatpickr/flatpickr.min.js')}}"></script>
+
+         <!-- Choices JS -->
+         <script src="{{asset('build/assets/libs/choices.js/public/assets/scripts/choices.min.js')}}"></script>
+
+         <script>
+            window.choicesInstances = new Map();
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Initialize Choices for all selects except those with .no-choices or .select-choices (manual init)
+                const genericSelects = document.querySelectorAll('select:not(.no-choices):not(.select-choices)');
+                genericSelects.forEach(element => {
+                    if (!window.choicesInstances.has(element)) {
+                        const instance = new Choices(element, {
+                            allowHTML: true,
+                            placeholder: true,
+                            placeholderValue: 'Pilih opsi...',
+                            searchPlaceholderValue: 'Cari...',
+                            itemSelectText: '',
+                            noResultsText: 'Tidak ada hasil ditemukan',
+                            noChoicesText: 'Tidak ada pilihan tersedia',
+                            searchEnabled: element.options.length > 10,
+                        });
+                        window.choicesInstances.set(element, instance);
+                    }
+                });
+            });
+
+            // Helper to update Choices UI when underlying select value is changed programmatically
+            function updateChoices(element) {
+                if (window.choicesInstances.has(element)) {
+                    const instance = window.choicesInstances.get(element);
+                    instance.setChoiceByValue(element.value);
+                }
+            }
+         </script>
          
          @yield('scripts')

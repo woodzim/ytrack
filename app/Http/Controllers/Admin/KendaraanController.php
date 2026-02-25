@@ -16,30 +16,48 @@ class KendaraanController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $id_perusahaan = $request->input('id_perusahaan');
+        $status = $request->input('status'); // 'digunakan' or 'tersedia'
 
         $query = Kendaraan::with(['perusahaan', 'jenisKendaraan'])
             ->withExists(['sesiAlat as sedang_digunakan' => function ($q) {
                 $q->where('aktif', true);
             }]);
 
-        if ($search) {
+        if ($request->filled('search')) {
             $query->where(function($q) use ($search) {
                 $q->where('kendaraan.nama', 'like', '%' . $search . '%')
-                    ->orWhere('kendaraan.plat', 'like', '%' . $search . '%')
-                    ->orWhereHas('perusahaan', function($subQuery) use ($search) {
-                        $subQuery->where('nama', 'like', '%' . $search . '%');
-                    })
-                    ->orWhereHas('jenisKendaraan', function($subQuery) use ($search) {
-                        $subQuery->where('nama', 'like', '%' . $search . '%');
-                    });
+                    ->orWhere('kendaraan.plat', 'like', '%' . $search . '%');
             });
+        }
+
+        if ($request->filled('id_perusahaan')) {
+            $query->where('id_perusahaan', $id_perusahaan);
+        }
+
+        if ($request->filled('status')) {
+            if ($status === 'digunakan') {
+                $query->whereHas('sesiAlat', function($q) {
+                    $q->where('aktif', true);
+                });
+            } elseif ($status === 'tersedia') {
+                $query->whereDoesntHave('sesiAlat', function($q) {
+                    $q->where('aktif', true);
+                });
+            }
         }
 
         $kendaraan = $query->latest()
                             ->paginate(10)
-                            ->appends(request()->query());
+                            ->appends($request->query());
 
-        return view('pages.admin.kendaraan.index', compact('kendaraan', 'search'));
+        $perusahaan = Perusahaan::all();
+
+        if ($request->ajax()) {
+            return view('pages.admin.kendaraan.table', compact('kendaraan', 'search', 'perusahaan', 'id_perusahaan', 'status'))->render();
+        }
+
+        return view('pages.admin.kendaraan.index', compact('kendaraan', 'search', 'perusahaan', 'id_perusahaan', 'status'));
     }
 
     public function create()

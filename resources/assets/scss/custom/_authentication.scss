@@ -1,6 +1,11 @@
 @use "../variables";
 .authentication {
   min-height: 100vh;
+  .card.custom-card {
+    background-color: variables.$custom-white !important;
+    border: 1px solid variables.$default-border !important;
+    box-shadow: variables.$box-shadow !important;
+  }
   .authentication-brand {
     &.desktop-dark {
       display: block;

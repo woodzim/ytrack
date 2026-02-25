@@ -437,22 +437,6 @@
   }
   /* header theme toggle */
 
-  /* Choices JS */
-  document.addEventListener("DOMContentLoaded", function () {
-    var genericExamples = document.querySelectorAll("[data-trigger]");
-    for (let i = 0; i < genericExamples.length; ++i) {
-      var element = genericExamples[i];
-      if (typeof Choices !== 'undefined' && element.nodeName !== 'DIV' && !element.classList.contains('choices__input')) {
-        new Choices(element, {
-          allowHTML: true,
-          placeholderValue: "This is a placeholder set in the config",
-          searchPlaceholderValue: "Search",
-        });
-      }
-    }
-  });
-  /* Choices JS */
-
   /* footer year */
   document.getElementById("year").innerHTML = new Date().getFullYear();
   /* footer year */
@@ -532,6 +516,83 @@
     window.scrollTo(0, 0);
   };
   /* back to top */
+
+  /* Form submission throttle and loading state */
+  document.addEventListener('submit', function (event) {
+    const form = event.target;
+    
+    // Check if the form is already submitting to prevent loops
+    if (form.dataset.submitting === 'true') {
+      event.preventDefault();
+      return;
+    }
+
+    // Find the submit button(s)
+    const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+    
+    // Handle buttons that might be outside the form but associated via form attribute
+    const formId = form.getAttribute('id');
+    let externalButtons = [];
+    if (formId) {
+      externalButtons = document.querySelectorAll(`button[type="submit"][form="${formId}"], input[type="submit"][form="${formId}"]`);
+    }
+
+    const allButtons = [...submitButtons, ...externalButtons];
+
+    // Check if any button is already disabled (might be handled by onsubmit="return confirm()")
+    // If the event was already prevented by an inline onsubmit, don't do anything
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    // Mark form as submitting
+    form.dataset.submitting = 'true';
+
+    allButtons.forEach(button => {
+      // Prevent double click by disabling the button
+      button.disabled = true;
+      
+      // Store original content if not already stored
+      if (!button.dataset.originalContent) {
+        button.dataset.originalContent = button.innerHTML;
+      }
+      
+      // Get button width to maintain it if possible
+      const width = button.offsetWidth;
+      button.style.minWidth = `${width}px`;
+
+      // Add loading spinner
+      let loadingText = '';
+      const content = button.innerHTML.toLowerCase();
+      if (button.classList.contains('text-danger') || content.includes('hapus')) {
+        loadingText = 'Menghapus...';
+      } else if (content.includes('tambah')) {
+        loadingText = 'Menambah...';
+      } else if (content.includes('edit') || content.includes('simpan') || content.includes('update')) {
+        loadingText = 'Menyimpan...';
+      } else {
+        loadingText = 'Loading...';
+      }
+
+      button.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>${loadingText}`;
+    });
+    
+    // Safety timeout: If for some reason the page doesn't reload after 10 seconds, re-enable buttons
+    // This handles cases like triggered downloads or interrupted submissions
+    setTimeout(() => {
+      if (document.body.contains(form)) {
+        form.dataset.submitting = 'false';
+        allButtons.forEach(button => {
+          button.disabled = false;
+          if (button.dataset.originalContent) {
+            button.innerHTML = button.dataset.originalContent;
+          }
+          button.style.minWidth = '';
+        });
+      }
+    }, 10000);
+  });
+  /* Form submission throttle and loading state */
 
   /* header dropdowns scroll */
   var myHeadernotification = document.getElementById("header-notification-scroll");

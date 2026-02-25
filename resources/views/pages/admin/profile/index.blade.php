@@ -14,8 +14,10 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header border-bottom">
-                    <h5 class="card-title mb-0">Edit Profil</h5>
+                <div class="card-header py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Edit Profil</h5>
+                    </div>
                 </div>
                 <div class="card-body">
                     @if ($errors->any())
@@ -114,8 +116,10 @@
 
             <!-- Account Info Card -->
             <div class="card mt-4">
-                <div class="card-header border-bottom">
-                    <h5 class="card-title mb-0">Informasi Akun</h5>
+                <div class="card-header py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">Informasi Akun</h5>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="row">

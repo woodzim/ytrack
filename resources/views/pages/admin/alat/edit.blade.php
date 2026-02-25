@@ -9,7 +9,7 @@
   <div class="row">
     <div class="col-12 col-lg-8">
       <div class="card form-card">
-        <div class="card-header border-bottom bg-white py-3">
+        <div class="card-header py-3">
           <h5 class="card-title mb-0"><i class="ri-edit-2-line me-2"></i>Form Edit Data</h5>
         </div>
         <div class="card-body p-4">
@@ -76,7 +76,7 @@
     {{-- SIDEBAR KANAN: LOG SISTEM --}}
     <div class="col-12 col-lg-4">
       <div class="card form-card">
-        <div class="card-header border-bottom bg-white py-3">
+        <div class="card-header py-3">
           <h5 class="card-title mb-0"><i class="ri-history-line me-2"></i>Log Sistem</h5>
         </div>
         <div class="card-body p-4">

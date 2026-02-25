@@ -5,7 +5,7 @@
     <div class="col-12 col-lg-8">
       <div class="card form-card">
         <div class="card-body">
-          <form action="{{ route('perusahaan.update', $perusahaan->id) }}" method="POST">
+          <form action="{{ route('admin.perusahaan.update', $perusahaan->id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -35,7 +35,7 @@
               <button type="submit" class="btn btn-primary btn-wave flex-sm-grow-1">
                 <i class="ri-save-line me-2"></i>Perbarui Data
               </button>
-              <a href="{{ route('perusahaan.index') }}" class="btn btn-outline-secondary btn-wave flex-sm-grow-1">
+              <a href="{{ route('admin.perusahaan.index') }}" class="btn btn-outline-secondary btn-wave flex-sm-grow-1">
                 <i class="ri-arrow-left-line me-2"></i>Kembali
               </a>
             </div>

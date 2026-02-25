@@ -1,13 +1,14 @@
 @extends('layouts.master')
 
 @section('styles')
-  @vite(['resources/assets/scss/select2.scss', 'resources/assets/scss/select2-bootstrap-theme.scss'])
   <style>
-    /* Styling tambahan agar opsi disabled terlihat lebih jelas */
-    .select2-results__option[aria-disabled="true"] {
-      background-color: #f8f9fa;
-      color: #d6d6d6;
-      font-style: italic;
+    /* Choices.js custom styling for better list visibility */
+    .choices__list--dropdown .choices__item--selectable {
+      padding-right: 10px;
+    }
+    .choices__list--dropdown .choices__item--disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
   </style>
 @endsection
@@ -22,8 +23,10 @@
   <div class="row pb-3">
     <div class="col-12">
       <div class="form-card">
-        <div class="card-header">
-          <h5>Edit Sesi</h5>
+        <div class="card-header py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Edit Sesi</h5>
+          </div>
         </div>
         <div class="card-body">
           <div class="meta-info mb-4 p-3 bg-light rounded border">
@@ -46,30 +49,11 @@
             @method('PUT')
 
             <div class="mb-3">
-              <label for="id_perusahaan" class="form-label">
-                Perusahaan <span class="text-danger">*</span>
-              </label>
-              <select name="id_perusahaan" id="id_perusahaan"
-                class="form-select @error('id_perusahaan') is-invalid @enderror" required>
-                <option value="">-- Pilih Perusahaan --</option>
-                @foreach ($perusahaan as $item)
-                  <option value="{{ $item->id }}"
-                    {{ old('id_perusahaan', $sesiAlat->id_perusahaan) == $item->id ? 'selected' : '' }}>
-                    {{ $item->nama }}
-                  </option>
-                @endforeach
-              </select>
-              @error('id_perusahaan')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
-            </div>
-
-            <div class="mb-3">
               <label for="id_kendaraan" class="form-label">
                 Kendaraan <span class="text-danger">*</span>
               </label>
               <select name="id_kendaraan" id="id_kendaraan"
-                class="form-select @error('id_kendaraan') is-invalid @enderror" required>
+                class="form-select select-choices-ajax @error('id_kendaraan') is-invalid @enderror" required>
                 @if ($sesiAlat->kendaraan)
                   <option value="{{ $sesiAlat->id_kendaraan }}" selected>{{ $sesiAlat->kendaraan->nama }}</option>
                 @endif
@@ -83,7 +67,7 @@
               <label for="id_alat" class="form-label">
                 Alat GPS <span class="text-danger">*</span>
               </label>
-              <select name="id_alat" id="id_alat" class="form-select @error('id_alat') is-invalid @enderror" required>
+              <select name="id_alat" id="id_alat" class="form-select select-choices-ajax @error('id_alat') is-invalid @enderror" required>
                 @if ($sesiAlat->alat)
                   <option value="{{ $sesiAlat->id_alat }}" selected>{{ $sesiAlat->alat->id }}</option>
                 @endif
@@ -120,108 +104,112 @@
 @endsection
 
 @section('scripts')
-  @vite(['resources/assets/js/jquery.js', 'resources/assets/js/select2.js'])
-
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Data ID saat ini (Data asli sesi ini)
-      // Kita butuh ini agar data milik sesi ini TIDAK ter-disabled
       const currentKendaraanId = "{{ $sesiAlat->id_kendaraan }}";
       const currentAlatId = "{{ $sesiAlat->id_alat }}";
+      const idPerusahaan = "{{ $sesiAlat->id_perusahaan }}";
 
-      // Inisialisasi Element
-      const $perusahaanSelect = $('#id_perusahaan');
-      const $kendaraanSelect = $('#id_kendaraan');
-      const $alatSelect = $('#id_alat');
+      const kendaraanSelect = document.getElementById('id_kendaraan');
+      const alatSelect = document.getElementById('id_alat');
 
-      // 1. Setup Select2 Dasar
-      $perusahaanSelect.select2({
-        theme: 'bootstrap-5',
-        width: '100%'
-      });
-      $kendaraanSelect.select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        placeholder: 'Loading...'
-      });
-      $alatSelect.select2({
-        theme: 'bootstrap-5',
-        width: '100%',
-        placeholder: 'Loading...'
-      });
+      const choicesConfigWithStatus = {
+        allowHTML: true,
+        placeholder: true,
+        itemSelectText: '',
+        callbackOnCreateTemplates: function(strToEl) {
+          return {
+            item: ({ classNames }, data) => {
+              return strToEl(`
+                <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : classNames.itemSelectable}" 
+                  data-item 
+                  data-id="${data.id}" 
+                  data-value="${data.value}" 
+                  ${data.active ? 'aria-selected="true"' : ''} 
+                  ${data.disabled ? 'aria-disabled="true"' : ''}>
+                  <span class="fw-bold">${data.label}</span>
+                </div>
+              `);
+            },
+            choice: ({ classNames }, data) => {
+              const isActive = data.customProperties && (data.customProperties.active === 'true' || data.customProperties.active === true);
+              const info = data.customProperties ? data.customProperties.info : '';
+              
+              return strToEl(`
+                <div class="${classNames.item} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable} ${isActive ? 'text-muted opacity-75' : ''}" 
+                  data-select-text="" 
+                  data-choice 
+                  ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'data-choice-selectable'} 
+                  data-id="${data.id}" 
+                  data-value="${data.value}" 
+                  role="option">
+                  <div class="d-flex justify-content-between align-items-center w-100">
+                    <strong>${data.label}</strong>
+                    ${isActive 
+                      ? '<span class="badge bg-danger-transparent text-danger border border-danger border-opacity-25"><i class="ri-lock-line me-1"></i> Digunakan</span>' 
+                      : '<span class="badge bg-success-transparent text-success border border-success border-opacity-25"><i class="ri-check-line me-1"></i> Tersedia</span>'
+                    }
+                  </div>
+                  ${info ? `<small class="d-block mt-1 ${isActive ? 'text-danger fst-italic' : 'text-muted'}" style="font-size:11px;">${info}</small>` : ''}
+                </div>
+              `);
+            },
+          };
+        },
+      };
 
-      // 2. Fungsi Load Data (Kendaraan & Alat)
-      function loadDataByPerusahaan(idPerusahaan) {
+      const choicesKendaraan = new Choices(kendaraanSelect, choicesConfigWithStatus);
+      const choicesAlat = new Choices(alatSelect, choicesConfigWithStatus);
+
+      function loadData() {
         if (!idPerusahaan) return;
 
         // --- A. LOAD KENDARAAN ---
-        // Ganti URL ini sesuai route Anda: 'sesi-alat-kendaraan/{idPerusahaan}'
         fetch(`{{ url('sesi-alat-kendaraan') }}/${idPerusahaan}`)
           .then(res => res.json())
           .then(data => {
-            // ... (logika update dropdown kendaraan sama seperti sebelumnya) ...
-            $kendaraanSelect.empty().append('<option value="">-- Pilih Kendaraan --</option>');
-
-            data.forEach(item => {
-              let isDisabled = item.is_active && (String(item.id) !== String(currentKendaraanId));
-              let label = item.nama + " (" + item.plat + ")";
-
-              if (isDisabled) label += " -- [Sedang Digunakan]";
-
-              let newOption = new Option(label, item.id, false, false);
-
-              if (isDisabled) $(newOption).attr('disabled', 'disabled');
-
-              if (String(item.id) === String(currentKendaraanId)) {
-                $(newOption).prop('selected', true);
-              }
-
-              $kendaraanSelect.append(newOption);
+            choicesKendaraan.clearChoices();
+            const options = data.map(item => {
+              const isDisabled = item.is_active && (String(item.id) !== String(currentKendaraanId));
+              return {
+                value: item.id,
+                label: item.nama,
+                selected: String(item.id) === String(currentKendaraanId),
+                disabled: isDisabled,
+                customProperties: {
+                  active: item.is_active && (String(item.id) !== String(currentKendaraanId)),
+                  info: item.is_active && (String(item.id) !== String(currentKendaraanId)) ? 'Kendaraan sedang dalam sesi aktif' : `${item.plat}`
+                }
+              };
             });
-            $kendaraanSelect.trigger('change');
+            choicesKendaraan.setChoices([{ value: '', label: '-- Pilih Kendaraan --', selected: false }, ...options], 'value', 'label', true);
           })
           .catch(err => console.error('Error fetching kendaraan:', err));
 
-
         // --- B. LOAD ALAT ---
-        // Ganti URL ini sesuai route Anda: 'sesi-alat-alat/{idPerusahaan}'
         fetch(`{{ url('sesi-alat-alat') }}/${idPerusahaan}`)
           .then(res => res.json())
           .then(data => {
-            // ... (logika update dropdown alat sama seperti sebelumnya) ...
-            $alatSelect.empty().append('<option value="">-- Pilih Alat --</option>');
-
-            data.forEach(item => {
-              let isDisabled = item.is_active && (String(item.id) !== String(currentAlatId));
-              let label = item.id;
-
-              if (isDisabled) label += ` -- [Dipakai: ${item.current_vehicle || 'Lain'}]`;
-
-              let newOption = new Option(label, item.id, false, false);
-
-              if (isDisabled) $(newOption).attr('disabled', 'disabled');
-
-              if (String(item.id) === String(currentAlatId)) {
-                $(newOption).prop('selected', true);
-              }
-
-              $alatSelect.append(newOption);
+            choicesAlat.clearChoices();
+            const options = data.map(item => {
+              const isDisabled = item.is_active && (String(item.id) !== String(currentAlatId));
+              return {
+                value: item.id,
+                label: item.id,
+                selected: String(item.id) === String(currentAlatId),
+                disabled: isDisabled,
+                customProperties: {
+                  active: item.is_active && (String(item.id) !== String(currentAlatId)),
+                  info: item.is_active && (String(item.id) !== String(currentAlatId)) ? (item.current_vehicle ? `Sedang dipakai di: ${item.current_vehicle}` : 'Sedang Aktif') : 'Siap digunakan'
+                }
+              };
             });
-            $alatSelect.trigger('change');
+            choicesAlat.setChoices([{ value: '', label: '-- Pilih Alat --', selected: false }, ...options], 'value', 'label', true);
           })
           .catch(err => console.error('Error fetching alat:', err));
       }
 
-      // 3. Event Listener Perusahaan Change
-      $perusahaanSelect.on('change', function() {
-        loadDataByPerusahaan(this.value);
-      });
-
-      // 4. Trigger saat halaman pertama dimuat
-      // Agar dropdown langsung terisi dengan data yang benar & status disable yang tepat
-      if ($perusahaanSelect.val()) {
-        loadDataByPerusahaan($perusahaanSelect.val());
-      }
+      loadData();
     });
   </script>
 @endsection

@@ -26,17 +26,20 @@ class SesiAlatController extends Controller
         $sesiAlat = SesiAlat::with('alat', 'kendaraan', 'perusahaan', 'riwayatPerjalanan')
             ->where('id_perusahaan', $idPerusahaan);
 
-        if ($search) {
-            $sesiAlat->whereHas('alat', function ($q) use ($search) {
-                $q->where('id', 'like', '%' . $search . '%');
-            })->orWhereHas('kendaraan', function ($q) use ($search) {
-                $q->where('nama', 'like', '%' . $search . '%');
-            })->orWhereHas('perusahaan', function ($q) use ($search) {
-                $q->where('nama', 'like', '%' . $search . '%');
+        if ($request->filled('search')) {
+            $sesiAlat->where(function ($query) use ($search) {
+                $query->where('id', 'like', "%{$search}%")
+                    ->orWhere('nama', 'like', "%{$search}%")
+                    ->orWhereHas('alat', function ($q) use ($search) {
+                        $q->where('id', 'like', '%' . $search . '%');
+                    })->orWhereHas('kendaraan', function ($q) use ($search) {
+                        $q->where('nama', 'like', '%' . $search . '%')
+                            ->orWhere('plat', 'like', '%' . $search . '%');
+                    });
             });
         }
 
-        if ($filter_status !== '') {
+        if ($request->filled('status')) {
             $sesiAlat->where('aktif', (bool)$filter_status);
         }
 
@@ -45,6 +48,10 @@ class SesiAlatController extends Controller
             ->orderBy('aktif', 'desc')
             ->paginate(10)
             ->appends(request()->query());
+
+        if ($request->ajax()) {
+            return view('pages.perusahaan.sesi-alat.table', compact('sesiAlat'))->render();
+        }
 
         return view('pages.perusahaan.sesi-alat.index', compact('sesiAlat', 'search', 'filter_status'));
     }
@@ -107,7 +114,7 @@ class SesiAlatController extends Controller
 
         // Logika otomatis mematikan sesi lain jika user memaksa aktif (walaupun validasi di atas sudah mencegah,
         // kode ini tetap aman jika validasi diubah di masa depan)
-        if ($request->has('aktif') && $request->aktif == 1) {
+        if ($request->input('aktif') == 1) {
             SesiAlat::where('id_alat', $request->id_alat)
                     ->where('aktif', 1)
                     ->update(['aktif' => 0]);
@@ -118,7 +125,7 @@ class SesiAlatController extends Controller
             'id_kendaraan'  => $request->id_kendaraan,
             'id_alat'       => $request->id_alat,
             'nama'          => $request->nama,
-            'aktif'         => $request->has('aktif') ? 1 : 0,
+            'aktif'         => $request->input('aktif', 0),
         ]);
 
         // --- TAMBAHAN LOG: CREATE ---
@@ -200,6 +207,14 @@ class SesiAlatController extends Controller
             'ip_address' => request()->ip(),
         ]);
         // -----------------------------
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'aktif' => $sesi->aktif,
+                'message' => 'Sesi berhasil ' . ($sesi->aktif ? 'diaktifkan' : 'dinonaktifkan') . '.'
+            ]);
+        }
 
         $statusMsg = $sesi->aktif ? 'diaktifkan' : 'dinonaktifkan';
         return back()->with('success', 'Sesi berhasil ' . $statusMsg . '.');
