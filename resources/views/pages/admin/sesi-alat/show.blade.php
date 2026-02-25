@@ -19,8 +19,8 @@
 
     .pin-wrapper i {
       font-size: 40px;
-      color: var(--primary-color);
-      /* Menggunakan warna palet */
+      color: #0F2854;
+      /* Blue D-LSP / Primary */
       filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.3));
       z-index: 2;
     }
@@ -30,7 +30,8 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: rgba(var(--primary-rgb), 0.4);
+      background: rgba(15, 40, 84, 0.4);
+      /* Blue D-LSP / Primary Transparent */
       border-radius: 50%;
       z-index: 1;
       animation: pulse-animation 2s infinite;
@@ -76,7 +77,88 @@
       z-index: 400 !important;
     }
 
-    /* Animasi Radar Wave untuk Tombol Power Aktif */
+            /* --- CUSTOM LEAFLET CONTROLS --- */
+            .leaflet-bar,
+            .leaflet-touch .leaflet-bar {
+              border: none !important;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+            }
+        
+            .leaflet-bar a,
+            .leaflet-touch .leaflet-bar a {
+              width: 34px !important;
+              height: 34px !important;
+              line-height: 34px !important;
+              border-radius: 6px !important;
+              margin-bottom: 5px !important;
+              background-color: #fff !important;
+              color: #5d6576 !important;
+              transition: all 0.2s ease;
+              border: 1px solid #e2e8ee !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+            }
+        
+            .leaflet-bar a:last-child,
+            .leaflet-touch .leaflet-bar a:last-child {
+              margin-bottom: 0 !important;
+              border-bottom: 1px solid #e2e8ee !important;
+            }
+        
+            .leaflet-bar a:hover,
+            .leaflet-touch .leaflet-bar a:hover {
+              background-color: #f9fafb !important;
+              color: #0F2854 !important;
+              border-color: #0F2854 !important;
+            }    
+        /* Fix Zoom Icons centering */
+        .leaflet-control-zoom-in span, .leaflet-control-zoom-out span {
+            line-height: 34px;
+        }
+    
+            /* Tracking Mode Button Customization */
+            .leaflet-control-tracking {
+              width: 34px !important;
+              height: 34px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              background: white !important;
+              border: 1px solid #e2e8ee !important;
+              border-radius: 6px !important;
+              cursor: pointer;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+              transition: all 0.2s ease;
+              text-decoration: none !important;
+            }
+        
+            .leaflet-control-tracking i {
+              color: #5d6576;
+              font-size: 20px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+        
+            .leaflet-control-tracking:hover {
+              background: #f9fafb !important;
+              border-color: #0F2854 !important;
+            }
+        
+            .leaflet-control-tracking:hover i {
+              color: #0F2854;
+            }
+        
+            .leaflet-control-tracking.is-tracking {
+              background: #0F2854 !important;
+              border-color: #0F2854 !important;
+              box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+            }
+        
+            .leaflet-control-tracking.is-tracking i {
+              color: white !important;
+            }    /* Animasi Radar Wave untuk Tombol Power Aktif */
     .pulse-active {
       position: relative;
       z-index: 1;
@@ -318,7 +400,11 @@
     let truckMarker = null;
     let selectedMarker = null;
     let liveLatLngs = [];
+
+    // Tracking Mode
+    let isTrackingMode = false;
     let isAutoPan = true;
+    let adminTrackingBtn = null; // Store button reference
 
     // --- 3. HELPER: PARSE TANGGAL AMAN ---
     const parseDateSafe = (input) => {
@@ -436,6 +522,41 @@
         maxZoom: 18
       }).addTo(map);
 
+      // --- CUSTOM CONTROL: TRACKING MODE ---
+      const TrackingControl = L.Control.extend({
+        options: {
+          position: 'bottomright'
+        },
+        onAdd: function(map) {
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+          // Important: Use 'a' tag for consistency with Leaflet controls
+          adminTrackingBtn = L.DomUtil.create('a', 'leaflet-control-tracking', container);
+          adminTrackingBtn.href = '#';
+          adminTrackingBtn.innerHTML = '<i class="ri-focus-3-line" style="font-size: 20px;"></i>'; // Icon only
+          adminTrackingBtn.title = 'Tracking Mode';
+
+          L.DomEvent.on(adminTrackingBtn, 'click', function(e) {
+            L.DomEvent.stop(e);
+            toggleTrackingMode(adminTrackingBtn);
+          });
+          return container;
+        }
+      });
+      map.addControl(new TrackingControl());
+
+      function toggleTrackingMode(btn) {
+        isTrackingMode = !isTrackingMode;
+        if (isTrackingMode) {
+          btn.classList.add('is-tracking');
+          isAutoPan = true;
+          if (truckMarker) {
+            map.setView(truckMarker.getLatLng(), 18); // Zoom dekat
+          }
+        } else {
+          btn.classList.remove('is-tracking');
+        }
+      }
+
       map.on('click', () => {
         if (!isAutoPan) {
           isAutoPan = true;
@@ -448,6 +569,15 @@
             map.panTo(truckMarker.getLatLng());
             truckMarker.openPopup();
           }
+        }
+      });
+
+      // Disable tracking mode on drag if desired? No, user says "selalu mengikuti".
+      // But if user drags, they fight the auto-pan.
+      map.on('dragstart', () => {
+        if (isTrackingMode) {
+          isTrackingMode = false;
+          if (adminTrackingBtn) adminTrackingBtn.classList.remove('is-tracking');
         }
       });
 
@@ -483,7 +613,7 @@
             zIndexOffset: 1000
           }).addTo(map).bindPopup("Lokasi Terkini");
           polyline = L.polyline(pathLatLngs, {
-            color: '#be1e2d',
+            color: '#0F2854', // My Blue
             weight: 4,
             dashArray: '5, 5'
           }).addTo(map);
@@ -513,7 +643,13 @@
       document.querySelector('#history-table').addEventListener('click', (e) => {
         const row = e.target.closest('tr.clickable-row');
         if (row) {
-          isAutoPan = false;
+          isAutoPan = false; // Disable auto pan when reviewing history
+          // Turn off Tracking Mode if active to allow review
+          if (isTrackingMode) {
+            isTrackingMode = false;
+            if (adminTrackingBtn) adminTrackingBtn.classList.remove('is-tracking');
+          }
+
           const lat = parseFloat(row.dataset.lat);
           const lng = parseFloat(row.dataset.lng);
           const timeRaw = row.dataset.time;
@@ -559,37 +695,63 @@
       });
 
       // D. REALTIME UPDATE
-      window.Echo.channel(`tracking.sesi.${window.SESI_ALAT_ID}`)
-        .listen('.LokasiBaru', (e) => {
-          const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
-          rawRiwayatData.unshift(e);
-          currentIndex++;
+      if (window.Echo) {
+        window.Echo.channel(`tracking.sesi.${window.SESI_ALAT_ID}`)
+          .listen('.LokasiBaru', (e) => {
+            // Map event data structure to match DB structure expected by getRowHtml
+            const mappedItem = {
+              lat: e.lat,
+              long: e.lng,
+              created_at: e.waktu,
+              speed: e.speed,
+              alt: e.alt,
+              sat: e.sat,
+              battery: e.battery
+            };
 
-          if (liveLatLngs.length === 0) {
-            startMarker = L.marker(latLng, {
-              icon: createCustomIcon('start')
-            }).addTo(map);
-            truckMarker = L.marker(latLng, {
-              icon: createCustomIcon('end')
-            }).addTo(map);
-            polyline = L.polyline([latLng], {
-              color: '#be1e2d',
-              weight: 4
-            }).addTo(map);
-          } else {
-            if (truckMarker) truckMarker.setLatLng(latLng);
-            if (polyline) polyline.addLatLng(latLng);
-          }
-          liveLatLngs.push(latLng);
-          if (isAutoPan) map.panTo(latLng);
+            const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
 
-          const tbody = document.getElementById('history-table-body');
-          const emptyRow = document.getElementById('empty-row');
-          if (emptyRow) emptyRow.remove();
+            // Add to raw data (unshift to keep order consistent with table logic)
+            rawRiwayatData.unshift(mappedItem);
+            currentIndex++;
 
-          const rowHtml = getRowHtml(e, 0);
-          tbody.insertAdjacentHTML('afterbegin', rowHtml);
-        });
+            // Update Map
+            if (!polyline) {
+              // First point
+              startMarker = L.marker(latLng, {
+                icon: createCustomIcon('start')
+              }).addTo(map);
+              truckMarker = L.marker(latLng, {
+                icon: createCustomIcon('end')
+              }).addTo(map);
+              polyline = L.polyline([latLng], {
+                color: '#0F2854', // My Blue
+                weight: 4
+              }).addTo(map);
+            } else {
+              // Subsequent points
+              if (truckMarker) truckMarker.setLatLng(latLng);
+              if (polyline) polyline.addLatLng(latLng);
+            }
+            liveLatLngs.push(latLng);
+
+            // Handle Panning
+            if (isTrackingMode) {
+              map.setView(latLng, 18); // Force Zoom 18 and Center
+            } else if (isAutoPan) {
+              map.panTo(latLng); // Normal auto pan
+            }
+
+            // Update Table
+            const tbody = document.getElementById('history-table-body');
+            const emptyRow = document.getElementById('empty-row');
+            if (emptyRow) emptyRow.remove();
+
+            // Use mappedItem here
+            const rowHtml = getRowHtml(mappedItem, 0);
+            tbody.insertAdjacentHTML('afterbegin', rowHtml);
+          });
+      }
 
       setTimeout(() => {
         map.invalidateSize();
@@ -670,4 +832,4 @@
       });
     };
   </script>
-@endsection
+@endsection,old_string:
