@@ -118,6 +118,7 @@ class PerusahaanSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'id_perusahaan' => $perusahaan->id,
                         'is_validated' => true,
+                        'email_verified_at' => $now,
                         'created_at' => $now,
                         'updated_at' => $now,
                     ]

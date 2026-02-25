@@ -391,9 +391,23 @@
       if (window.Echo) {
         window.Echo.channel(`tracking.sesi.${window.SESI_ALAT_ID}`)
           .listen('.LokasiBaru', (e) => {
+            // Map event data structure to match DB structure expected by getRowHtml
+            const mappedItem = {
+              lat: e.lat,
+              long: e.lng,
+              created_at: e.waktu,
+              speed: e.speed,
+              alt: e.alt,
+              sat: e.sat,
+              battery: e.battery
+            };
+            
             const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
-            rawRiwayatData.unshift(e);
+            
+            // Add to raw data for scroll loading (optional, but good for consistency)
+            rawRiwayatData.unshift(mappedItem);
             currentIndex++;
+
             if (!polyline) {
               truckMarker = L.marker(latLng, {
                 icon: createCustomIcon('end')
@@ -407,7 +421,9 @@
               polyline.addLatLng(latLng);
             }
             if (isAutoPan) map.panTo(latLng);
-            document.getElementById('history-table-body').insertAdjacentHTML('afterbegin', getRowHtml(e, 0));
+            
+            // Pass mappedItem instead of raw 'e'
+            document.getElementById('history-table-body').insertAdjacentHTML('afterbegin', getRowHtml(mappedItem, 0));
           });
       }
 

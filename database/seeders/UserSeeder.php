@@ -24,6 +24,8 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Admin',
                 'password' => bcrypt('admindmg123'),
+                'email_verified_at' => now(),
+                'is_validated' => true,
             ]
         );
         $admin1->assignRole($adminRole);
@@ -33,6 +35,8 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Test User',
                 'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+                'is_validated' => true,
             ]
         );
         $admin2->assignRole($adminRole);

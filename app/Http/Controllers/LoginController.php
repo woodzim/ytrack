@@ -48,9 +48,9 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             // Cek verifikasi email
-            if (!Auth::user()->hasVerifiedEmail()) {
-                return redirect()->route('verification.notice');
-            }
+            // if (!Auth::user()->hasVerifiedEmail()) {
+            //     return redirect()->route('verification.notice');
+            // }
 
             // LOGIKA REDIRECT
             // Prioritaskan Admin

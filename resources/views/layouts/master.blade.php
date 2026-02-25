@@ -372,13 +372,15 @@
       min-height: auto !important;
     }
 
-    /* Force Global Modals to be on TOP of everything */
+    /* Force Global Modals to be on TOP of everything - REMOVED TO FIX Z-INDEX ISSUES */
+    /* 
     #globalConfirmModal, #globalAlertModal {
         z-index: 9999 !important;
     }
     .modal-backdrop {
         z-index: 9998 !important;
-    }
+    } 
+    */
   </style>
 
 </head>
