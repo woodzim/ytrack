@@ -151,8 +151,15 @@
       color: white !important;
     }
 
+    /* Fullscreen style */
+    #map-container:fullscreen {
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+    }
+
     /* Ensure icon inside is visible */
-    .leaflet-control-tracking i {
+    .leaflet-control-tracking i, .leaflet-control-fullscreen i {
       display: block;
       line-height: 1;
     }
@@ -485,6 +492,46 @@
           btn.classList.remove('is-tracking');
         }
       }
+
+      // --- CUSTOM CONTROL: FULLSCREEN ---
+      const FullscreenControl = L.Control.extend({
+        options: {
+          position: 'bottomright'
+        },
+        onAdd: function(map) {
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+          const btn = L.DomUtil.create('a', 'leaflet-control-fullscreen', container);
+          btn.href = '#';
+          btn.innerHTML = '<i class="ri-fullscreen-line" style="font-size: 20px;"></i>';
+          btn.title = 'Fullscreen';
+
+          L.DomEvent.on(btn, 'click', function(e) {
+            L.DomEvent.stop(e);
+            const mapEl = document.getElementById('map-container');
+            if (!document.fullscreenElement) {
+              mapEl.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+              });
+            } else {
+              document.exitFullscreen();
+            }
+          });
+          return container;
+        }
+      });
+      map.addControl(new FullscreenControl());
+
+      // Update button icon on fullscreen change
+      document.addEventListener('fullscreenchange', () => {
+        const btn = document.querySelector('.leaflet-control-fullscreen');
+        if (document.fullscreenElement) {
+          btn.innerHTML = '<i class="ri-fullscreen-exit-line" style="font-size: 20px;"></i>';
+          setTimeout(() => map.invalidateSize(), 100);
+        } else {
+          btn.innerHTML = '<i class="ri-fullscreen-line" style="font-size: 20px;"></i>';
+          setTimeout(() => map.invalidateSize(), 100);
+        }
+      });
 
       map.on('click', () => {
         if (!isAutoPan) {

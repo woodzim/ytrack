@@ -20,14 +20,12 @@
 @endsection
 
 @section('content')
-  <!-- Start::page-header -->
-  <div class="d-flex align-items-center justify-content-between mb-4 page-header-breadcrumb flex-wrap gap-2">
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h1 class="page-title fw-bold fs-24 mb-1">Manajemen Perjalanan</h1>
-      <p class="text-muted mb-0">Kelola dan pantau sesi penggunaan alat GPS pada armada kendaraan.</p>
+      <h1 class="page-title fw-medium fs-20 mb-0">Perjalanan</h1>
+      <p class="">Kelola sesi penggunaan alat GPS di kendaraan</p>
     </div>
   </div>
-  <!-- End::page-header -->
 
   <div class="row">
     <div class="col-12">

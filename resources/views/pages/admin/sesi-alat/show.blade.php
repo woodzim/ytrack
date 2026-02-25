@@ -77,88 +77,111 @@
       z-index: 400 !important;
     }
 
-            /* --- CUSTOM LEAFLET CONTROLS --- */
-            .leaflet-bar,
-            .leaflet-touch .leaflet-bar {
-              border: none !important;
-              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-            }
-        
-            .leaflet-bar a,
-            .leaflet-touch .leaflet-bar a {
-              width: 34px !important;
-              height: 34px !important;
-              line-height: 34px !important;
-              border-radius: 6px !important;
-              margin-bottom: 5px !important;
-              background-color: #fff !important;
-              color: #5d6576 !important;
-              transition: all 0.2s ease;
-              border: 1px solid #e2e8ee !important;
-              display: flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-            }
-        
-            .leaflet-bar a:last-child,
-            .leaflet-touch .leaflet-bar a:last-child {
-              margin-bottom: 0 !important;
-              border-bottom: 1px solid #e2e8ee !important;
-            }
-        
-            .leaflet-bar a:hover,
-            .leaflet-touch .leaflet-bar a:hover {
-              background-color: #f9fafb !important;
-              color: #0F2854 !important;
-              border-color: #0F2854 !important;
-            }    
-        /* Fix Zoom Icons centering */
-        .leaflet-control-zoom-in span, .leaflet-control-zoom-out span {
-            line-height: 34px;
-        }
-    
-            /* Tracking Mode Button Customization */
-            .leaflet-control-tracking {
-              width: 34px !important;
-              height: 34px !important;
-              display: flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-              background: white !important;
-              border: 1px solid #e2e8ee !important;
-              border-radius: 6px !important;
-              cursor: pointer;
-              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-              transition: all 0.2s ease;
-              text-decoration: none !important;
-            }
-        
-            .leaflet-control-tracking i {
-              color: #5d6576;
-              font-size: 20px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            }
-        
-            .leaflet-control-tracking:hover {
-              background: #f9fafb !important;
-              border-color: #0F2854 !important;
-            }
-        
-            .leaflet-control-tracking:hover i {
-              color: #0F2854;
-            }
-        
-            .leaflet-control-tracking.is-tracking {
-              background: #0F2854 !important;
-              border-color: #0F2854 !important;
-              box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
-            }
-        
-            .leaflet-control-tracking.is-tracking i {
-              color: white !important;
-            }    /* Animasi Radar Wave untuk Tombol Power Aktif */
+    /* --- CUSTOM LEAFLET CONTROLS --- */
+    .leaflet-bar,
+    .leaflet-touch .leaflet-bar {
+      border: none !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .leaflet-bar a,
+    .leaflet-touch .leaflet-bar a {
+      width: 34px !important;
+      height: 34px !important;
+      line-height: 34px !important;
+      border-radius: 6px !important;
+      margin-bottom: 5px !important;
+      background-color: #fff !important;
+      color: #5d6576 !important;
+      transition: all 0.2s ease;
+      border: 1px solid #e2e8ee !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .leaflet-bar a:last-child,
+    .leaflet-touch .leaflet-bar a:last-child {
+      margin-bottom: 0 !important;
+      border-bottom: 1px solid #e2e8ee !important;
+    }
+
+    .leaflet-bar a:hover,
+    .leaflet-touch .leaflet-bar a:hover {
+      background-color: #f9fafb !important;
+      color: #0F2854 !important;
+      border-color: #0F2854 !important;
+    }
+
+    /* Fix Zoom Icons centering */
+    .leaflet-control-zoom-in span,
+    .leaflet-control-zoom-out span {
+      line-height: 34px;
+    }
+
+    /* Tracking & Fullscreen Button Customization */
+    .leaflet-control-tracking,
+    .leaflet-control-fullscreen {
+      width: 34px !important;
+      height: 34px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: white !important;
+      border: 1px solid #e2e8ee !important;
+      border-radius: 6px !important;
+      cursor: pointer;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+      text-decoration: none !important;
+    }
+
+    .leaflet-control-tracking i,
+    .leaflet-control-fullscreen i {
+      color: #5d6576;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .leaflet-control-tracking:hover,
+    .leaflet-control-fullscreen:hover {
+      background: #f9fafb !important;
+      border-color: #0F2854 !important;
+    }
+
+    .leaflet-control-tracking:hover i,
+    .leaflet-control-fullscreen:hover i {
+      color: #0F2854;
+    }
+
+    .leaflet-control-tracking.is-tracking {
+      background: #0F2854 !important;
+      border-color: #0F2854 !important;
+      box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    .leaflet-control-tracking.is-tracking i {
+      color: white !important;
+    }
+
+    /* Fullscreen Support */
+    #map-container:fullscreen {
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+      margin: 0 !important;
+    }
+
+    /* Ensure icon inside is visible */
+    .leaflet-control-tracking i,
+    .leaflet-control-fullscreen i {
+      display: block;
+      line-height: 1;
+    }
+
+    /* Animasi Radar Wave untuk Tombol Power Aktif */
     .pulse-active {
       position: relative;
       z-index: 1;
@@ -219,12 +242,10 @@
 @endsection
 
 @section('content')
-  <div class="page-header-section d-flex align-items-center justify-content-between">
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
-      <div>
-        <h1>Detail Perjalanan</h1>
-        <p>Informasi lengkap sesi GPS tracking (Admin View)</p>
-      </div>
+      <h1 class="page-title fw-medium fs-20 mb-0">Perjalanan</h1>
+      <p class="">Kelola sesi penggunaan alat GPS di kendaraan</p>
     </div>
     <div class="ms-auto">
       <a href="{{ route('sesi-alat.index') }}" class="btn btn-light btn-wave">
@@ -544,6 +565,46 @@
       });
       map.addControl(new TrackingControl());
 
+      // --- CUSTOM CONTROL: FULLSCREEN ---
+      const FullscreenControl = L.Control.extend({
+        options: {
+          position: 'bottomright'
+        },
+        onAdd: function(map) {
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+          const btn = L.DomUtil.create('a', 'leaflet-control-fullscreen', container);
+          btn.href = '#';
+          btn.innerHTML = '<i class="ri-fullscreen-line" style="font-size: 20px;"></i>';
+          btn.title = 'Fullscreen';
+
+          L.DomEvent.on(btn, 'click', function(e) {
+            L.DomEvent.stop(e);
+            const mapEl = document.getElementById('map-container');
+            if (!document.fullscreenElement) {
+              mapEl.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+              });
+            } else {
+              document.exitFullscreen();
+            }
+          });
+          return container;
+        }
+      });
+      map.addControl(new FullscreenControl());
+
+      // Update button icon on fullscreen change
+      document.addEventListener('fullscreenchange', () => {
+        const btn = document.querySelector('.leaflet-control-fullscreen');
+        if (document.fullscreenElement) {
+          btn.innerHTML = '<i class="ri-fullscreen-exit-line" style="font-size: 20px;"></i>';
+          setTimeout(() => map.invalidateSize(), 100);
+        } else {
+          btn.innerHTML = '<i class="ri-fullscreen-line" style="font-size: 20px;"></i>';
+          setTimeout(() => map.invalidateSize(), 100);
+        }
+      });
+
       function toggleTrackingMode(btn) {
         isTrackingMode = !isTrackingMode;
         if (isTrackingMode) {
@@ -832,4 +893,4 @@
       });
     };
   </script>
-@endsection,old_string:
+@endsection

@@ -27,10 +27,10 @@
 @endsection
 
 @section('content')
-  <div class="page-header-section d-flex align-items-center justify-content-between">
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h1>Daftar Kendaraan</h1>
-      <p>Kelola semua kendaraan di sistem</p>
+      <h1 class="page-title fw-medium fs-20 mb-0">Kendaraan</h1>
+      <p class="">Kelola semua kendaraan di sistem</p>
     </div>
     <div class="ms-auto">
       <a href="{{ route('kendaraan.create') }}" class="btn btn-light btn-wave">
