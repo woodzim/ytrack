@@ -115,7 +115,9 @@
     </div>
   </div>
   <!-- End::app-content -->
+@endsection
 
+@section('modals')
   <!-- Reset Password Modal -->
   <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordLabel" aria-hidden="true">
     <div class="modal-dialog">

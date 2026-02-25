@@ -49,6 +49,12 @@ Route::middleware(['auth'])->group(function () {
     // EMAIL VERIFICATION
     // =================================================================
     Route::get('/email/verify', function () {
+        if (Auth::user()->hasVerifiedEmail()) {
+            if (Auth::user()->hasRole('perusahaan')) {
+                return redirect()->route('perusahaan.dashboard.index');
+            }
+            return redirect()->route('dashboard');
+        }
         return view('pages.verify-email');
     })->name('verification.notice');
 

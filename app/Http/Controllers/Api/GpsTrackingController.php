@@ -102,7 +102,7 @@ class GpsTrackingController extends Controller
             // --- 6. TEMBAK EVENT KE PUSHER ---
             // Karena id_sesi_alat pasti ada, event ini dijamin jalan
             event(new RiwayatPerjalananCreated(
-                (int) $activeSesiAlat->id,
+                $activeSesiAlat->id,
                 (float) $riwayat->lat,
                 (float) $riwayat->long,
                 $riwayat->created_at->toDateTimeString(),
