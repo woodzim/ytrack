@@ -47,7 +47,7 @@
                 {{-- Tombol Hapus --}}
                 <form action="{{ route('jenis-kendaraan.destroy', $item->id) }}" method="POST"
                   style="display: inline;"
-                  onsubmit="return confirm('Hapus jenis kendaraan {{ $item->nama }}? Data kendaraan yang menggunakan jenis ini mungkin akan terdampak.');">
+                  data-confirm="Hapus jenis kendaraan {{ $item->nama }}? Data kendaraan yang menggunakan jenis ini mungkin akan terdampak.">
                   @csrf
                   @method('DELETE')
                   <button type="submit" class="btn btn-sm btn-danger btn-wave" title="Hapus">

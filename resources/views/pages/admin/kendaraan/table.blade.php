@@ -76,7 +76,7 @@
                           </button>
                         @else
                           <form action="{{ route('kendaraan.destroy', $item->id) }}" method="POST"
-                            onsubmit="return confirm('Anda yakin ingin menghapus kendaraan {{ $item->nama }}?');">
+                            data-confirm="Anda yakin ingin menghapus kendaraan {{ $item->nama }}?">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="dropdown-item text-danger">

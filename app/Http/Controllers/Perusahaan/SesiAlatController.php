@@ -114,7 +114,7 @@ class SesiAlatController extends Controller
 
         // Logika otomatis mematikan sesi lain jika user memaksa aktif (walaupun validasi di atas sudah mencegah,
         // kode ini tetap aman jika validasi diubah di masa depan)
-        if ($request->has('aktif') && $request->aktif == 1) {
+        if ($request->input('aktif') == 1) {
             SesiAlat::where('id_alat', $request->id_alat)
                     ->where('aktif', 1)
                     ->update(['aktif' => 0]);
@@ -125,7 +125,7 @@ class SesiAlatController extends Controller
             'id_kendaraan'  => $request->id_kendaraan,
             'id_alat'       => $request->id_alat,
             'nama'          => $request->nama,
-            'aktif'         => $request->has('aktif') ? 1 : 0,
+            'aktif'         => $request->input('aktif', 0),
         ]);
 
         // --- TAMBAHAN LOG: CREATE ---

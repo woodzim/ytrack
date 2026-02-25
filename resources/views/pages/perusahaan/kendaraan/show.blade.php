@@ -68,18 +68,18 @@
         </div>
         <div style="padding: 16px; background: #f9f9f9; border-top: 1px solid #f0f0f0; border-radius: 0 0 8px 8px;">
           <div class="btn-action-group">
-            <a href="{{ route('kendaraan.edit', $kendaraan->id) }}" class="btn btn-warning btn-wave">
+            <a href="{{ route('perusahaan.kendaraan.edit', $kendaraan->id) }}" class="btn btn-warning btn-wave">
               <i class="ri-edit-line me-2"></i>Edit
             </a>
-            <form action="{{ route('kendaraan.destroy', $kendaraan->id) }}" method="POST" style="display: inline;"
-              onsubmit="return confirm('Anda yakin ingin menghapus kendaraan ini?');">
+            <form action="{{ route('perusahaan.kendaraan.destroy', $kendaraan->id) }}" method="POST" style="display: inline;"
+              data-confirm="Anda yakin ingin menghapus kendaraan ini?" data-confirm-title="Hapus Kendaraan">
               @csrf
               @method('DELETE')
               <button type="submit" class="btn btn-primary btn-wave">
                 <i class="ri-delete-bin-line me-2"></i>Hapus
               </button>
             </form>
-            <a href="{{ route('kendaraan.index') }}" class="btn btn-outline-secondary btn-wave">
+            <a href="{{ route('perusahaan.kendaraan.index') }}" class="btn btn-outline-secondary btn-wave">
               <i class="ri-arrow-left-line me-2"></i>Kembali
             </a>
           </div>

@@ -83,7 +83,7 @@
                       <li><hr class="dropdown-divider"></li>
                       <li>
                         <form action="{{ route('sesi-alat.destroy', $item->id) }}" method="POST"
-                          onsubmit="return confirm('Hapus sesi ini?');">
+                          data-confirm="Hapus sesi ini?">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="dropdown-item text-danger">

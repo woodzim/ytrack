@@ -16,7 +16,7 @@
                     <div class="card-body p-5">
                         <div class="mb-4">
                             <a href="{{ route('login') }}">
-                                <img src="{{ asset('images/long-logo.png') }}" alt="logo"
+                                <img src="{{ asset('images/long-logo.webp') }}" alt="logo"
                                     class="desktop-dark mt-3 mt-md-0">
                             </a>
                         </div>

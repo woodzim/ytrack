@@ -92,7 +92,7 @@
                     <li><hr class="dropdown-divider"></li>
                     <li>
                       <form action="{{ route('alat.destroy', $item->id) }}" method="POST"
-                        onsubmit="return confirm('Hapus alat ini? Semua data terkait (sesi & riwayat) mungkin terdampak.');">
+                        data-confirm="Hapus alat ini? Semua data terkait (sesi & riwayat) mungkin terdampak.">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="dropdown-item text-danger">

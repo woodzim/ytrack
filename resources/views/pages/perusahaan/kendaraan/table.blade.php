@@ -92,7 +92,7 @@
                       @else
                         {{-- Jika parkir, tombol aktif --}}
                         <form action="{{ route('perusahaan.kendaraan.destroy', $item->id) }}" method="POST"
-                          onsubmit="return confirm('Yakin ingin menghapus kendaraan {{ $item->plat }}?');">
+                          data-confirm="Yakin ingin menghapus kendaraan {{ $item->plat }}?" data-confirm-title="Hapus Kendaraan">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="dropdown-item text-danger">

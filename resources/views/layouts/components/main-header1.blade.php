@@ -11,10 +11,10 @@
 						<div class="header-element">
 							<div class="horizontal-logo">
 								<a href="{{url('index')}}" class="header-logo">
-									<img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-logo">
-									<img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-logo">
-									<img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-dark">
-									<img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-dark">
+									<img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-logo">
+									<img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-logo">
+									<img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-dark">
+									<img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-dark">
 								</a>
 							</div>
 						</div>

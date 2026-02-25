@@ -5,7 +5,6 @@
     /* --- Layout Refinements --- */
     #map-dashboard {
       height: 55vh;
-      /* Ditetapkan 55vh sesuai permintaan */
       width: 100%;
       border-radius: 8px;
       position: relative;
@@ -41,6 +40,7 @@
       box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05) !important;
       margin-bottom: 1.25rem;
       border-radius: 12px;
+      transition: all 0.3s ease;
     }
 
     .stats-card-enhanced:hover {
@@ -94,13 +94,6 @@
     .activity-chart-container .chart-title {
       margin-left: 1rem;
       margin-right: 1rem;
-    }
-
-    /* Fixed height for chart containers to match admin dashboard */
-    .chart-container-fixed {
-      min-height: 380px;
-      position: relative;
-      width: 100%;
     }
 
     @media (max-width: 991.98px) {
@@ -411,7 +404,6 @@
       </div>
     </div>
   </div>
-  <!-- End::app-content -->
 @endsection
 
 @section('scripts')
@@ -423,34 +415,27 @@
     let trackedSesiId = null;
     let fitTimeout;
 
-    // Helper: Fit all markers into view
     const fitAllMarkers = () => {
-      // Jika sedang fokus (isUserFocusing true) atau ada alat yang dilacak, JANGAN panggil fitBounds
       if (isUserFocusing || trackedSesiId) return;
-
       var markerArray = Object.values(markers);
       if (markerArray.length > 0) {
         var group = new L.featureGroup(markerArray);
         map.fitBounds(group.getBounds().pad(0.1), {
           animate: true,
-          maxZoom: 18
+          maxZoom: 13
         });
       }
     };
 
     const focusMarker = (id_sesi, skipScroll = false) => {
       if (markers[id_sesi]) {
-        // Batalkan semua antrian fitAllMarkers yang mungkin masih berjalan
         clearTimeout(fitTimeout);
         fitTimeout = null;
-
-        trackedSesiId = String(id_sesi); // Simpan sebagai string untuk perbandingan presisi
+        trackedSesiId = String(id_sesi);
         isUserFocusing = true;
-
         const marker = markers[id_sesi];
-        map.stop(); // Hentikan animasi peta yang sedang berlangsung
-        map.setView(marker.getLatLng(), 22);
-
+        map.stop();
+        map.setView(marker.getLatLng(), 18);
         if (markerCluster.hasLayer(marker)) {
           markerCluster.zoomToShowLayer(marker, () => {
             marker.openPopup();
@@ -458,7 +443,6 @@
         } else {
           marker.openPopup();
         }
-
         if (!skipScroll) {
           const element = document.getElementById('map-dashboard');
           window.scrollTo({
@@ -478,10 +462,9 @@
 
       map = L.map('map-dashboard', {
         center: [-2.5489, 118.0149],
-        zoom: 5,
+        zoom: 3, // Dikurangi dari 5 menjadi 3 (agar view lebih luas)
         layers: [streets],
         gestureHandling: true,
-        fullscreenControl: true,
         preferCanvas: true,
         attributionControl: false
       });
@@ -496,11 +479,10 @@
       var locations = @json($lokasiAlat);
       var lowBatSessions = new Set();
 
-      const getMarkerIcon = (isFilled = false) => {
-        const type = isFilled ? 'ri-map-pin-fill' : 'ri-map-pin-line';
-        const color = '#be1e2d';
+      const getMarkerIcon = () => {
+        const color = 'var(--primary-color)'; // Menggunakan warna palet utama
         const html = `<div style="background: white; border-radius: 50%; padding: 2px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); border: 2px solid ${color}; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;">
-                        <i class="${type}" style="color: ${color}; font-size: 20px;"></i>
+                        <i class="ri-map-pin-fill" style="color: ${color}; font-size: 20px;"></i>
                       </div>`;
         return L.divIcon({
           html: html,
@@ -516,9 +498,7 @@
         let color = '#be1e2d';
         if (levelInt > 70) color = '#10b981';
         else if (levelInt > 30) color = '#f59e0b';
-
         const borderThickness = parseInt(maskSize);
-
         return `<div class="battery-circle-container d-flex align-items-center justify-content-center">
                   <div style="position: relative; width: ${size}; height: ${size}; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: radial-gradient(closest-side, white calc(100% - ${borderThickness}px), transparent calc(100% - ${borderThickness}px + 0.5px)), conic-gradient(${color} ${levelInt}%, #e9ecef 0);">
                     <span style="font-size: ${fontSize}; font-weight: 700; color: ${color}; z-index: 1;">${levelInt}%</span>
@@ -526,18 +506,12 @@
                 </div>`;
       };
 
-      // Listener: Saat popup ditutup, kembalikan tampilan ke seluruh alat jika benar-benar tidak ada yang difokuskan
       map.on('popupclose', function() {
-        // Berikan delay sedikit untuk mengecek apakah ini perpindahan fokus atau benar-benar ditutup
         setTimeout(() => {
           let anyPopupOpen = false;
-          // Cek apakah ada marker yang masih memiliki popup terbuka
           Object.values(markers).forEach(m => {
-            if (m.getPopup() && m.getPopup().isOpen()) {
-              anyPopupOpen = true;
-            }
+            if (m.getPopup() && m.getPopup().isOpen()) anyPopupOpen = true;
           });
-
           if (!anyPopupOpen) {
             trackedSesiId = null;
             isUserFocusing = false;
@@ -547,39 +521,30 @@
         }, 200);
       });
 
-      // Inisialisasi marker
       locations.forEach(function(loc) {
         if (loc.is_low_bat && loc.id_sesi) lowBatSessions.add(loc.id_sesi);
-
         if (loc.lat && loc.long) {
           var marker = L.marker([loc.lat, loc.long], {
-              icon: getMarkerIcon(false)
+              icon: getMarkerIcon()
             })
             .bindPopup(`<div class="p-1" id="popup-${loc.id_sesi}">
                           <div class="fw-bold mb-1">${loc.nama_alat}</div>
                           <div class="text-muted small mb-2">${loc.kendaraan}</div>
                           <div class="d-flex justify-content-between align-items-center border-top pt-2">
                             <span class="small">Baterai:</span>
-                            <div class="battery-popup-container">${getBatteryHtml(loc.battery, '32px', '8px', '3px')}</div>
+                            <div class="battery-popup-container">${getBatteryHtml(loc.battery)}</div>
                           </div>
-                          <div class="text-muted text-end mt-1 text-xs last-update-text">
-                            ${loc.last_update}
-                          </div>
+                          <div class="text-muted text-end mt-1 text-xs last-update-text">${loc.last_update}</div>
                         </div>`, {
               minWidth: 150,
               autoPan: false
             });
 
-          // Unifikasi: Klik marker memanggil focusMarker yang sama dengan tabel
-          marker.on('click', function() {
-            focusMarker(loc.id_sesi, true);
-          });
-
+          marker.on('click', () => focusMarker(loc.id_sesi, true));
           markerCluster.addLayer(marker);
           if (loc.id_sesi) markers[loc.id_sesi] = marker;
         }
 
-        // --- Realtime Setup per Active Session ---
         if (loc.id_sesi && loc.status === 'Aktif' && window.Echo) {
           window.Echo.channel(`tracking.sesi.${loc.id_sesi}`)
             .listen('.LokasiBaru', (e) => {
@@ -587,38 +552,27 @@
               const battery = parseInt(e.battery || 0);
               const isLowBat = battery <= 20;
 
-              // 1. Update Map Marker
               if (markers[loc.id_sesi]) {
                 const marker = markers[loc.id_sesi];
-                // Cek apakah alat yang baru gerak ini adalah alat yang sedang kita kunci fokusnya
-                const isThisToolTracked = (trackedSesiId && String(loc.id_sesi) === trackedSesiId);
-
                 marker.setLatLng(latLng);
-                if (typeof markerCluster.refreshClusters === 'function') {
-                  markerCluster.refreshClusters(marker);
-                }
+                if (typeof markerCluster.refreshClusters === 'function') markerCluster.refreshClusters(marker);
 
-                // Update popup content if open
                 const popup = marker.getPopup();
                 if (popup && popup.isOpen()) {
                   const popupElement = popup.getElement();
                   if (popupElement) {
                     const batContainer = popupElement.querySelector('.battery-popup-container');
                     const updateText = popupElement.querySelector('.last-update-text');
-                    if (batContainer) {
-                      batContainer.innerHTML = getBatteryHtml(battery, '32px', '8px', '3px');
-                    }
+                    if (batContainer) batContainer.innerHTML = getBatteryHtml(battery);
                     if (updateText) updateText.innerText = 'Sesaat lalu';
                   }
                 }
 
-                // LOGIKA KRUSIAL: Ikuti hanya jika alat ini yang dilacak
-                if (isThisToolTracked) {
+                if (trackedSesiId && String(loc.id_sesi) === trackedSesiId) {
                   map.panTo(latLng, {
                     animate: true
                   });
                 } else if (!isUserFocusing && !trackedSesiId) {
-                  // Jika TIDAK ADA alat yang dilacak, barulah sesuaikan viewport agar semua masuk layar (debounced)
                   clearTimeout(fitTimeout);
                   fitTimeout = setTimeout(() => {
                     if (!isUserFocusing && !trackedSesiId) fitAllMarkers();
@@ -626,91 +580,21 @@
                 }
               }
 
-              // 2. Update Table Row
               const row = document.getElementById(`row-alat-${loc.id_sesi}`);
               if (row) {
                 const batCell = row.querySelector('.battery-cell');
-                if (batCell) {
-                  batCell.innerHTML = getBatteryHtml(battery, '40px', '10px', '4px');
-                }
-
+                if (batCell) batCell.innerHTML = getBatteryHtml(battery, '40px', '10px', '4px');
                 const updateCell = row.querySelector('.update-cell');
-                if (updateCell) {
-                  const icon = updateCell.querySelector('i') ? updateCell.querySelector('i').outerHTML + ' ' :
-                    '';
-                  updateCell.innerHTML = `<span class="text-muted small">${icon}Sesaat lalu</span>`;
-                }
-
-                const nameCell = row.querySelector('.name-cell');
-                if (isLowBat) {
-                  row.classList.add('table-danger');
-                  if (nameCell && !nameCell.querySelector('.ri-error-warning-fill')) {
-                    nameCell.insertAdjacentHTML('afterbegin',
-                      '<i class="ri-error-warning-fill text-danger me-1"></i>');
-                  }
-                } else {
-                  row.classList.remove('table-danger');
-                  if (nameCell) {
-                    const icon = nameCell.querySelector('.ri-error-warning-fill');
-                    if (icon) icon.remove();
-                  }
-                }
-              }
-
-              // 3. Update Global Low Battery Stats
-              const wasLowBat = lowBatSessions.has(loc.id_sesi);
-              if (isLowBat && !wasLowBat) {
-                lowBatSessions.add(loc.id_sesi);
-              } else if (!isLowBat && wasLowBat) {
-                lowBatSessions.delete(loc.id_sesi);
-              }
-
-              const currentCount = lowBatSessions.size;
-              const countDisplay = document.getElementById('count-low-bat');
-              const cardLowBat = document.getElementById('card-low-bat');
-              const alertContainer = document.getElementById('low-bat-alert-container');
-
-              if (countDisplay) {
-                countDisplay.innerText = currentCount;
-                countDisplay.className = 'fw-black mb-0 ' + (currentCount > 0 ? 'text-danger' : 'text-dark');
-              }
-
-              if (cardLowBat) {
-                if (currentCount > 0) {
-                  cardLowBat.style.display = 'block';
-                  cardLowBat.classList.add('border-start', 'border-danger', 'border-4');
-                } else {
-                  cardLowBat.style.display = 'none';
-                }
-              }
-
-              if (currentCount > 0) {
-                if (!document.getElementById('alert-low-bat-count')) {
-                  alertContainer.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-4 border-0" role="alert" style="cursor: pointer; border-left: 5px solid #dc3545 !important;"
-                    onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
-                    <i class="ri-error-warning-fill fs-24 me-3"></i>
-                    <div class="flex-grow-1">
-                      <strong class="d-block text-uppercase fs-12">Peringatan Baterai Lemah!</strong> 
-                      Terdapat <b id="alert-low-bat-count">${currentCount}</b> perangkat yang memerlukan pengisian daya segera.
-                    </div>
-                    <div class="ms-auto text-end d-none d-sm-block">
-                      <span class="badge bg-primary-transparent text-primary border-0 py-2">Klik untuk Lihat <i class="ri-arrow-right-line ms-1"></i></span>
-                    </div>
-                  </div>`;
-                } else {
-                  document.getElementById('alert-low-bat-count').innerText = currentCount;
-                }
-              } else {
-                alertContainer.innerHTML = '';
+                if (updateCell) updateCell.innerHTML =
+                  `<span class="text-muted small"><i class="ri-time-line me-1"></i>Sesaat lalu</span>`;
+                if (isLowBat) row.classList.add('table-danger');
+                else row.classList.remove('table-danger');
               }
             });
         }
       });
 
-      if (Object.keys(markers).length > 0) {
-        const firstSesiId = Object.keys(markers)[0];
-        focusMarker(firstSesiId, true);
-      }
+      if (Object.keys(markers).length > 0) fitAllMarkers();
 
       setTimeout(() => {
         map.invalidateSize();
@@ -731,18 +615,7 @@
           },
           zoom: {
             enabled: false
-          },
-          fontFamily: 'inherit',
-          animations: {
-            enabled: true
-          },
-          sparkline: {
-            enabled: false
-          },
-          parentHeightOffset: 0
-        },
-        dataLabels: {
-          enabled: false
+          }
         },
         stroke: {
           curve: 'smooth',
@@ -755,60 +628,21 @@
             shadeIntensity: 1,
             opacityFrom: 0.4,
             opacityTo: 0.1,
-            stops: [0, 90, 100],
-            colorStops: [{
-              offset: 0,
-              color: '#be1e2d',
-              opacity: 0.4
-            }]
+            stops: [0, 90, 100]
           }
         },
         xaxis: {
-          type: 'category',
-          categories: @json(collect($last7Days)->map(fn($d) => \Carbon\Carbon::parse($d['date'])->translatedFormat('d M'))),
-          axisBorder: {
-            show: false
-          },
-          axisTicks: {
-            show: false
-          },
-          labels: {
-            style: {
-              colors: '#64748b',
-              fontWeight: 500
-            }
-          },
-          tooltip: {
-            enabled: false
-          }
+          categories: @json(collect($last7Days)->map(fn($d) => \Carbon\Carbon::parse($d['date'])->translatedFormat('d M')))
         },
         yaxis: {
           show: false
         },
         grid: {
           borderColor: '#f1f1f1',
-          strokeDashArray: 4,
-          padding: {
-            left: 20,
-            right: 20,
-            top: 0,
-            bottom: 0
-          }
-        },
-        tooltip: {
-          theme: 'light',
-          x: {
-            show: true
-          }
+          strokeDashArray: 4
         }
       };
-
-      const activityChart = new ApexCharts(document.querySelector("#activity-chart"), activityOptions);
-
-      setTimeout(() => {
-        activityChart.render();
-        window.dispatchEvent(new Event('resize'));
-      }, 300);
+      new ApexCharts(document.querySelector("#activity-chart"), activityOptions).render();
 
       const batteryOptions = {
         series: [@json($batteryStats['good']), @json($batteryStats['moderate']), @json($batteryStats['low'])],
@@ -820,8 +654,7 @@
         labels: ['Bagus (>70%)', 'Cukup (30-70%)', 'Lemah (<30%)'],
         colors: ['#10b981', '#f59e0b', '#ef4444'],
         legend: {
-          position: 'bottom',
-          fontWeight: 600
+          position: 'bottom'
         },
         plotOptions: {
           pie: {
@@ -832,16 +665,11 @@
                 total: {
                   show: true,
                   label: 'Total Alat',
-                  fontWeight: 700,
-                  color: '#1e293b',
                   formatter: () => @json(count($lokasiAlat))
                 }
               }
             }
           }
-        },
-        dataLabels: {
-          enabled: false
         }
       };
       new ApexCharts(document.querySelector("#battery-chart"), batteryOptions).render();
@@ -856,8 +684,7 @@
         labels: ['Bergerak', 'Berhenti'],
         colors: ['#3b82f6', '#94a3b8'],
         legend: {
-          position: 'bottom',
-          fontWeight: 600
+          position: 'bottom'
         },
         plotOptions: {
           pie: {
@@ -873,9 +700,6 @@
               }
             }
           }
-        },
-        dataLabels: {
-          enabled: false
         }
       };
       new ApexCharts(document.querySelector("#status-chart"), statusOptions).render();
@@ -890,8 +714,7 @@
         labels: ['Aktif', 'Nonaktif'],
         colors: ['#f59e0b', '#cbd5e1'],
         legend: {
-          position: 'bottom',
-          fontWeight: 600
+          position: 'bottom'
         },
         plotOptions: {
           pie: {
@@ -907,9 +730,6 @@
               }
             }
           }
-        },
-        dataLabels: {
-          enabled: false
         }
       };
       new ApexCharts(document.querySelector("#tool-status-chart"), toolStatusOptions).render();

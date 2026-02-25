@@ -2,20 +2,20 @@
 
   <div class="main-sidebar-header">
     <a href="{{ route('dashboard') }}" class="header-logo">
-      <img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-logo">
-      <img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-logo">
-      <img src="{{ asset('images/long-logo.png') }}" alt="logo" class="desktop-dark">
-      <img src="{{ asset('images/square-logo.png') }}" alt="logo" class="toggle-dark">
+      <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-logo">
+      <img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-logo">
+      <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-dark">
+      <img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-dark">
     </a>
   </div>
   <div class="main-sidebar" id="sidebar-scroll">
     <nav class="main-menu-container nav nav-pills flex-column sub-open">
       <div class="slide-left" id="slide-left">
-        <img src="{{ asset('images/square-logo.png') }}">
+        <img src="{{ asset('images/square-logo.webp') }}">
       </div>
       <ul class="main-menu">
         <div class="text-center mb-4 mt-3 d-block d-md-none">
-          <img src="{{ asset('images/long-logo.png') }}" width="160" height="35" alt="logo"
+          <img src="{{ asset('images/long-logo.webp') }}" width="160" height="35" alt="logo"
             class="desktop-logo">
         </div>
 

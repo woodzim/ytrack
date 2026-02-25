@@ -19,8 +19,8 @@
 
     .pin-wrapper i {
       font-size: 40px;
-      color: #be1e2d;
-      /* Merah */
+      color: var(--primary-color);
+      /* Menggunakan warna palet */
       filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.3));
       z-index: 2;
     }
@@ -30,7 +30,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: rgba(190, 30, 45, 0.4);
+      background: rgba(var(--primary-rgb), 0.4);
       border-radius: 50%;
       z-index: 1;
       animation: pulse-animation 2s infinite;
@@ -644,13 +644,13 @@
               } else {
                 // Rollback on failure
                 powerIcon.className = originalIconClass;
-                alert(data.message || 'Gagal mengubah status daya.');
+                showAlertModal(data.message || 'Gagal mengubah status daya.', 'error', 'Gagal');
               }
             })
             .catch(error => {
               console.error('Error toggling power:', error);
               powerIcon.className = originalIconClass;
-              alert('Terjadi kesalahan sistem.');
+              showAlertModal('Terjadi kesalahan sistem.', 'error', 'Gagal');
             })
             .finally(() => {
               powerBtn.disabled = false;

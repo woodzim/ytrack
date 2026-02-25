@@ -132,7 +132,6 @@
 
       <div class="card custom-card">
         <div class="card-header justify-content-between">
-
         </div>
 
         <div class="card-body p-0" id="table-container">

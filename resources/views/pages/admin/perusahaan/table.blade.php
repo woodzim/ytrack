@@ -50,7 +50,7 @@
                       <li><hr class="dropdown-divider"></li>
                       <li>
                         <form action="{{ route('admin.perusahaan.destroy', $item->id) }}" method="POST"
-                          onsubmit="return confirm('Anda yakin ingin menghapus perusahaan ini?');">
+                          data-confirm="Anda yakin ingin menghapus perusahaan ini?">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="dropdown-item text-danger">

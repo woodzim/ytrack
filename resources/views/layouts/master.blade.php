@@ -320,15 +320,14 @@
         top: 0 !important;
         height: 100vh !important;
         overflow-y: auto !important;
-        z-index: 1001 !important;
+        z-index: 100 !important; /* Diatur rendah agar modal (1050+) bisa menutupi */
         /* Higher than header to stay on top when expanded */
       }
 
       .app-header {
         position: sticky !important;
         top: 0 !important;
-        z-index: 1000 !important;
-        /* Lower than sidebar */
+        z-index: 99 !important; /* Diatur rendah agar modal (1050+) bisa menutupi */
         width: 100% !important;
         padding-inline-start: 0 !important;
         /* Remove excessive gap to bring toggle closer to sidebar */
@@ -371,6 +370,14 @@
       grid-template-rows: auto 1fr auto !important; /* Header, Content, Footer */
       height: auto !important;
       min-height: auto !important;
+    }
+
+    /* Force Global Modals to be on TOP of everything */
+    #globalConfirmModal, #globalAlertModal {
+        z-index: 9999 !important;
+    }
+    .modal-backdrop {
+        z-index: 9998 !important;
     }
   </style>
 
@@ -482,16 +489,109 @@
     @include('layouts.components.footer')
     <!-- End::main-footer -->
 
-    <!-- Start::main-modal -->
-    @include('layouts.components.modal')
-    <!-- End::main-modal -->
-
-    @yield('modals')
-
   </div>
+
+  <!-- Start::main-modal -->
+  @include('layouts.components.modal')
+  <!-- End::main-modal -->
+
+  @yield('modals')
 
   <!-- Scripts -->
   @include('layouts.components.scripts')
+
+  <script>
+    /**
+     * Global Confirm Modal Helper
+     * @param {string} message - The message to display
+     * @param {function} onConfirm - Callback when user clicks 'Confirm'
+     * @param {string} title - Optional title
+     * @param {string} confirmBtnText - Optional confirm button text
+     * @param {string} confirmBtnClass - Optional confirm button class
+     */
+    window.showConfirmModal = function(message, onConfirm, title = 'Konfirmasi Tindakan', confirmBtnText = 'Ya, Lanjutkan', confirmBtnClass = 'btn-danger') {
+        const modalEl = document.getElementById('globalConfirmModal');
+        const modal = new bootstrap.Modal(modalEl);
+        const messageEl = document.getElementById('globalConfirmModalMessage');
+        const titleEl = document.getElementById('globalConfirmModalLabel');
+        const confirmBtn = document.getElementById('globalConfirmModalBtn');
+        
+        messageEl.textContent = message;
+        titleEl.textContent = title;
+        confirmBtn.textContent = confirmBtnText;
+        
+        // Reset classes and add the requested one
+        confirmBtn.className = 'btn btn-wave shadow-sm ' + confirmBtnClass;
+        
+        // Clone button to remove old event listeners
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        
+        newConfirmBtn.addEventListener('click', function() {
+            onConfirm();
+            modal.hide();
+        });
+        
+        modal.show();
+    };
+
+    // Global listener for forms with data-confirm
+    document.addEventListener('submit', function(e) {
+        const form = e.target;
+        if (form.hasAttribute('data-confirm')) {
+            e.preventDefault();
+            const message = form.getAttribute('data-confirm') || 'Apakah Anda yakin ingin melanjutkan?';
+            const title = form.getAttribute('data-confirm-title') || 'Konfirmasi Tindakan';
+            const btnText = form.getAttribute('data-confirm-btn') || 'Ya, Lanjutkan';
+            const btnClass = form.getAttribute('data-confirm-btn-class') || 'btn-danger';
+
+            window.showConfirmModal(message, function() {
+                // Submit form without triggering this listener again
+                form.removeAttribute('data-confirm');
+                form.submit();
+            }, title, btnText, btnClass);
+        }
+    });
+
+    /**
+     * Global Alert Modal Helper
+     * @param {string} message - The message to display
+     * @param {string} type - 'success', 'error', 'info', 'warning'
+     * @param {string} title - Optional title
+     */
+    window.showAlertModal = function(message, type = 'info', title = 'Informasi') {
+        const modal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+        const messageEl = document.getElementById('globalAlertModalMessage');
+        const titleEl = document.getElementById('globalAlertModalLabel');
+        const iconContainer = document.getElementById('globalAlertModalIcon');
+        
+        messageEl.textContent = message;
+        titleEl.textContent = title;
+        
+        // Set icon and colors based on type
+        let iconHtml = '<i class="ri-information-line fs-24"></i>';
+        let bgClass = 'bg-primary-transparent text-primary';
+        
+        if (type === 'success') {
+            iconHtml = '<i class="ri-checkbox-circle-line fs-24"></i>';
+            bgClass = 'bg-success-transparent text-success';
+        } else if (type === 'error') {
+            iconHtml = '<i class="ri-error-warning-line fs-24"></i>';
+            bgClass = 'bg-danger-transparent text-danger';
+        } else if (type === 'warning') {
+            iconHtml = '<i class="ri-alert-line fs-24"></i>';
+            bgClass = 'bg-warning-transparent text-warning';
+        }
+        
+        iconContainer.innerHTML = iconHtml;
+        iconContainer.className = 'flex-shrink-0 p-2 rounded-3 ' + bgClass;
+        
+        modal.show();
+    };
+
+    // Override default window.confirm and window.alert if needed? 
+    // Usually better to call the custom functions explicitly to handle async.
+  </script>
 
   <!-- Sticky JS -->
   <script src="{{ asset('build/assets/sticky.js') }}"></script>

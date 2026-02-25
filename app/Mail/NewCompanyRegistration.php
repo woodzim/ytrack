@@ -26,7 +26,7 @@ class NewCompanyRegistration extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pendaftaran Perusahaan Baru - YA-Track',
+            subject: 'Selamat Datang di YA-Track',
         );
     }
 

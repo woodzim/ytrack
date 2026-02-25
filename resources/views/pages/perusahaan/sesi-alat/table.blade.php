@@ -88,7 +88,7 @@
                   </li>
                   <li>
                     <form action="{{ route('perusahaan.sesi-alat.toggle', $item->id) }}" method="POST"
-                      onsubmit="return confirm('Ubah status sesi ini?')">
+                      data-confirm="Ubah status sesi ini?" data-confirm-title="Konfirmasi Sesi" data-confirm-btn="Ya, Ubah" data-confirm-btn-class="btn-primary">
                       @csrf
                       @method('PUT')
                       <button type="submit" class="dropdown-item">
@@ -103,7 +103,7 @@
                   </li>
                   <li>
                     <form action="{{ route('perusahaan.sesi-alat.destroy', $item->id) }}" method="POST"
-                      onsubmit="return confirm('Hapus sesi ini? Data tracking mungkin akan hilang.')">
+                      data-confirm="Hapus sesi ini? Data tracking mungkin akan hilang." data-confirm-title="Hapus Sesi">
                       @csrf
                       @method('DELETE')
                       <button type="submit" class="dropdown-item text-danger">

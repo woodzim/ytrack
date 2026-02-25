@@ -114,7 +114,7 @@
                                                     <a href="{{ route('riwayat-perjalanan.edit', $item->id) }}" class="btn btn-warning btn-sm">
                                                         <i class="ri-edit-line"></i> Edit
                                                     </a>
-                                                    <form action="{{ route('riwayat-perjalanan.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Hapus data ini?');">
+                                                    <form action="{{ route('riwayat-perjalanan.destroy', $item->id) }}" method="POST" style="display: inline;" data-confirm="Hapus data ini?">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-primary btn-sm w-100">
