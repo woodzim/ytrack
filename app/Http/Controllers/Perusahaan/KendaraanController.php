@@ -4,11 +4,14 @@ namespace App\Http\Controllers\Perusahaan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kendaraan;
+use App\Models\KendaraanImage;
 use App\Models\JenisKendaraan;
 use App\Models\SesiAlat;
-use App\Models\ActivityLog; // <-- TAMBAHAN 1: Import Model Log
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class KendaraanController extends Controller
 {
@@ -22,7 +25,7 @@ class KendaraanController extends Controller
         $filter_status = $request->input('status');
 
         $query = Kendaraan::where('id_perusahaan', $idPerusahaan)
-            ->with('jenisKendaraan')
+            ->with(['jenisKendaraan', 'images'])
             ->withExists(['sesiAlat as sedang_digunakan' => function ($q) {
                 $q->where('aktif', true);
             }]);
@@ -37,12 +40,10 @@ class KendaraanController extends Controller
         if ($request->has('status') && $request->input('status') !== null && $request->input('status') !== '') {
             $filter_status = $request->input('status');
             if ($filter_status == '1') {
-                // Sedang Digunakan (punya sesi aktif)
                 $query->whereHas('sesiAlat', function($q) {
                     $q->where('aktif', true);
                 });
             } elseif ($filter_status == '0') {
-                // Standby (tidak punya sesi aktif)
                 $query->whereDoesntHave('sesiAlat', function($q) {
                     $q->where('aktif', true);
                 });
@@ -76,34 +77,49 @@ class KendaraanController extends Controller
             'id_jenis_kendaraan' => 'required|exists:jenis_kendaraan,id',
             'nama'               => 'required|string|max:255',
             'plat'               => 'required|string|max:20|unique:kendaraan,plat',
+            'images.*'           => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'captions.*'         => 'nullable|string|max:255',
         ],[
             'nama.required'      => 'Nama kendaraan harus diisi',
             'plat.required'      => 'Nomor plat harus diisi',
             'plat.unique'        => 'Nomor plat ini sudah terdaftar',
-
+            'images.*.image'     => 'File harus berupa gambar',
+            'images.*.max'       => 'Ukuran gambar maksimal 2MB',
         ]);
 
-        // UBAH DISINI: Tampung hasil create ke variabel $kendaraan agar bisa ambil ID-nya
-        $kendaraan = Kendaraan::create([
-            'id_perusahaan'      => Auth::user()->id_perusahaan,
-            'id_jenis_kendaraan' => $validated['id_jenis_kendaraan'],
-            'nama'               => $validated['nama'],
-            'plat'               => $validated['plat'],
-        ]);
+        return DB::transaction(function () use ($request, $validated) {
+            $kendaraan = Kendaraan::create([
+                'id_perusahaan'      => Auth::user()->id_perusahaan,
+                'id_jenis_kendaraan' => $validated['id_jenis_kendaraan'],
+                'nama'               => $validated['nama'],
+                'plat'               => $validated['plat'],
+            ]);
 
-        // --- TAMBAHAN LOG: CREATE ---
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'CREATE',
-            'subject_type' => Kendaraan::class,
-            'subject_id' => $kendaraan->id,
-            'description' => "Perusahaan menambahkan kendaraan: {$kendaraan->nama} ({$kendaraan->plat})",
-            'ip_address' => $request->ip(),
-        ]);
-        // -----------------------------
+            // Handle multiple images
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $key => $image) {
+                    $path = $image->store('kendaraan/' . $kendaraan->id, 'public');
+                    
+                    KendaraanImage::create([
+                        'kendaraan_id' => $kendaraan->id,
+                        'image_path'   => $path,
+                        'caption'      => $request->captions[$key] ?? null,
+                    ]);
+                }
+            }
 
-        return redirect()->route('perusahaan.kendaraan.index')
-            ->with('success', 'Kendaraan berhasil ditambahkan.');
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'CREATE',
+                'subject_type' => Kendaraan::class,
+                'subject_id' => $kendaraan->id,
+                'description' => "Perusahaan menambahkan kendaraan: {$kendaraan->nama} ({$kendaraan->plat}) dengan " . (count($request->file('images') ?? []) ) . " foto",
+                'ip_address' => $request->ip(),
+            ]);
+
+            return redirect()->route('perusahaan.kendaraan.index')
+                ->with('success', 'Kendaraan berhasil ditambahkan.');
+        });
     }
 
     /**
@@ -113,6 +129,7 @@ class KendaraanController extends Controller
     {
         $kendaraan = Kendaraan::where('id', $id)
             ->where('id_perusahaan', Auth::user()->id_perusahaan)
+            ->with('images')
             ->firstOrFail();
 
         $jenisKendaraan = JenisKendaraan::all();
@@ -133,34 +150,62 @@ class KendaraanController extends Controller
             'id_jenis_kendaraan' => 'required|exists:jenis_kendaraan,id',
             'nama'               => 'required|string|max:255',
             'plat'               => 'required|string|max:20|unique:kendaraan,plat,' . $kendaraan->id,
+            'images.*'           => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'captions.*'         => 'nullable|string|max:255',
+            'delete_images.*'    => 'nullable|exists:kendaraan_images,id',
         ],[
             'nama.required'      => 'Nama kendaraan harus diisi',
             'plat.required'      => 'Nomor plat harus diisi',
             'plat.unique'        => 'Nomor plat ini sudah terdaftar',
         ]);
 
-        // Simpan info lama untuk log
-        $oldInfo = "{$kendaraan->nama} ({$kendaraan->plat})";
+        return DB::transaction(function () use ($request, $kendaraan, $validated) {
+            $oldInfo = "{$kendaraan->nama} ({$kendaraan->plat})";
 
-        $kendaraan->update([
-            'id_jenis_kendaraan' => $validated['id_jenis_kendaraan'],
-            'nama'               => $validated['nama'],
-            'plat'               => $validated['plat'],
-        ]);
+            $kendaraan->update([
+                'id_jenis_kendaraan' => $validated['id_jenis_kendaraan'],
+                'nama'               => $validated['nama'],
+                'plat'               => $validated['plat'],
+            ]);
 
-        // --- TAMBAHAN LOG: UPDATE ---
-        ActivityLog::create([
-            'user_id' => Auth::id(),
-            'action' => 'UPDATE',
-            'subject_type' => Kendaraan::class,
-            'subject_id' => $kendaraan->id,
-            'description' => "Perusahaan memperbarui kendaraan. Dari [$oldInfo] menjadi [{$validated['nama']} ({$validated['plat']})]",
-            'ip_address' => $request->ip(),
-        ]);
-        // -----------------------------
+            // Handle image deletions
+            if ($request->filled('delete_images')) {
+                foreach ($request->delete_images as $imageId) {
+                    $img = KendaraanImage::find($imageId);
+                    if ($img) {
+                        Storage::disk('public')->delete($img->image_path);
+                        $img->delete();
+                    }
+                }
+            }
 
-        return redirect()->route('perusahaan.kendaraan.index')
-            ->with('success', 'Data kendaraan berhasil diperbarui.');
+            // Handle new images
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $key => $image) {
+                    if ($image->isValid()) {
+                        $path = $image->store('kendaraan/' . $kendaraan->id, 'public');
+                        
+                        KendaraanImage::create([
+                            'kendaraan_id' => $kendaraan->id,
+                            'image_path'   => $path,
+                            'caption'      => $request->captions[$key] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'UPDATE',
+                'subject_type' => Kendaraan::class,
+                'subject_id' => $kendaraan->id,
+                'description' => "Perusahaan memperbarui kendaraan. Dari [$oldInfo] menjadi [{$validated['nama']} ({$validated['plat']})]",
+                'ip_address' => $request->ip(),
+            ]);
+
+            return redirect()->route('perusahaan.kendaraan.index')
+                ->with('success', 'Data kendaraan berhasil diperbarui.');
+        });
     }
 
     /**
@@ -184,29 +229,127 @@ class KendaraanController extends Controller
             ->firstOrFail();
 
         try {
-            // Simpan info sebelum hapus
-            $info = $kendaraan->nama . ' (' . $kendaraan->plat . ')';
-            $deletedId = $kendaraan->id;
+            return DB::transaction(function () use ($kendaraan) {
+                $info = $kendaraan->nama . ' (' . $kendaraan->plat . ')';
+                $deletedId = $kendaraan->id;
 
-            $kendaraan->delete();
-            
-            // --- TAMBAHAN LOG: DELETE ---
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'action' => 'DELETE',
-                'subject_type' => Kendaraan::class,
-                'subject_id' => $deletedId,
-                'description' => "Perusahaan menghapus kendaraan: $info",
-                'ip_address' => request()->ip(),
-            ]);
-            // -----------------------------
+                // Delete images from storage
+                foreach ($kendaraan->images as $img) {
+                    Storage::disk('public')->delete($img->image_path);
+                }
+                
+                // Folder cleanup
+                Storage::disk('public')->deleteDirectory('kendaraan/' . $kendaraan->id);
 
-            return redirect()->route('perusahaan.kendaraan.index')
-                ->with('success', 'Kendaraan berhasil dihapus.');
+                $kendaraan->delete();
+                
+                ActivityLog::create([
+                    'user_id' => Auth::id(),
+                    'action' => 'DELETE',
+                    'subject_type' => Kendaraan::class,
+                    'subject_id' => $deletedId,
+                    'description' => "Perusahaan menghapus kendaraan: $info beserta seluruh datanya",
+                    'ip_address' => request()->ip(),
+                ]);
+
+                return redirect()->route('perusahaan.kendaraan.index')
+                    ->with('success', 'Kendaraan berhasil dihapus.');
+            });
                 
         } catch (\Exception $e) {
             return redirect()->route('perusahaan.kendaraan.index')
                 ->with('error', 'Kendaraan tidak bisa dihapus karena memiliki riwayat penggunaan.');
         }
+    }
+
+    /**
+     * Update foto kendaraan tertentu.
+     */
+    public function updateImage(Request $request, $id, $imageId)
+    {
+        $request->validate([
+            'new_image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+        ], [
+            'new_image.required' => 'File gambar baru harus diunggah',
+            'new_image.image' => 'File harus berupa gambar',
+            'new_image.max' => 'Ukuran gambar maksimal 2MB',
+        ]);
+
+        $kendaraan = Kendaraan::where('id', $id)
+            ->where('id_perusahaan', Auth::user()->id_perusahaan)
+            ->firstOrFail();
+
+        $image = KendaraanImage::where('id', $imageId)
+            ->where('kendaraan_id', $kendaraan->id)
+            ->firstOrFail();
+
+        if ($request->hasFile('new_image')) {
+            // Delete old image from storage
+            if (Storage::disk('public')->exists($image->image_path)) {
+                Storage::disk('public')->delete($image->image_path);
+            }
+
+            // Store new image
+            $path = $request->file('new_image')->store('kendaraan/' . $kendaraan->id, 'public');
+            
+            // Update database record
+            $image->update([
+                'image_path' => $path,
+            ]);
+
+            ActivityLog::create([
+                'user_id' => Auth::id(),
+                'action' => 'UPDATE',
+                'subject_type' => KendaraanImage::class,
+                'subject_id' => $image->id,
+                'description' => "Perusahaan mengubah foto kendaraan: {$kendaraan->nama} ({$kendaraan->plat})",
+                'ip_address' => $request->ip(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Foto kendaraan berhasil diubah.');
+    }
+
+    /**
+     * Hapus foto kendaraan tertentu.
+     */
+    public function destroyImage($id, $imageId)
+    {
+        $kendaraan = Kendaraan::where('id', $id)
+            ->where('id_perusahaan', Auth::user()->id_perusahaan)
+            ->firstOrFail();
+
+        $image = KendaraanImage::where('id', $imageId)
+            ->where('kendaraan_id', $kendaraan->id)
+            ->firstOrFail();
+
+        Storage::disk('public')->delete($image->image_path);
+        $image->delete();
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'DELETE',
+            'subject_type' => KendaraanImage::class,
+            'subject_id' => $image->id,
+            'description' => "Perusahaan menghapus foto kendaraan: {$kendaraan->nama} ({$kendaraan->plat})",
+            'ip_address' => request()->ip(),
+        ]);
+
+        return redirect()->back()->with('success', 'Foto kendaraan berhasil dihapus.');
+    }
+
+    /**
+     * Menampilkan detail kendaraan (opsional untuk show page)
+     */
+    public function show($id)
+    {
+        $kendaraan = Kendaraan::where('id', $id)
+            ->where('id_perusahaan', Auth::user()->id_perusahaan)
+            ->with(['jenisKendaraan', 'images', 'sesiAlat' => function($q) {
+                $q->latest()->limit(5);
+            }])
+            ->firstOrFail();
+
+        return view('pages.perusahaan.kendaraan.show', compact('kendaraan'));
     }
 }

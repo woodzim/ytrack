@@ -75,6 +75,15 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get the user's avatar URL using UI Avatars.
+     */
+    public function getAvatarUrlAttribute(): string
+    {
+        $name = urlencode($this->name);
+        return "https://ui-avatars.com/api/?name={$name}&background=0F2854&color=fff&bold=true&format=svg";
+    }
+
+    /**
      * Send the email verification notification.
      *
      * @return void

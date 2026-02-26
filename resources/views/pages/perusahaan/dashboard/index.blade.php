@@ -465,6 +465,9 @@
         zoom: 3, // Dikurangi dari 5 menjadi 3 (agar view lebih luas)
         layers: [streets],
         gestureHandling: true,
+        fullscreenControl: {
+          position: 'bottomright'
+        },
         preferCanvas: true,
         attributionControl: false
       });

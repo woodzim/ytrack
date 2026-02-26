@@ -368,7 +368,9 @@
         zoom: 5,
         layers: [streets],
         gestureHandling: true,
-        fullscreenControl: true,
+        fullscreenControl: {
+          position: 'bottomright'
+        },
         preferCanvas: true,
         attributionControl: false
       });
