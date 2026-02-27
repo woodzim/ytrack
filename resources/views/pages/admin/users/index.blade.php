@@ -42,14 +42,12 @@
 @endsection
 
 @section('content')
-  <!-- Start::page-header -->
-  <div class="page-header-section d-flex align-items-center justify-content-between">
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h1>Pengguna</h1>
-      <p>Daftar pengguna dalam sistem</p>
+      <h1 class="page-title fw-medium fs-20 mb-0">Pengguna</h1>
+      <p class="">Kelola semua pengguna dalam sistem</p>
     </div>
   </div>
-  <!-- End::page-header -->
 
   <!-- Start::app-content -->
   <div class="row">

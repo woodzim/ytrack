@@ -1,10 +1,10 @@
 @extends('layouts.master')
 
 @section('content')
-  <div class="page-header-section d-flex align-items-center justify-content-between">
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h1>Jenis Kendaraan</h1>
-      <p>Kelola kategori dan tipe kendaraan</p>
+      <h1 class="page-title fw-medium fs-20 mb-0">Jenis Kendaraan</h1>
+      <p class="">Kelola kategori dan tipe kendaraan</p>
     </div>
     <div class="ms-auto">
       <a href="{{ route('jenis-kendaraan.create') }}" class="btn btn-light btn-wave">

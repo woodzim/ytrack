@@ -19,8 +19,7 @@
 
     .pin-wrapper i {
       font-size: 40px;
-      color: #be1e2d;
-      /* Menggunakan hex stabil */
+      color: #0F2854; /* My Blue */
       filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.3));
       z-index: 2;
     }
@@ -29,7 +28,7 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: rgba(190, 30, 45, 0.4);
+      background: rgba(15, 40, 84, 0.4); /* My Blue Transparent */
       border-radius: 50%;
       z-index: 1;
       animation: pulse-animation 2s infinite;
@@ -71,6 +70,98 @@
     .leaflet-top,
     .leaflet-bottom {
       z-index: 400 !important;
+    }
+
+    /* --- CUSTOM LEAFLET CONTROLS --- */
+    .leaflet-bar,
+    .leaflet-touch .leaflet-bar {
+      border: none !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    .leaflet-bar a,
+    .leaflet-touch .leaflet-bar a {
+      width: 34px !important;
+      height: 34px !important;
+      line-height: 34px !important;
+      border-radius: 6px !important;
+      margin-bottom: 5px !important;
+      background-color: #fff !important;
+      color: #5d6576 !important;
+      transition: all 0.2s ease;
+      border: 1px solid #e2e8ee !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+
+    .leaflet-bar a:last-child,
+    .leaflet-touch .leaflet-bar a:last-child {
+      margin-bottom: 0 !important;
+      border-bottom: 1px solid #e2e8ee !important;
+    }
+
+    .leaflet-bar a:hover,
+    .leaflet-touch .leaflet-bar a:hover {
+      background-color: #f9fafb !important;
+      color: #0F2854 !important;
+      border-color: #0F2854 !important;
+    }
+
+    /* Fix Zoom Icons centering */
+    .leaflet-control-zoom-in span,
+    .leaflet-control-zoom-out span {
+      line-height: 34px;
+    }
+
+    /* Tracking Mode Button Customization */
+    .leaflet-control-tracking {
+      /* Inherits from .leaflet-bar a, but explicit overrides just in case */
+      width: 34px !important;
+      height: 34px !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border: 1px solid #e2e8ee;
+      border-radius: 6px !important;
+      cursor: pointer;
+      color: #5d6576;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+      text-decoration: none !important;
+      font-size: 18px;
+      /* Icon size */
+    }
+
+    .leaflet-control-tracking:hover {
+      background: #f9fafb;
+      color: #0F2854;
+      border-color: #0F2854;
+    }
+
+    .leaflet-control-tracking.is-tracking {
+      background: #0F2854 !important;
+      color: white !important;
+      border-color: #0F2854 !important;
+      box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    }
+
+    .leaflet-control-tracking.is-tracking i {
+      color: white !important;
+    }
+
+    /* Fullscreen style */
+    #map-container:fullscreen {
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+    }
+
+    /* Ensure icon inside is visible */
+    .leaflet-control-tracking i, .leaflet-control-fullscreen i {
+      display: block;
+      line-height: 1;
     }
 
     .pulse-active {
@@ -276,8 +367,12 @@
       startMarker = null,
       truckMarker = null,
       selectedMarker = null;
-    let liveLatLngs = [],
-      isAutoPan = true;
+    let liveLatLngs = [];
+
+    // Tracking Mode
+    let isTrackingMode = false;
+    let isAutoPan = true;
+    let perusahaanTrackingBtn = null; // Store button reference
 
     const parseDateSafe = (input) => {
       if (!input) return new Date();
@@ -364,6 +459,103 @@
       }).setView([-2.5489, 118.0149], 4);
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
 
+      // --- CUSTOM CONTROL: TRACKING MODE ---
+      const TrackingControl = L.Control.extend({
+        options: {
+          position: 'bottomright'
+        },
+        onAdd: function(map) {
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+          perusahaanTrackingBtn = L.DomUtil.create('a', 'leaflet-control-tracking', container);
+          perusahaanTrackingBtn.href = '#';
+          perusahaanTrackingBtn.innerHTML = '<i class="ri-focus-3-line" style="font-size: 20px;"></i>'; // Icon only
+          perusahaanTrackingBtn.title = 'Tracking Mode';
+
+          L.DomEvent.on(perusahaanTrackingBtn, 'click', function(e) {
+            L.DomEvent.stop(e);
+            toggleTrackingMode(perusahaanTrackingBtn);
+          });
+          return container;
+        }
+      });
+      map.addControl(new TrackingControl());
+
+      function toggleTrackingMode(btn) {
+        isTrackingMode = !isTrackingMode;
+        if (isTrackingMode) {
+          btn.classList.add('is-tracking');
+          isAutoPan = true;
+          if (truckMarker) {
+            map.setView(truckMarker.getLatLng(), 18); // Zoom dekat
+          }
+        } else {
+          btn.classList.remove('is-tracking');
+        }
+      }
+
+      // --- CUSTOM CONTROL: FULLSCREEN ---
+      const FullscreenControl = L.Control.extend({
+        options: {
+          position: 'bottomright'
+        },
+        onAdd: function(map) {
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+          const btn = L.DomUtil.create('a', 'leaflet-control-fullscreen', container);
+          btn.href = '#';
+          btn.innerHTML = '<i class="ri-fullscreen-line" style="font-size: 20px;"></i>';
+          btn.title = 'Fullscreen';
+
+          L.DomEvent.on(btn, 'click', function(e) {
+            L.DomEvent.stop(e);
+            const mapEl = document.getElementById('map-container');
+            if (!document.fullscreenElement) {
+              mapEl.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+              });
+            } else {
+              document.exitFullscreen();
+            }
+          });
+          return container;
+        }
+      });
+      map.addControl(new FullscreenControl());
+
+      // Update button icon on fullscreen change
+      document.addEventListener('fullscreenchange', () => {
+        const btn = document.querySelector('.leaflet-control-fullscreen');
+        if (document.fullscreenElement) {
+          btn.innerHTML = '<i class="ri-fullscreen-exit-line" style="font-size: 20px;"></i>';
+          setTimeout(() => map.invalidateSize(), 100);
+        } else {
+          btn.innerHTML = '<i class="ri-fullscreen-line" style="font-size: 20px;"></i>';
+          setTimeout(() => map.invalidateSize(), 100);
+        }
+      });
+
+      map.on('click', () => {
+        if (!isAutoPan) {
+          isAutoPan = true;
+          if (selectedMarker) {
+            map.removeLayer(selectedMarker);
+            selectedMarker = null;
+          }
+          document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+          if (truckMarker) {
+            map.panTo(truckMarker.getLatLng());
+            truckMarker.openPopup();
+          }
+        }
+      });
+
+      // Disable tracking mode on drag
+      map.on('dragstart', () => {
+        if (isTrackingMode) {
+          isTrackingMode = false;
+          if (perusahaanTrackingBtn) perusahaanTrackingBtn.classList.remove('is-tracking');
+        }
+      });
+
       if (rawRiwayatData.length > 0) {
         loadMoreData();
         const pathLatLngs = rawRiwayatData.map(i => [parseFloat(i.lat), parseFloat(i.long)]).filter(c => !isNaN(c[0]))
@@ -377,7 +569,7 @@
             zIndexOffset: 1000
           }).addTo(map);
           polyline = L.polyline(pathLatLngs, {
-            color: '#be1e2d',
+            color: '#0F2854', // My Blue
             weight: 4,
             dashArray: '5, 5'
           }).addTo(map);
@@ -387,6 +579,57 @@
           liveLatLngs = [...pathLatLngs];
         }
       }
+
+      // Klik Tabel Interaction
+      document.querySelector('#history-table').addEventListener('click', (e) => {
+        const row = e.target.closest('tr.clickable-row');
+        if (row) {
+          isAutoPan = false;
+          if (isTrackingMode) {
+            isTrackingMode = false;
+            if (perusahaanTrackingBtn) perusahaanTrackingBtn.classList.remove('is-tracking');
+          }
+
+          const lat = parseFloat(row.dataset.lat);
+          const lng = parseFloat(row.dataset.lng);
+          const timeRaw = row.dataset.time;
+          const timeDisplay = formatDateJS(timeRaw);
+          const speed = row.dataset.speed;
+
+          document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+          row.classList.add('table-active-row');
+
+          if (selectedMarker) map.removeLayer(selectedMarker);
+          selectedMarker = L.circleMarker([lat, lng], {
+            radius: 8,
+            fillColor: "#0ea5e9",
+            color: "#fff",
+            weight: 2,
+            fillOpacity: 1
+          }).addTo(map);
+          selectedMarker.bindPopup(
+            `<div class="text-center"><strong>Riwayat</strong><br>${timeDisplay}<br><span style="color: #10b981;">${speed} km/h</span></div>`
+          ).openPopup();
+          map.panTo([lat, lng]);
+
+          selectedMarker.on('popupclose', function() {
+            if (selectedMarker) {
+              map.removeLayer(selectedMarker);
+              selectedMarker = null;
+            }
+            document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+          });
+
+          const mapEl = document.getElementById('map-container');
+          const navbarHeight = 80;
+          const elementPosition = mapEl.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: "smooth"
+          });
+        }
+      });
 
       if (window.Echo) {
         window.Echo.channel(`tracking.sesi.${window.SESI_ALAT_ID}`)
@@ -401,10 +644,8 @@
               sat: e.sat,
               battery: e.battery
             };
-            
+
             const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
-            
-            // Add to raw data for scroll loading (optional, but good for consistency)
             rawRiwayatData.unshift(mappedItem);
             currentIndex++;
 
@@ -413,16 +654,22 @@
                 icon: createCustomIcon('end')
               }).addTo(map);
               polyline = L.polyline([latLng], {
-                color: '#be1e2d',
+                color: '#0F2854', // My Blue
                 weight: 4
               }).addTo(map);
             } else {
-              truckMarker.setLatLng(latLng);
-              polyline.addLatLng(latLng);
+              if (truckMarker) truckMarker.setLatLng(latLng);
+              if (polyline) polyline.addLatLng(latLng);
             }
-            if (isAutoPan) map.panTo(latLng);
-            
-            // Pass mappedItem instead of raw 'e'
+            liveLatLngs.push(latLng);
+
+            // Handle Panning
+            if (isTrackingMode) {
+              map.setView(latLng, 18); // Force Zoom 18 and Center
+            } else if (isAutoPan) {
+              map.panTo(latLng); // Normal auto pan
+            }
+
             document.getElementById('history-table-body').insertAdjacentHTML('afterbegin', getRowHtml(mappedItem, 0));
           });
       }

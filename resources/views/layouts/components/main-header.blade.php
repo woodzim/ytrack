@@ -1,246 +1,261 @@
 <header class="app-header sticky" id="header">
 
-    <!-- Start::main-header-container -->
-    <div class="main-header-container container-fluid px-sm-4 px-3">
+  <!-- Start::main-header-container -->
+  <div class="main-header-container container-fluid px-sm-4 px-3">
 
-        <!-- Start::header-content-left -->
-        <div class="header-content-left">
+    <!-- Start::header-content-left -->
+    <div class="header-content-left">
 
-            <!-- Start::header-element -->
-            <div class="header-element">
-                <div class="horizontal-logo">
-                    <a href="{{ url('dashboard') }}" class="header-logo">
-                        <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-logo">
-                        <img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-logo">
-                        <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-dark">
-                        <img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-dark">
-                    </a>
-                </div>
-            </div>
-            <!-- End::header-element -->
-
-            <!-- Start::header-element -->
-            <div class="header-element mx-lg-0 mx-2">
-                <a aria-label="Hide Sidebar"
-                    class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle"
-                    data-bs-toggle="sidebar" href="javascript:void(0);">
-                    <i class="ri-menu-line header-link-icon side-menu__icon-hamburger"></i>
-                    <i class="ri-close-line header-link-icon side-menu__icon-close"></i>
-                </a>
-            </div>
-            <!-- End::header-element -->
+      <!-- Start::header-element -->
+      <div class="header-element">
+        <div class="horizontal-logo">
+          <a href="{{ url('dashboard') }}" class="header-logo">
+            <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-logo">
+            <img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-logo">
+            <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-dark">
+            <img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-dark">
+          </a>
         </div>
-        <!-- End::header-content-left -->
+      </div>
+      <!-- End::header-element -->
 
-        <!-- Start::header-content-right -->
-        <ul class="header-content-right">
-            <!-- Start::header-element -->
-            <li class="header-element notifications-dropdown d-xl-block d-none dropdown">
-                <!-- Start::header-link|dropdown-toggle -->
-                <a href="javascript:void(0);" class="header-link dropdown-toggle d-none" data-bs-toggle="dropdown"
-                    data-bs-auto-close="outside" id="messageDropdown" aria-expanded="false">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="header-link-icon" viewBox="0 0 256 256">
-                        <rect width="256" height="256" fill="none" />
-                        <path
-                            d="M56,104a72,72,0,0,1,144,0c0,35.82,8.3,64.6,14.9,76A8,8,0,0,1,208,192H48a8,8,0,0,1-6.88-12C47.71,168.6,56,139.81,56,104Z"
-                            opacity="0.2" />
-                        <path d="M96,192a32,32,0,0,0,64,0" fill="none" stroke="currentColor" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="16" />
-                        <path
-                            d="M56,104a72,72,0,0,1,144,0c0,35.82,8.3,64.6,14.9,76A8,8,0,0,1,208,192H48a8,8,0,0,1-6.88-12C47.71,168.6,56,139.81,56,104Z"
-                            fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="16" />
-                    </svg>
-                    <span class="header-icon-pulse bg-secondary rounded pulse pulse-secondary"></span>
-                </a>
-                <!-- End::header-link|dropdown-toggle -->
-                <!-- Start::main-header-dropdown -->
-                <div class="main-header-dropdown dropdown-menu dropdown-menu-end" style="--bs-dropdown-padding-y: 0.5rem; margin-top: 0.5rem;">
-                    <div class="p-3 bg-primary text-fixed-white">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <p class="mb-0 fs-16">Notifikasi</p>
-                            <a href="javascript:void(0);" class="badge bg-light text-default border">Bersihkan</a>
-                        </div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <ul class="list-unstyled mb-0" id="header-notification-scroll">
-                        <li class="dropdown-item position-relative">
-                            <a href="javascript:void(0);" class="stretched-link"></a>
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="lh-1">
-                                    <span class="avatar avatar-sm avatar-rounded bg-primary-transparent">
-                                        <img src="{{ asset('build/assets/images/faces/1.jpg') }}" alt="">
-                                    </span>
-                                </div>
-                                <div class="flex-fill">
-                                    <span class="d-block fw-semibold">New Message</span>
-                                    <span class="d-block text-muted fs-12">You have received a new message from John
-                                        Doe</span>
-                                </div>
-                                <div class="text-end">
-                                    <span class="d-block mb-1 fs-12 text-muted">11:45am</span>
-                                    <span class="d-block text-primary d-none"><i
-                                            class="ri-circle-fill fs-9"></i></span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="dropdown-item position-relative">
-                            <a href="javascript:void(0);" class="stretched-link"></a>
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="lh-1">
-                                    <span class="avatar avatar-sm avatar-rounded bg-primary-transparent">
-                                        <i class="ri-notification-line fs-16"></i>
-                                    </span>
-                                </div>
-                                <div class="flex-fill">
-                                    <span class="d-block fw-semibold">Task Reminder</span>
-                                    <span class="d-block text-muted fs-12">Don't forget to submit your report by 3 PM
-                                        today</span>
-                                </div>
-                                <div class="text-end">
-                                    <span class="d-block mb-1 fs-12 text-muted">02:16pm</span>
-                                    <span class="d-block text-primary d-none"><i
-                                            class="ri-circle-fill fs-9"></i></span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="dropdown-item position-relative">
-                            <a href="javascript:void(0);" class="stretched-link"></a>
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="lh-1">
-                                    <span class="avatar avatar-sm avatar-rounded bg-primary-transparent fs-5">
-                                        <img src="{{ asset('build/assets/images/faces/12.jpg') }}" alt="">
-                                    </span>
-                                </div>
-                                <div class="flex-fill">
-                                    <span class="d-block fw-semibold">Friend Request</span>
-                                    <span class="d-block text-muted fs-12">Jane Smith sent you a friend request</span>
-                                </div>
-                                <div class="text-end">
-                                    <span class="d-block mb-1 fs-12 text-muted">10:04am</span>
-                                    <span class="d-block text-primary"><i class="ri-circle-fill fs-9"></i></span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="dropdown-item position-relative">
-                            <a href="javascript:void(0);" class="stretched-link"></a>
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="lh-1">
-                                    <span class="avatar avatar-sm avatar-rounded bg-primary-transparent fs-5">
-                                        <i class="ri-notification-line fs-16"></i>
-                                    </span>
-                                </div>
-                                <div class="flex-fill">
-                                    <span class="d-block fw-semibold">Event Reminder</span>
-                                    <span class="d-block text-muted fs-12">You have an upcoming event: Team Meeting on
-                                        October 25 at 10 AM.</span>
-                                </div>
-                                <div class="text-end">
-                                    <span class="d-block mb-1 fs-12 text-muted">12:58pm</span>
-                                    <span class="d-block text-primary"><i class="ri-circle-fill fs-9"></i></span>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="dropdown-item position-relative">
-                            <a href="javascript:void(0);" class="stretched-link"></a>
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="lh-1">
-                                    <span class="avatar avatar-sm avatar-rounded bg-primary-transparent fs-5">
-                                        <i class="ri-notification-line fs-16"></i>
-                                    </span>
-                                </div>
-                                <div class="flex-fill">
-                                    <span class="d-block fw-semibold">File Uploaded</span>
-                                    <span class="d-block text-muted fs-12">The file "Project_Proposal.pdf" has been
-                                        uploaded successfully</span>
-                                </div>
-                                <div class="text-end">
-                                    <span class="d-block mb-1 fs-12 text-muted">05:13pm</span>
-                                    <span class="d-block text-primary"><i class="ri-circle-fill fs-9"></i></span>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="p-5 empty-item1 d-none">
-                        <div class="text-center">
-                            <span class="avatar avatar-xl avatar-rounded bg-secondary-transparent">
-                                <i class="ri-notification-off-line fs-2"></i>
-                            </span>
-                            <h6 class="fw-medium mt-3">No New Notifications</h6>
-                        </div>
-                    </div>
+      <!-- Start::header-element -->
+      <div class="header-element mx-lg-0 mx-2">
+        <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle"
+          data-bs-toggle="sidebar" href="javascript:void(0);">
+          <i class="ri-menu-line header-link-icon side-menu__icon-hamburger"></i>
+          <i class="ri-close-line header-link-icon side-menu__icon-close"></i>
+        </a>
+      </div>
+      <!-- End::header-element -->
+    </div>
+    <!-- End::header-content-left -->
+
+    <!-- Start::header-content-right -->
+    <ul class="header-content-right">
+      <!-- Start::header-element -->
+      <li class="header-element notifications-dropdown d-xl-block d-none dropdown">
+        <!-- Start::header-link|dropdown-toggle -->
+        <a href="javascript:void(0);" class="header-link dropdown-toggle d-none" data-bs-toggle="dropdown"
+          data-bs-auto-close="outside" id="messageDropdown" aria-expanded="false">
+          <svg xmlns="http://www.w3.org/2000/svg" class="header-link-icon" viewBox="0 0 256 256">
+            <rect width="256" height="256" fill="none" />
+            <path
+              d="M56,104a72,72,0,0,1,144,0c0,35.82,8.3,64.6,14.9,76A8,8,0,0,1,208,192H48a8,8,0,0,1-6.88-12C47.71,168.6,56,139.81,56,104Z"
+              opacity="0.2" />
+            <path d="M96,192a32,32,0,0,0,64,0" fill="none" stroke="currentColor" stroke-linecap="round"
+              stroke-linejoin="round" stroke-width="16" />
+            <path
+              d="M56,104a72,72,0,0,1,144,0c0,35.82,8.3,64.6,14.9,76A8,8,0,0,1,208,192H48a8,8,0,0,1-6.88-12C47.71,168.6,56,139.81,56,104Z"
+              fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16" />
+          </svg>
+          <span class="header-icon-pulse bg-secondary rounded pulse pulse-secondary"></span>
+        </a>
+        <!-- End::header-link|dropdown-toggle -->
+        <!-- Start::main-header-dropdown -->
+        <div class="main-header-dropdown dropdown-menu dropdown-menu-end"
+          style="--bs-dropdown-padding-y: 0.5rem; margin-top: 0.5rem;">
+          <div class="p-3 bg-primary text-fixed-white">
+            <div class="d-flex align-items-center justify-content-between">
+              <p class="mb-0 fs-16">Notifikasi</p>
+              <a href="javascript:void(0);" class="badge bg-light text-default border">Bersihkan</a>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <ul class="list-unstyled mb-0" id="header-notification-scroll">
+            <li class="dropdown-item position-relative">
+              <a href="javascript:void(0);" class="stretched-link"></a>
+              <div class="d-flex align-items-start gap-3">
+                <div class="lh-1">
+                  <span class="avatar avatar-sm avatar-rounded bg-primary-transparent">
+                    <img src="{{ asset('build/assets/images/faces/1.jpg') }}" alt="">
+                  </span>
                 </div>
-                <!-- End::main-header-dropdown -->
+                <div class="flex-fill">
+                  <span class="d-block fw-semibold">New Message</span>
+                  <span class="d-block text-muted fs-12">You have received a new message from John
+                    Doe</span>
+                </div>
+                <div class="text-end">
+                  <span class="d-block mb-1 fs-12 text-muted">11:45am</span>
+                  <span class="d-block text-primary d-none"><i class="ri-circle-fill fs-9"></i></span>
+                </div>
+              </div>
             </li>
-            <!-- End::header-element -->
+            <li class="dropdown-item position-relative">
+              <a href="javascript:void(0);" class="stretched-link"></a>
+              <div class="d-flex align-items-start gap-3">
+                <div class="lh-1">
+                  <span class="avatar avatar-sm avatar-rounded bg-primary-transparent">
+                    <i class="ri-notification-line fs-16"></i>
+                  </span>
+                </div>
+                <div class="flex-fill">
+                  <span class="d-block fw-semibold">Task Reminder</span>
+                  <span class="d-block text-muted fs-12">Don't forget to submit your report by 3 PM
+                    today</span>
+                </div>
+                <div class="text-end">
+                  <span class="d-block mb-1 fs-12 text-muted">02:16pm</span>
+                  <span class="d-block text-primary d-none"><i class="ri-circle-fill fs-9"></i></span>
+                </div>
+              </div>
+            </li>
+            <li class="dropdown-item position-relative">
+              <a href="javascript:void(0);" class="stretched-link"></a>
+              <div class="d-flex align-items-start gap-3">
+                <div class="lh-1">
+                  <span class="avatar avatar-sm avatar-rounded bg-primary-transparent fs-5">
+                    <img src="{{ asset('build/assets/images/faces/12.jpg') }}" alt="">
+                  </span>
+                </div>
+                <div class="flex-fill">
+                  <span class="d-block fw-semibold">Friend Request</span>
+                  <span class="d-block text-muted fs-12">Jane Smith sent you a friend request</span>
+                </div>
+                <div class="text-end">
+                  <span class="d-block mb-1 fs-12 text-muted">10:04am</span>
+                  <span class="d-block text-primary"><i class="ri-circle-fill fs-9"></i></span>
+                </div>
+              </div>
+            </li>
+            <li class="dropdown-item position-relative">
+              <a href="javascript:void(0);" class="stretched-link"></a>
+              <div class="d-flex align-items-start gap-3">
+                <div class="lh-1">
+                  <span class="avatar avatar-sm avatar-rounded bg-primary-transparent fs-5">
+                    <i class="ri-notification-line fs-16"></i>
+                  </span>
+                </div>
+                <div class="flex-fill">
+                  <span class="d-block fw-semibold">Event Reminder</span>
+                  <span class="d-block text-muted fs-12">You have an upcoming event: Team Meeting on
+                    October 25 at 10 AM.</span>
+                </div>
+                <div class="text-end">
+                  <span class="d-block mb-1 fs-12 text-muted">12:58pm</span>
+                  <span class="d-block text-primary"><i class="ri-circle-fill fs-9"></i></span>
+                </div>
+              </div>
+            </li>
+            <li class="dropdown-item position-relative">
+              <a href="javascript:void(0);" class="stretched-link"></a>
+              <div class="d-flex align-items-start gap-3">
+                <div class="lh-1">
+                  <span class="avatar avatar-sm avatar-rounded bg-primary-transparent fs-5">
+                    <i class="ri-notification-line fs-16"></i>
+                  </span>
+                </div>
+                <div class="flex-fill">
+                  <span class="d-block fw-semibold">File Uploaded</span>
+                  <span class="d-block text-muted fs-12">The file "Project_Proposal.pdf" has been
+                    uploaded successfully</span>
+                </div>
+                <div class="text-end">
+                  <span class="d-block mb-1 fs-12 text-muted">05:13pm</span>
+                  <span class="d-block text-primary"><i class="ri-circle-fill fs-9"></i></span>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="p-5 empty-item1 d-none">
+            <div class="text-center">
+              <span class="avatar avatar-xl avatar-rounded bg-secondary-transparent">
+                <i class="ri-notification-off-line fs-2"></i>
+              </span>
+              <h6 class="fw-medium mt-3">No New Notifications</h6>
+            </div>
+          </div>
+        </div>
+        <!-- End::main-header-dropdown -->
+      </li>
+      <!-- End::header-element -->
 
-            <!-- Start::header-element -->
-            <li class="header-element dropdown">
-                <!-- Start::header-link|dropdown-toggle -->
-                <a href="javascript:void(0);" class="header-link dropdown-toggle" id="mainHeaderProfile"
-                    data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                    <div>
-                        <img src="{{ asset('build/assets/images/faces/12.jpg') }}" alt="img"
-                            class="header-link-icon">
-                    </div>
-                </a>
-                <!-- End::header-link|dropdown-toggle -->
-                <div class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" style="--bs-dropdown-padding-y: 0.5rem; margin-top: 0.5rem; min-width: 260px;"
-                    aria-labelledby="mainHeaderProfile">
-                    {{-- <div class="p-3 bg-primary text-fixed-white">
+      <!-- Start::header-element -->
+      <li class="header-element dropdown">
+        <!-- Start::header-link|dropdown-toggle -->
+        <a href="javascript:void(0);" class="header-link dropdown-toggle" id="mainHeaderProfile"
+          data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+          <div class="d-flex align-items-center mt-">
+            <div class="d-sm-block d-none me-2 text-end mt-1">
+              <p class="fw-semibold mb-0 lh-1 fs-13">{{ auth()->user()->name }}</p>
+              <span
+                class="op-7 fw-normal d-block fs-11 text-muted">{{ ucfirst(auth()->user()->roles->first()?->name ?? 'User') }}</span>
+            </div>
+            <div class="lh-1 position-relative">
+              <span class="avatar avatar-md avatar-rounded border">
+                <img src="{{ auth()->user()->avatar_url }}" alt="img">
+              </span>
+              <span class="avatar-badge bg-success rounded-circle"></span>
+            </div>
+          </div>
+        </a>
+        <!-- End::header-link|dropdown-toggle -->
+        <div class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end"
+          style="--bs-dropdown-padding-y: 0.5rem; margin-top: 0.5rem; min-width: 260px;"
+          aria-labelledby="mainHeaderProfile">
+          {{-- <div class="p-3 bg-primary text-fixed-white">
                         <div class="d-flex align-items-center justify-content-between">
                             <p class="mb-0 fs-16">Profil</p>
                         </div>
                     </div> --}}
-                    <div class="dropdown-divider"></div>
-                    <div class="p-3 bg-primary text-fixed-white">
-                        <div class="d-flex align-items-start gap-2">
-                            <div>
-                                <span class="d-block fw-semibold lh-1">{{ auth()->user()->name }}</span>
-                                <span class="text-muted text-white fs-12">{{ auth()->user()->email }}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <ul class="list-unstyled mb-0">
-                        @role('admin')
-                        <li>
-                            <ul class="list-unstyled mb-0 sub-list">
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile.index') }}"><i
-                                            class="ti ti-user-circle me-2 fs-18"></i>Profil</a>
-                                </li>
-                            </ul>
-                        </li>
-                        @endrole
-                        @role('perusahaan')
-                        <li>
-                            <ul class="list-unstyled mb-0 sub-list">
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center" href="{{ route('perusahaan.profile.index') }}"><i
-                                            class="ti ti-building me-2 fs-18"></i>Informasi Profil Perusahaan</a>
-                                </li>
-                            </ul>
-                        </li>
-                        @endrole
-                        <li>
-                            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                                @csrf
-                                <button type="submit" class="dropdown-item d-flex align-items-center"
-                                    style="border: none; background: none; cursor: pointer; width: 100%; text-align: left;">
-                                    <i class="ti ti-logout me-2 fs-18"></i>Keluar
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
+          <div class="dropdown-divider"></div>
+          <div class="p-3 bg-primary text-fixed-white">
+            <div class="d-flex align-items-center gap-2">
+              <div class="lh-1 position-relative">
+                <span class="avatar avatar-md avatar-rounded border border-2 border-white-transparent shadow-sm">
+                  <img src="{{ auth()->user()->avatar_url }}" alt="img">
+                </span>
+                <span class="avatar-badge bg-success rounded-circle"
+                  style="width: 10px; height: 10px; bottom: 2px; right: 2px;"></span>
+              </div>
+              <div>
+                <span class="d-block fw-semibold lh-1">{{ auth()->user()->name }}</span>
+                <span class="text-white op-7 fs-11 mt-1 d-block">{{ auth()->user()->email }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="dropdown-divider"></div>
+          <ul class="list-unstyled mb-0">
+            @role('admin')
+              <li>
+                <ul class="list-unstyled mb-0 sub-list">
+                  <li>
+                    <a class="dropdown-item d-flex align-items-center" href="{{ route('admin.profile.index') }}"><i
+                        class="ti ti-user-circle me-2 fs-18"></i>Profil</a>
+                  </li>
+                </ul>
+              </li>
+            @endrole
+            @role('perusahaan')
+              <li>
+                <ul class="list-unstyled mb-0 sub-list">
+                  <li>
+                    <a class="dropdown-item d-flex align-items-center"
+                      href="{{ route('perusahaan.profile.index') }}"><i class="ti ti-building me-2 fs-18"></i>Informasi
+                      Profil Perusahaan</a>
+                  </li>
+                </ul>
+              </li>
+            @endrole
+            <li>
+              <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                @csrf
+                <button type="submit" class="dropdown-item d-flex align-items-center"
+                  style="border: none; background: none; cursor: pointer; width: 100%; text-align: left;">
+                  <i class="ti ti-logout me-2 fs-18"></i>Keluar
+                </button>
+              </form>
             </li>
-            <!-- End::header-element -->
+          </ul>
+        </div>
+      </li>
+      <!-- End::header-element -->
 
-        </ul>
-        <!-- End::header-content-right -->
+    </ul>
+    <!-- End::header-content-right -->
 
-    </div>
-    <!-- End::main-header-container -->
+  </div>
+  <!-- End::main-header-container -->
 
 </header>

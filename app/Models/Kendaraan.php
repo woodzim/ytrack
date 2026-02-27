@@ -46,4 +46,9 @@ class Kendaraan extends Model
     {
         return $this->hasMany(RiwayatPerjalanan::class, 'id_kendaraan');
     }
+
+    public function images()
+    {
+        return $this->hasMany(KendaraanImage::class, 'kendaraan_id');
+    }
 }

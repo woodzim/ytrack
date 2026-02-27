@@ -13,19 +13,17 @@
 @endsection
 
 @section('content')
-  <!-- Start::page-header -->
-  <div class="d-flex align-items-center justify-content-between mb-4 page-header-breadcrumb flex-wrap gap-2">
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h1 class="page-title fw-bold fs-24 mb-1">Daftar Perusahaan</h1>
-      <p class="text-muted mb-0">Kelola semua perusahaan di sistem</p>
+      <h1 class="page-title fw-medium fs-20 mb-0">Perusahaan</h1>
+      <p class="">Kelola semua perusahaan di sistem</p>
     </div>
     <div class="ms-auto">
-      <a href="{{ route('admin.perusahaan.create') }}" class="btn btn-primary btn-wave shadow-sm">
+      <a href="{{ route('admin.perusahaan.create') }}" class="btn btn-light btn-wave">
         <i class="ri-add-line me-2"></i>Tambah Perusahaan
       </a>
     </div>
   </div>
-  <!-- End::page-header -->
 
   <!-- Start::app-content -->
   <div class="row">
