@@ -82,12 +82,12 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li>
-                    <a class="dropdown-item" href="{{ route('perusahaan.sesi-alat.show', $item->id) }}">
+                    <a class="dropdown-item" href="{{ route('perusahaan.perjalanan.show', $item->id) }}">
                       <i class="ri-eye-line me-2 align-middle text-info"></i>Lihat Tracking
                     </a>
                   </li>
                   <li>
-                    <form action="{{ route('perusahaan.sesi-alat.toggle', $item->id) }}" method="POST"
+                    <form action="{{ route('perusahaan.perjalanan.toggle', $item->id) }}" method="POST"
                       data-confirm="Ubah status sesi ini?" data-confirm-title="Konfirmasi Sesi" data-confirm-btn="Ya, Ubah" data-confirm-btn-class="btn-primary">
                       @csrf
                       @method('PUT')
@@ -102,7 +102,7 @@
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <form action="{{ route('perusahaan.sesi-alat.destroy', $item->id) }}" method="POST"
+                    <form action="{{ route('perusahaan.perjalanan.destroy', $item->id) }}" method="POST"
                       data-confirm="Hapus sesi ini? Data tracking mungkin akan hilang." data-confirm-title="Hapus Sesi">
                       @csrf
                       @method('DELETE')
@@ -132,7 +132,7 @@
     </div>
     <h5 class="fw-bold">Belum Ada Perjalanan</h5>
     <p class="text-muted mb-4">Buat sesi baru untuk mulai menghubungkan Alat GPS dengan Kendaraan.</p>
-    <a href="{{ route('perusahaan.sesi-alat.create') }}" class="btn btn-primary btn-wave">
+    <a href="{{ route('perusahaan.perjalanan.create') }}" class="btn btn-primary btn-wave">
       <i class="ri-add-line me-2"></i>Buat Sesi Sekarang
     </a>
   </div>

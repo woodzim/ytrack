@@ -248,7 +248,7 @@
       <p class="">Kelola sesi penggunaan alat GPS di kendaraan</p>
     </div>
     <div class="ms-auto">
-      <a href="{{ route('sesi-alat.index') }}" class="btn btn-light btn-wave">
+      <a href="{{ route('perjalanan.index') }}" class="btn btn-light btn-wave">
         <i class="ri-arrow-left-line me-2"></i>Kembali
       </a>
     </div>
@@ -334,7 +334,7 @@
             <div class="flex-fill d-flex flex-column align-items-center justify-content-center">
               <label class="detail-label mb-3 d-block text-uppercase text-center text-nowrap">Kontrol Daya</label>
               <div class="my-auto d-flex flex-column align-items-center">
-                <form id="toggle-power-form" action="{{ route('sesi-alat.toggle', $sesiAlat->id) }}" method="POST">
+                <form id="toggle-power-form" action="{{ route('perjalanan.toggle', $sesiAlat->id) }}" method="POST">
                   @csrf
                   @method('PUT')
                   <button type="submit" id="toggle-power-btn"

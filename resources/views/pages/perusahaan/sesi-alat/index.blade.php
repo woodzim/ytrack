@@ -59,7 +59,7 @@
     </div>
     <div class="ms-auto">
       {{-- TOMBOL BUAT SESI --}}
-      <a href="{{ route('perusahaan.sesi-alat.create') }}" class="btn btn-light btn-wave">
+      <a href="{{ route('perusahaan.perjalanan.create') }}" class="btn btn-light btn-wave">
         <i class="ri-add-line me-2"></i>Buat Sesi Baru
       </a>
     </div>
@@ -69,7 +69,7 @@
 
       <div class="card mb-0 border-0 shadow-none bg-transparent">
         <div class="p-0">
-          <form action="{{ route('perusahaan.sesi-alat.index') }}" method="GET" id="filterForm"
+          <form action="{{ route('perusahaan.perjalanan.index') }}" method="GET" id="filterForm"
             class="d-flex gap-3 flex-wrap align-items-end">
 
             {{-- SEARCH INPUT --}}
@@ -120,7 +120,7 @@
 
             <div id="reset-container"
               class="{{ request()->filled('search') || (request()->has('status') && request('status') !== '') ? '' : 'd-none' }}">
-              <a href="{{ route('perusahaan.sesi-alat.index') }}"
+              <a href="{{ route('perusahaan.perjalanan.index') }}"
                 class="btn btn-outline-secondary btn-wave d-flex align-items-center" id="resetBtn" style="height: 38px;">
                 <i class="ri-close-line me-2"></i>Reset
               </a>

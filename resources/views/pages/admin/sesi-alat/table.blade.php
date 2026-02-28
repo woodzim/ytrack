@@ -66,12 +66,12 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                       <li>
-                        <a class="dropdown-item" href="{{ route('sesi-alat.show', $item->id) }}">
+                        <a class="dropdown-item" href="{{ route('perjalanan.show', $item->id) }}">
                           <i class="ri-map-2-line me-2 align-middle text-info"></i>Lihat Tracking
                         </a>
                       </li>
                       <li>
-                        <form action="{{ route('sesi-alat.toggle', $item->id) }}" method="POST">
+                        <form action="{{ route('perjalanan.toggle', $item->id) }}" method="POST">
                           @csrf
                           @method('PUT')
                           <button type="submit" class="dropdown-item {{ $item->aktif ? 'text-warning' : 'text-success' }}">
@@ -82,7 +82,7 @@
                       </li>
                       <li><hr class="dropdown-divider"></li>
                       <li>
-                        <form action="{{ route('sesi-alat.destroy', $item->id) }}" method="POST"
+                        <form action="{{ route('perjalanan.destroy', $item->id) }}" method="POST"
                           data-confirm="Hapus sesi ini?">
                           @csrf
                           @method('DELETE')

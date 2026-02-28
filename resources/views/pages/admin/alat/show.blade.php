@@ -82,7 +82,7 @@
         <div class="card-footer bg-light border-top">
           <div class="d-flex gap-2">
             {{-- Tombol Lihat Riwayat Sesi (Filter by ID) --}}
-            <a href="{{ route('sesi-alat.index', ['search' => $alat->id]) }}" class="btn btn-primary btn-wave">
+            <a href="{{ route('perjalanan.index', ['search' => $alat->id]) }}" class="btn btn-primary btn-wave">
               <i class="ri-history-line me-2"></i>Riwayat Sesi
             </a>
             <a href="{{ route('alat.edit', $alat->id) }}" class="btn btn-warning btn-wave text-white">

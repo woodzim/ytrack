@@ -221,7 +221,7 @@
       <p>Informasi lengkap sesi GPS tracking</p>
     </div>
     <div>
-      <a href="{{ route('perusahaan.sesi-alat.index') }}" class="btn btn-light btn-wave">
+      <a href="{{ route('perusahaan.perjalanan.index') }}" class="btn btn-light btn-wave">
         <i class="ri-arrow-left-line me-2"></i>Kembali
       </a>
     </div>
@@ -292,7 +292,7 @@
             <div class="flex-fill d-flex flex-column align-items-center justify-content-center">
               <label class="detail-label mb-3 d-block text-uppercase text-center text-nowrap">Kontrol Daya</label>
               <div class="my-auto d-flex flex-column align-items-center">
-                <form id="toggle-power-form" action="{{ route('perusahaan.sesi-alat.toggle', $sesiAlat->id) }}"
+                <form id="toggle-power-form" action="{{ route('perusahaan.perjalanan.toggle', $sesiAlat->id) }}"
                   method="POST">
                   @csrf
                   @method('PUT')

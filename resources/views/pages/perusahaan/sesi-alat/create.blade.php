@@ -26,7 +26,7 @@
     <div class="col-lg-8 col-12">
       <div class="">
         <div class="card-body">
-          <form action="{{ route('perusahaan.sesi-alat.store') }}" method="POST">
+          <form action="{{ route('perusahaan.perjalanan.store') }}" method="POST">
             @csrf
 
             <div class="mb-4">
@@ -121,7 +121,7 @@
             </div>
 
             <div class="d-flex gap-2 justify-content-end">
-              <a href="{{ route('perusahaan.sesi-alat.index') }}" class="btn btn-light">
+              <a href="{{ route('perusahaan.perjalanan.index') }}" class="btn btn-light">
                 <i class="ri-close-line me-1"></i>Batal
               </a>
               <button type="submit" class="btn btn-primary"

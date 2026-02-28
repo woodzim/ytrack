@@ -32,7 +32,7 @@
       <!-- Filter Section -->
       <div class="card mb-4 border-0 shadow-none">
         <div class="p-0">
-          <form action="{{ route('sesi-alat.index') }}" method="GET" id="filterForm"
+          <form action="{{ route('perjalanan.index') }}" method="GET" id="filterForm"
             class="d-flex gap-3 flex-wrap align-items-end">
             <div class="grow" style="min-width: 250px;">
               <label for="searchInput" class="form-label fw-medium mb-2">Cari Sesi</label>
@@ -103,7 +103,7 @@
 
             <div id="reset-container"
               class="{{ $search || $filter_status !== '' || $filter_perusahaan !== '' ? 'd-flex' : 'd-none' }}">
-              <a href="{{ route('sesi-alat.index') }}"
+              <a href="{{ route('perjalanan.index') }}"
                 class="btn btn-outline-secondary btn-wave d-flex align-items-center px-3" id="resetBtn"
                 style="height: 40px;">
                 <i class="ri-refresh-line me-2"></i>Reset

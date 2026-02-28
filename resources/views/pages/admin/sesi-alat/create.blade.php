@@ -31,7 +31,7 @@
           </div>
         </div>
         <div class="card-body">
-          <form action="{{ route('sesi-alat.store') }}" method="POST">
+          <form action="{{ route('perjalanan.store') }}" method="POST">
             @csrf
 
             {{-- 1. Pilih Perusahaan --}}
@@ -96,7 +96,7 @@
             </div>
 
             <div class="d-flex gap-2 justify-content-end border-top pt-3">
-              <a href="{{ route('sesi-alat.index') }}" class="btn btn-light">
+              <a href="{{ route('perjalanan.index') }}" class="btn btn-light">
                 <i class="ri-close-line me-1"></i>Batal
               </a>
               <button type="submit" class="btn btn-primary">
@@ -227,7 +227,7 @@
         }
 
         // --- AJAX KENDARAAN ---
-        fetch(`{{ url('/sesi-alat-kendaraan') }}/${idPerusahaan}`)
+        fetch(`{{ url('/perjalanan-kendaraan') }}/${idPerusahaan}`)
           .then(res => res.json())
           .then(data => {
             choicesKendaraan.clearChoices();
@@ -250,7 +250,7 @@
           });
 
         // --- AJAX ALAT ---
-        fetch(`{{ url('/sesi-alat-alat') }}/${idPerusahaan}`)
+        fetch(`{{ url('/perjalanan-alat') }}/${idPerusahaan}`)
           .then(res => res.json())
           .then(data => {
             choicesAlat.clearChoices();

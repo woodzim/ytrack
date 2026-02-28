@@ -143,7 +143,7 @@ class SesiAlatController extends Controller
         ]);
         // -----------------------------
 
-        return redirect()->route('perusahaan.sesi-alat.index')
+        return redirect()->route('perusahaan.perjalanan.index')
                         ->with('success', 'Perjalanan berhasil dibuat.');
     }
 
@@ -246,7 +246,7 @@ class SesiAlatController extends Controller
         ]);
         // -----------------------------
 
-        return redirect()->route('perusahaan.sesi-alat.index')
+        return redirect()->route('perusahaan.perjalanan.index')
                             ->with('success', 'Sesi berhasil dihapus.');
     }
 }

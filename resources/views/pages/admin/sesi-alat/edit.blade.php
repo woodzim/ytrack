@@ -44,7 +44,7 @@
             </div>
           </div>
 
-          <form action="{{ route('sesi-alat.update', $sesiAlat->id) }}" method="POST">
+          <form action="{{ route('perjalanan.update', $sesiAlat->id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -92,7 +92,7 @@
               <button type="submit" class="btn btn-primary btn-wave">
                 <i class="ri-save-line me-2"></i>Simpan Perubahan
               </button>
-              <a href="{{ route('sesi-alat.index') }}" class="btn btn-light btn-wave">
+              <a href="{{ route('perjalanan.index') }}" class="btn btn-light btn-wave">
                 <i class="ri-close-line me-2"></i>Batal
               </a>
             </div>
@@ -165,7 +165,7 @@
         if (!idPerusahaan) return;
 
         // --- A. LOAD KENDARAAN ---
-        fetch(`{{ url('sesi-alat-kendaraan') }}/${idPerusahaan}`)
+        fetch(`{{ url('perjalanan-kendaraan') }}/${idPerusahaan}`)
           .then(res => res.json())
           .then(data => {
             choicesKendaraan.clearChoices();
@@ -187,7 +187,7 @@
           .catch(err => console.error('Error fetching kendaraan:', err));
 
         // --- B. LOAD ALAT ---
-        fetch(`{{ url('sesi-alat-alat') }}/${idPerusahaan}`)
+        fetch(`{{ url('perjalanan-alat') }}/${idPerusahaan}`)
           .then(res => res.json())
           .then(data => {
             choicesAlat.clearChoices();
