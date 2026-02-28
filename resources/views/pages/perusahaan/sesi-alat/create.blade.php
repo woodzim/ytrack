@@ -31,11 +31,11 @@
 
             <div class="mb-4">
               <label for="nama" class="form-label">
-                Nama Sesi <span class="text-danger">*</span>
+                Nama Perjalanan <span class="text-danger">*</span>
               </label>
               <input type="text" class="form-control @error('nama') is-invalid @enderror" id="nama" name="nama"
                 placeholder="Contoh: Operasional Harian Truck 01" value="{{ old('nama') }}" required>
-              <div class="form-text">Berikan nama yang mudah dikenali untuk sesi pemantauan ini.</div>
+              <div class="form-text">Berikan nama yang mudah dikenali untuk perjalanan pemantauan ini.</div>
               @error('nama')
                 <small class="text-danger">{{ $message }}</small>
               @enderror
@@ -53,7 +53,7 @@
                   @foreach ($kendaraan as $k)
                     @php
                       $isActive = $k->sesiAlat->isNotEmpty();
-                      $info = $isActive ? 'Sedang aktif dalam sesi lain' : $k->tipe . ' - ' . $k->plat;
+                      $info = $isActive ? 'Sedang aktif dalam perjalanan lain' : $k->tipe . ' - ' . $k->plat;
                     @endphp
                     <option value="{{ $k->id }}" {{ $isActive ? 'disabled' : '' }}
                       {{ old('id_kendaraan') == $k->id ? 'selected' : '' }}
@@ -113,7 +113,7 @@
                 <input type="hidden" name="aktif" value="0">
                 <input class="form-check-input" type="checkbox" role="switch" id="aktif" name="aktif"
                   value="1" checked>
-                <label class="form-check-label fw-medium" for="aktif">Aktifkan Sesi Sekarang?</label>
+                <label class="form-check-label fw-medium" for="aktif">Aktifkan Perjalanan Sekarang?</label>
               </div>
               <small class="text-muted d-block mt-1">
                 Jika diaktifkan, data lokasi dari alat akan mulai dicatat untuk kendaraan ini.
@@ -126,7 +126,7 @@
               </a>
               <button type="submit" class="btn btn-primary"
                 {{ $kendaraan->isEmpty() || $alat->isEmpty() ? 'disabled' : '' }}>
-                <i class="ri-check-line me-1"></i>Simpan Sesi
+                <i class="ri-check-line me-1"></i>Simpan Perjalanan
               </button>
             </div>
 
@@ -153,15 +153,15 @@
               <i class="ri-link-unlink-m text-light me-3"></i>
               <div>
                 <strong>Pairing Data</strong>
-                <p class="small mb-0">Sesi ini menghubungkan stream data koordinat alat ke database kendaraan.
+                <p class="small mb-0">Perjalanan ini menghubungkan stream data koordinat alat ke database kendaraan.
                 </p>
               </div>
             </li>
             <li class="d-flex align-items-start">
               <i class="ri-history-line text-light me-3"></i>
               <div>
-                <strong>Nonaktifkan Dahulu</strong>
-                <p class="small mb-0">Pastikan menonaktifkan sesi lama sebelum memindahkan alat.</p>
+                <strong>Selesaikan Dahulu</strong>
+                <p class="small mb-0">Pastikan menyelesaikan perjalanan lama sebelum memindahkan alat.</p>
               </div>
             </li>
           </ul>

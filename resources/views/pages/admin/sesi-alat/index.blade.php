@@ -33,14 +33,15 @@
       <div class="card custom-card">
         <div class="card-body p-0">
           <form action="{{ route('perjalanan.index') }}" method="GET" id="filterForm"
-            class="d-flex flex-column flex-md-row gap-3 align-items-md-end p-3 border-bottom">
+            class="d-flex flex-column flex-md-row gap-3 align-items-md-end border-bottom">
             <div class="flex-grow-1" style="min-width: 250px;">
-              <label for="searchInput" class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari Sesi</label>
+              <label for="searchInput" class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari
+                Sesi</label>
               <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 border-light"><i class="ri-search-line"></i></span>
-                <input type="text" id="searchInput" name="search" class="form-control border-start-0 border-light bg-light"
-                  placeholder="Cari alat atau kendaraan..." value="{{ $search }}" autocomplete="off"
-                  style="height: 40px;">
+                <span class="input-group-text bg-white border-end-0 border-light"><i class="ri-search-line"></i></span>
+                <input type="text" id="searchInput" name="search"
+                  class="form-control border-start-0 border-light bg-white" placeholder="Cari alat atau kendaraan..."
+                  value="{{ $search }}" autocomplete="off" style="height: 40px;">
               </div>
             </div>
 
@@ -48,7 +49,7 @@
               <label class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Perusahaan</label>
               <input type="hidden" name="id_perusahaan" id="id_perusahaan_input" value="{{ $filter_perusahaan }}">
               <div class="dropdown w-100">
-                <button class="btn btn-outline-light border text-dark w-100 d-flex justify-content-between align-items-center"
+                <button class="btn bg-white border text-dark w-100 d-flex justify-content-between align-items-center"
                   type="button" data-bs-toggle="dropdown" aria-expanded="false" id="id_perusahaanDropdown"
                   style="height: 40px;">
                   <div class="d-flex align-items-center text-truncate">
@@ -61,10 +62,19 @@
                   <i class="ri-arrow-down-s-line text-muted ms-2"></i>
                 </button>
                 <ul class="dropdown-menu shadow-sm border-0 mt-1 w-100" style="max-height: 300px; overflow-y: auto;">
-                  <li><a class="dropdown-item py-2 {{ $filter_perusahaan === '' ? 'active bg-primary-transparent text-primary' : '' }}" href="#" onclick="selectFilter('id_perusahaan', '', 'Semua Perusahaan')">Semua Perusahaan</a></li>
-                  <li><hr class="dropdown-divider"></li>
+                  <li><a
+                      class="dropdown-item py-2 {{ $filter_perusahaan === '' ? 'active bg-primary-transparent text-primary' : '' }}"
+                      href="#" onclick="selectFilter('id_perusahaan', '', 'Semua Perusahaan')">Semua Perusahaan</a>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
                   @foreach ($perusahaan as $p)
-                    <li><a class="dropdown-item py-2 {{ $filter_perusahaan == $p->id ? 'active bg-primary-transparent text-primary' : '' }}" href="#" onclick="selectFilter('id_perusahaan', '{{ $p->id }}', '{{ $p->nama }}')">{{ $p->nama }}</a></li>
+                    <li><a
+                        class="dropdown-item py-2 {{ $filter_perusahaan == $p->id ? 'active bg-primary-transparent text-primary' : '' }}"
+                        href="#"
+                        onclick="selectFilter('id_perusahaan', '{{ $p->id }}', '{{ $p->nama }}')">{{ $p->nama }}</a>
+                    </li>
                   @endforeach
                 </ul>
               </div>
@@ -74,8 +84,9 @@
               <label class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Status</label>
               <input type="hidden" name="status" id="status_input" value="{{ $filter_status }}">
               <div class="dropdown w-100">
-                <button class="btn btn-outline-light border text-dark w-100 d-flex justify-content-between align-items-center"
-                  type="button" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown" style="height: 40px;">
+                <button class="btn bg-white border text-dark w-100 d-flex justify-content-between align-items-center"
+                  type="button" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown"
+                  style="height: 40px;">
                   <div class="d-flex align-items-center">
                     <i class="ri-filter-3-line me-2 text-muted"></i>
                     <span class="fw-medium">
@@ -91,15 +102,26 @@
                   <i class="ri-arrow-down-s-line text-muted"></i>
                 </button>
                 <ul class="dropdown-menu shadow-sm border-0 mt-1 w-100">
-                  <li><a class="dropdown-item py-2 {{ $filter_status === '' ? 'active bg-primary-transparent text-primary' : '' }}" href="#" onclick="selectFilter('status', '', 'Semua Status')">Semua Status</a></li>
-                  <li><a class="dropdown-item py-2 {{ $filter_status === '1' ? 'active bg-success-transparent text-success' : '' }}" href="#" onclick="selectFilter('status', '1', 'Aktif')"><i class="ri-checkbox-circle-line me-2"></i>Aktif</a></li>
-                  <li><a class="dropdown-item py-2 {{ $filter_status === '0' ? 'active bg-danger-transparent text-danger' : '' }}" href="#" onclick="selectFilter('status', '0', 'Nonaktif')"><i class="ri-close-circle-line me-2"></i>Nonaktif</a></li>
+                  <li><a
+                      class="dropdown-item py-2 {{ $filter_status === '' ? 'active bg-primary-transparent text-primary' : '' }}"
+                      href="#" onclick="selectFilter('status', '', 'Semua Status')">Semua Status</a></li>
+                  <li><a
+                      class="dropdown-item py-2 {{ $filter_status === '1' ? 'active bg-success-transparent text-success' : '' }}"
+                      href="#" onclick="selectFilter('status', '1', 'Aktif')"><i
+                        class="ri-checkbox-circle-line me-2"></i>Aktif</a></li>
+                  <li><a
+                      class="dropdown-item py-2 {{ $filter_status === '0' ? 'active bg-danger-transparent text-danger' : '' }}"
+                      href="#" onclick="selectFilter('status', '0', 'Nonaktif')"><i
+                        class="ri-close-circle-line me-2"></i>Nonaktif</a></li>
                 </ul>
               </div>
             </div>
 
-            <div id="reset-container" class="{{ $search || $filter_status !== '' || $filter_perusahaan !== '' ? 'd-flex' : 'd-none' }}">
-              <a href="{{ route('perjalanan.index') }}" class="btn btn-danger-transparent btn-wave d-flex align-items-center justify-content-center" id="resetBtn" style="height: 40px; min-width: 100px;">
+            <div id="reset-container"
+              class="{{ $search || $filter_status !== '' || $filter_perusahaan !== '' ? 'd-flex' : 'd-none' }}">
+              <a href="{{ route('perjalanan.index') }}"
+                class="btn btn-danger-transparent btn-wave d-flex align-items-center justify-content-center"
+                id="resetBtn" style="height: 40px; min-width: 100px;">
                 <i class="ri-refresh-line me-2"></i>Reset
               </a>
             </div>

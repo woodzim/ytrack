@@ -70,14 +70,16 @@
       <div class="card custom-card">
         <div class="card-body p-0">
           <form action="{{ route('perusahaan.perjalanan.index') }}" method="GET" id="filterForm"
-            class="d-flex flex-column flex-md-row gap-3 align-items-md-end p-3 border-bottom">
+            class="d-flex flex-column flex-md-row gap-3 align-items-md-end border-bottom">
 
             {{-- SEARCH INPUT --}}
             <div class="flex-grow-1" style="min-width: 250px;">
-              <label for="searchInput" class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari Sesi</label>
+              <label for="searchInput" class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari
+                Sesi</label>
               <div class="input-group">
-                <span class="input-group-text bg-light border-end-0 border-light"><i class="ri-search-line"></i></span>
-                <input type="text" id="searchInput" name="search" class="form-control border-start-0 border-light bg-light"
+                <span class="input-group-text bg-white border-end-0 border-light"><i class="ri-search-line"></i></span>
+                <input type="text" id="searchInput" name="search"
+                  class="form-control border-start-0 border-light bg-white"
                   placeholder="Cari nama sesi, serial number alat, atau kendaraan..." value="{{ request('search') }}"
                   autocomplete="off" style="height: 40px;">
               </div>
@@ -88,8 +90,9 @@
               <label class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Status</label>
               <input type="hidden" name="status" id="status_input" value="{{ request('status') }}">
               <div class="dropdown">
-                <button class="btn btn-outline-light border text-dark w-100 d-flex justify-content-between align-items-center"
-                  type="button" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown" style="height: 40px;">
+                <button class="btn bg-white border text-dark w-100 d-flex justify-content-between align-items-center"
+                  type="button" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown"
+                  style="height: 40px;">
                   <div class="d-flex align-items-center">
                     <i class="ri-filter-3-line me-2 text-muted"></i>
                     <span class="fw-medium">
@@ -105,15 +108,26 @@
                   <i class="ri-arrow-down-s-line text-muted"></i>
                 </button>
                 <ul class="dropdown-menu w-100 shadow-sm border-0 mt-1">
-                  <li><a class="dropdown-item py-2 {{ request('status') === null || request('status') === '' ? 'active bg-primary-transparent text-primary' : '' }}" href="#" onclick="selectFilter(this, 'status', '', 'Semua Status')">Semua Status</a></li>
-                  <li><a class="dropdown-item py-2 {{ request('status') === '1' ? 'active bg-success-transparent text-success' : '' }}" href="#" onclick="selectFilter(this, 'status', '1', 'Aktif')"><i class="ri-checkbox-circle-line me-2"></i>Aktif</a></li>
-                  <li><a class="dropdown-item py-2 {{ request('status') === '0' ? 'active bg-danger-transparent text-danger' : '' }}" href="#" onclick="selectFilter(this, 'status', '0', 'Nonaktif')"><i class="ri-close-circle-line me-2"></i>Nonaktif</a></li>
+                  <li><a
+                      class="dropdown-item py-2 {{ request('status') === null || request('status') === '' ? 'active bg-primary-transparent text-primary' : '' }}"
+                      href="#" onclick="selectFilter(this, 'status', '', 'Semua Status')">Semua Status</a></li>
+                  <li><a
+                      class="dropdown-item py-2 {{ request('status') === '1' ? 'active bg-success-transparent text-success' : '' }}"
+                      href="#" onclick="selectFilter(this, 'status', '1', 'Aktif')"><i
+                        class="ri-checkbox-circle-line me-2"></i>Aktif</a></li>
+                  <li><a
+                      class="dropdown-item py-2 {{ request('status') === '0' ? 'active bg-danger-transparent text-danger' : '' }}"
+                      href="#" onclick="selectFilter(this, 'status', '0', 'Nonaktif')"><i
+                        class="ri-close-circle-line me-2"></i>Nonaktif</a></li>
                 </ul>
               </div>
             </div>
 
-            <div id="reset-container" class="{{ request()->filled('search') || (request()->has('status') && request('status') !== '') ? '' : 'd-none' }}">
-              <a href="{{ route('perusahaan.perjalanan.index') }}" class="btn btn-danger-transparent btn-wave d-flex align-items-center justify-content-center" id="resetBtn" style="height: 40px; min-width: 100px;">
+            <div id="reset-container"
+              class="{{ request()->filled('search') || (request()->has('status') && request('status') !== '') ? '' : 'd-none' }}">
+              <a href="{{ route('perusahaan.perjalanan.index') }}"
+                class="btn btn-danger-transparent btn-wave d-flex align-items-center justify-content-center"
+                id="resetBtn" style="height: 40px; min-width: 100px;">
                 <i class="ri-refresh-line me-2"></i>Reset
               </a>
             </div>
@@ -122,12 +136,12 @@
         </div>
       </div>
 
-        <div class="card-body p-0" id="table-container">
-          @include('pages.perusahaan.sesi-alat.table')
-        </div>
+      <div class="card-body p-0" id="table-container">
+        @include('pages.perusahaan.sesi-alat.table')
       </div>
-
     </div>
+
+  </div>
   </div>
 @endsection
 
@@ -256,6 +270,48 @@
       });
 
       formatDates();
+
+      // AJAX Logic untuk Toggle Status
+      tableContainer.addEventListener('click', (e) => {
+        const toggleBtn = e.target.closest('.toggle-status-btn');
+        if (toggleBtn) {
+          e.preventDefault();
+          const url = toggleBtn.dataset.url;
+          const token = toggleBtn.dataset.token;
+          const isActive = toggleBtn.dataset.active === '1';
+
+          const title = "Konfirmasi Perjalanan";
+          const message = "Ubah status perjalanan ini?";
+          const btnText = "Ya, Ubah";
+          const btnClass = "btn-primary";
+
+          window.showConfirmModal(message, () => {
+            // Lakukan fetch
+            fetch(url, {
+                method: 'PUT',
+                headers: {
+                  'X-CSRF-TOKEN': token,
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                }
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.status === 'success') {
+                  window.showAlertModal(data.message || 'Status berhasil diubah', 'success');
+                  // Refresh tabel saja tanpa refresh halaman
+                  triggerFetch();
+                } else {
+                  window.showAlertModal(data.message || 'Gagal mengubah status', 'error');
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                window.showAlertModal('Terjadi kesalahan jaringan.', 'error');
+              });
+          }, title, btnText, btnClass);
+        }
+      });
     });
   </script>
 @endsection

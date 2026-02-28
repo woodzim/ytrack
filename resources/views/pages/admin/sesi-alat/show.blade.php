@@ -245,7 +245,7 @@
   <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
       <h1 class="page-title fw-medium fs-20 mb-0">Perjalanan</h1>
-      <p class="">Kelola sesi penggunaan alat GPS di kendaraan</p>
+      <p class="">Kelola perjalanan penggunaan alat GPS di kendaraan</p>
     </div>
     <div class="ms-auto">
       <a href="{{ route('perjalanan.index') }}" class="btn btn-light btn-wave">
@@ -259,14 +259,14 @@
       <div class="detail-card h-100 mb-0">
         <div class="card-header py-3">
           <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Informasi Sesi</h5>
+            <h5 class="card-title mb-0">Informasi Perjalanan</h5>
           </div>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-6">
               <div class="detail-group mb-3 d-flex flex-column">
-                <span class="detail-label mb-1">Nama Sesi</span>
+                <span class="detail-label mb-1">Nama Perjalanan</span>
                 <span class="detail-value fw-bold text-dark">{{ $sesiAlat->nama ?? '-' }}</span>
               </div>
               <div class="detail-group mb-3 d-flex flex-column">
@@ -308,7 +308,7 @@
       <div class="detail-card h-100 mb-0 d-flex flex-column">
         <div class="card-header py-3">
           <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Status & Kontrol Sesi</h5>
+            <h5 class="card-title mb-0">Status & Kontrol Perjalanan</h5>
           </div>
         </div>
         <div class="d-flex align-items-center justify-content-center py-4 flex-grow-1">
@@ -319,9 +319,9 @@
 
           <div class="d-flex w-100 align-items-stretch">
             {{-- KOLOM BATERAI --}}
-            <div class="flex-fill d-flex flex-column align-items-center justify-content-center border-end">
+            <div class="flex-fill d-flex flex-column align-items-center justify-content-center border-end w-50">
               <span class="detail-label mb-3 d-block text-center text-uppercase text-nowrap">Baterai Alat</span>
-              <div class="my-auto">
+              <div class="my-auto d-flex flex-column align-items-center justify-content-start" style="height: 120px;">
                 @if ($lastRiwayat && $lastRiwayat->battery !== null)
                   <x-battery-circle :level="$batLevel" size="85px" />
                 @else
@@ -331,21 +331,22 @@
             </div>
 
             {{-- KOLOM KONTROL --}}
-            <div class="flex-fill d-flex flex-column align-items-center justify-content-center">
+            <div class="flex-fill d-flex flex-column align-items-center justify-content-center w-50">
               <label class="detail-label mb-3 d-block text-uppercase text-center text-nowrap">Kontrol Daya</label>
-              <div class="my-auto d-flex flex-column align-items-center">
+              <div class="my-auto d-flex flex-column align-items-center justify-content-start" style="height: 120px;">
                 <form id="toggle-power-form" action="{{ route('perjalanan.toggle', $sesiAlat->id) }}" method="POST">
                   @csrf
                   @method('PUT')
                   <button type="submit" id="toggle-power-btn"
                     class="btn btn-icon btn-lg rounded-circle shadow-lg {{ $sesiAlat->aktif ? 'btn-success pulse-active' : 'btn-danger' }}"
-                    style="width: 80px; height: 80px;" title="{{ $sesiAlat->aktif ? 'Matikan Sesi' : 'Aktifkan Sesi' }}">
+                    style="width: 80px; height: 80px;"
+                    title="{{ $sesiAlat->aktif ? 'Selesaikan Perjalanan' : 'Aktifkan Perjalanan' }}">
                     <i id="toggle-power-icon" class="ri-shut-down-line fs-40"></i>
                   </button>
                 </form>
                 <span id="power-status-badge"
                   class="badge rounded-pill mt-3 {{ $sesiAlat->aktif ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} px-3">
-                  {{ $sesiAlat->aktif ? 'SESI AKTIF' : 'SESI NONAKTIF' }}
+                  {{ $sesiAlat->aktif ? 'AKTIF' : 'NONAKTIFKAN' }}
                 </span>
               </div>
             </div>
@@ -401,11 +402,6 @@
 
 @section('scripts')
   <script>
-    // --- 2. CHECK ECHO ---
-    if (typeof window.Echo === 'undefined') {
-      console.warn('Echo is not defined. Realtime updates might not work.');
-    }
-
     window.SESI_ALAT_ID = "{{ $sesiAlat->id }}";
 
     // Konversi Data PHP ke JS
@@ -818,7 +814,7 @@
         map.invalidateSize();
       }, 500);
 
-      // E. AJAX POWER TOGGLE
+      // E. AJAX POWER TOGGLE DENGAN KONFIRMASI MODAL
       const powerForm = document.getElementById('toggle-power-form');
       const powerBtn = document.getElementById('toggle-power-btn');
       const powerIcon = document.getElementById('toggle-power-icon');
@@ -832,52 +828,75 @@
           const url = powerForm.action;
           const token = document.querySelector('input[name="_token"]').value;
 
-          // Start Loading: Change icon to spinner (no text)
-          powerIcon.className = 'ri-loader-4-line fs-40 spin';
-          powerBtn.disabled = true;
+          const isActive = powerBtn.getAttribute('data-is-active') === '1';
+          const confirmTitle = isActive ? 'Selesaikan Perjalanan?' : 'Aktifkan Perjalanan?';
+          const confirmText = isActive ?
+            'Perjalanan ini akan diselesaikan dan alat akan dinonaktifkan.' :
+            'Perjalanan ini akan diaktifkan dan alat akan mulai melacak.';
 
-          fetch(url, {
-              method: 'POST',
-              headers: {
-                'X-CSRF-TOKEN': token,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              },
-              body: JSON.stringify({
-                _method: 'PUT'
+          window.showConfirmModal(confirmText, () => {
+            // Start Loading: Change icon to spinner (no text)
+            powerIcon.className = 'ri-loader-4-line fs-40 spin';
+            powerBtn.disabled = true;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                  'X-CSRF-TOKEN': token,
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                  _method: 'PUT'
+                })
               })
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                const isActive = data.aktif;
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  const isNowActive = data.aktif;
+                  powerBtn.setAttribute('data-is-active', isNowActive ? '1' : '0');
 
-                // Update Button
-                powerBtn.className =
-                  `btn btn-icon btn-lg rounded-circle shadow-lg ${isActive ? 'btn-success pulse-active' : 'btn-danger'}`;
-                powerBtn.title = isActive ? 'Matikan Sesi' : 'Aktifkan Sesi';
+                  // Update Button
+                  powerBtn.className =
+                    `btn btn-icon btn-lg rounded-circle shadow-lg ${isNowActive ? 'btn-success pulse-active' : 'btn-danger'}`;
+                  powerBtn.title = isNowActive ? 'Selesaikan Perjalanan' : 'Aktifkan Perjalanan';
 
-                // Update Icon
-                powerIcon.className = 'ri-shut-down-line fs-40';
+                  // Update Icon
+                  powerIcon.className = 'ri-shut-down-line fs-40';
 
-                // Update Badge
-                statusBadge.className =
-                  `badge rounded-pill mt-3 ${isActive ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger'} px-3`;
-                statusBadge.textContent = isActive ? 'SESI AKTIF' : 'SESI NONAKTIF';
-              } else {
-                // Rollback on failure
+                  // Update Badge
+                  statusBadge.className =
+                    `badge rounded-pill mt-3 ${isNowActive ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger'} px-3`;
+                  statusBadge.textContent = isNowActive ? 'AKTIF' : 'NONAKTIFKAN';
+
+                  if (window.showAlertModal) {
+                    window.showAlertModal(data.message || 'Status berhasil diubah', 'success');
+                  } else if (window.Swal) {
+                    Swal.fire('Berhasil', data.message || 'Status berhasil diubah', 'success');
+                  }
+                } else {
+                  // Rollback on failure
+                  powerIcon.className = originalIconClass;
+                  if (window.showAlertModal) {
+                    window.showAlertModal(data.message || 'Gagal mengubah status', 'error');
+                  } else if (window.Swal) {
+                    Swal.fire('Gagal', data.message || 'Gagal mengubah status', 'error');
+                  }
+                }
+              })
+              .catch(error => {
+                console.error('Error toggling power:', error);
                 powerIcon.className = originalIconClass;
-                showAlertModal(data.message || 'Gagal mengubah status daya.', 'error', 'Gagal');
-              }
-            })
-            .catch(error => {
-              console.error('Error toggling power:', error);
-              powerIcon.className = originalIconClass;
-              showAlertModal('Terjadi kesalahan sistem.', 'error', 'Gagal');
-            })
-            .finally(() => {
-              powerBtn.disabled = false;
-            });
+                if (window.showAlertModal) {
+                  window.showAlertModal('Terjadi kesalahan sistem', 'error');
+                } else if (window.Swal) {
+                  Swal.fire('Error', 'Kesalahan sistem', 'error');
+                }
+              })
+              .finally(() => {
+                powerBtn.disabled = false;
+              });
+          });
         });
       }
 

@@ -6,6 +6,7 @@
     .choices__list--dropdown .choices__item--selectable {
       padding-right: 10px;
     }
+
     .choices__list--dropdown .choices__item--disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -27,7 +28,7 @@
       <div class="card custom-card">
         <div class="card-header py-3">
           <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Informasi Sesi</h5>
+            <h5 class="card-title mb-0">Informasi Perjalanan</h5>
           </div>
         </div>
         <div class="card-body">
@@ -85,11 +86,11 @@
 
             <div class="mb-4">
               <label for="nama" class="form-label">
-                Nama Sesi <span class="text-muted fw-normal">(Opsional)</span>
+                Nama Perjalanan <span class="text-muted fw-normal">(Opsional)</span>
               </label>
               <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror"
-                placeholder="Contoh: Sesi Tracking Koransi" value="{{ old('nama') }}">
-              <small class="text-muted d-block mt-1">Berikan nama unik untuk membedakan sesi jika diperlukan</small>
+                placeholder="Contoh: Perjalanan Tracking Koransi" value="{{ old('nama') }}">
+              <small class="text-muted d-block mt-1">Berikan nama unik untuk membedakan perjalanan jika diperlukan</small>
               @error('nama')
                 <small class="text-danger d-block mt-1">{{ $message }}</small>
               @enderror
@@ -100,7 +101,7 @@
                 <i class="ri-close-line me-1"></i>Batal
               </a>
               <button type="submit" class="btn btn-primary">
-                <i class="ri-check-line me-1"></i>Buat Sesi
+                <i class="ri-check-line me-1"></i>Buat Perjalanan
               </button>
             </div>
           </form>
@@ -126,7 +127,8 @@
               <i class="ri-lock-line text-primary me-3 mt-1"></i>
               <div>
                 <strong>Status Ketersediaan</strong>
-                <p class="small text-muted mb-0">Item yang sedang aktif di sesi lain akan ditandai "Digunakan" dan tidak
+                <p class="small text-muted mb-0">Item yang sedang aktif di perjalanan lain akan ditandai "Digunakan" dan
+                  tidak
                   bisa dipilih.</p>
               </div>
             </li>
@@ -164,7 +166,9 @@
         ...commonConfig,
         callbackOnCreateTemplates: function(strToEl) {
           return {
-            item: ({ classNames }, data) => {
+            item: ({
+              classNames
+            }, data) => {
               return strToEl(`
                 <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : classNames.itemSelectable}" 
                   data-item 
@@ -176,10 +180,13 @@
                 </div>
               `);
             },
-            choice: ({ classNames }, data) => {
-              const isActive = data.customProperties && (data.customProperties.active === 'true' || data.customProperties.active === true);
+            choice: ({
+              classNames
+            }, data) => {
+              const isActive = data.customProperties && (data.customProperties.active === 'true' || data
+                .customProperties.active === true);
               const info = data.customProperties ? data.customProperties.info : '';
-              
+
               return strToEl(`
                 <div class="${classNames.item} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable} ${isActive ? 'text-muted opacity-75' : ''}" 
                   data-select-text="" 
@@ -213,14 +220,29 @@
         // Reset and disable
         choicesKendaraan.clearChoices();
         choicesKendaraan.disable();
-        choicesKendaraan.setChoices([{ value: '', label: '-- Loading... --', selected: true, disabled: true }]);
+        choicesKendaraan.setChoices([{
+          value: '',
+          label: '-- Loading... --',
+          selected: true,
+          disabled: true
+        }]);
 
         choicesAlat.clearChoices();
         choicesAlat.disable();
-        choicesAlat.setChoices([{ value: '', label: '-- Loading... --', selected: true, disabled: true }]);
+        choicesAlat.setChoices([{
+          value: '',
+          label: '-- Loading... --',
+          selected: true,
+          disabled: true
+        }]);
 
         if (!idPerusahaan) {
-          const placeholder = [{ value: '', label: '-- Pilih Perusahaan Terlebih Dahulu --', selected: true, disabled: true }];
+          const placeholder = [{
+            value: '',
+            label: '-- Pilih Perusahaan Terlebih Dahulu --',
+            selected: true,
+            disabled: true
+          }];
           choicesKendaraan.setChoices(placeholder);
           choicesAlat.setChoices(placeholder);
           return;
@@ -239,13 +261,24 @@
                 disabled: item.is_active,
                 customProperties: {
                   active: item.is_active,
-                  info: item.is_active ? 'Kendaraan sedang dalam sesi aktif' : `<i class="ri-info-card-line"></i> ${item.plat}`
+                  info: item.is_active ? 'Kendaraan sedang dalam perjalanan aktif' :
+                    `<i class="ri-info-card-line"></i> ${item.plat}`
                 }
               }));
-              choicesKendaraan.setChoices([{ value: '', label: '-- Pilih Kendaraan --', selected: true, disabled: false }, ...options], 'value', 'label', true);
+              choicesKendaraan.setChoices([{
+                value: '',
+                label: '-- Pilih Kendaraan --',
+                selected: true,
+                disabled: false
+              }, ...options], 'value', 'label', true);
               choicesKendaraan.enable();
             } else {
-              choicesKendaraan.setChoices([{ value: '', label: 'Tidak ada kendaraan tersedia', selected: true, disabled: true }]);
+              choicesKendaraan.setChoices([{
+                value: '',
+                label: 'Tidak ada kendaraan tersedia',
+                selected: true,
+                disabled: true
+              }]);
             }
           });
 
@@ -262,13 +295,24 @@
                 disabled: item.is_active,
                 customProperties: {
                   active: item.is_active,
-                  info: item.is_active ? (item.current_vehicle ? `Sedang dipakai di: ${item.current_vehicle}` : 'Sedang Aktif') : 'Siap digunakan'
+                  info: item.is_active ? (item.current_vehicle ?
+                    `Sedang dipakai di: ${item.current_vehicle}` : 'Sedang Aktif') : 'Siap digunakan'
                 }
               }));
-              choicesAlat.setChoices([{ value: '', label: '-- Pilih Alat --', selected: true, disabled: false }, ...options], 'value', 'label', true);
+              choicesAlat.setChoices([{
+                value: '',
+                label: '-- Pilih Alat --',
+                selected: true,
+                disabled: false
+              }, ...options], 'value', 'label', true);
               choicesAlat.enable();
             } else {
-              choicesAlat.setChoices([{ value: '', label: 'Tidak ada alat tersedia', selected: true, disabled: true }]);
+              choicesAlat.setChoices([{
+                value: '',
+                label: 'Tidak ada alat tersedia',
+                selected: true,
+                disabled: true
+              }]);
             }
           });
       });

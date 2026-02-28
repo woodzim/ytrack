@@ -50,26 +50,28 @@
     </div>
   </div>
 
-  <div class="card border-0 shadow-none mb-4 bg-transparent">
-    <div class="p-0">
+  <div class="card custom-card mb-4">
+    <div class="card-body p-3">
       <form action="{{ route('perusahaan.alat.index') }}" method="GET" id="filterForm"
-        class="d-flex gap-3 flex-wrap align-items-end">
+        class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
         <div class="grow" style="min-width: 250px;">
-          <label class="form-label text-muted small mb-2">Cari Serial Number</label>
+          <label class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari Serial Number</label>
           <div class="input-group">
-            <span class="input-group-text bg-white border-end-0" style="height: 38px;"><i
-                class="ri-search-line text-muted"></i></span>
-            <input type="text" id="searchInput" name="search" class="form-control border-start-0 ps-1"
-              placeholder="Contoh: GPS-001..." value="{{ $search }}" autocomplete="off" style="height: 38px;">
+            <span class="input-group-text bg-white border-end-0 border-light" style="height: 40px;"><i
+                class="ri-search-line"></i></span>
+            <input type="text" id="searchInput" name="search"
+              class="form-control border-start-0 border-light bg-white" placeholder="Contoh: GPS-001..."
+              value="{{ $search }}" autocomplete="off" style="height: 40px;">
           </div>
         </div>
 
         <div style="min-width: 200px;">
-          <label class="form-label text-muted small mb-2">Status Penggunaan</label>
+          <label class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Status Penggunaan</label>
           <input type="hidden" name="status" id="status_input" value="{{ $filter_status }}">
-          <div class="dropdown">
-            <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown"
-              aria-expanded="false" id="statusDropdown">
+          <div class="dropdown w-100">
+            <button
+              class="btn bg-white border text-dark w-100 d-flex justify-content-between align-items-center dropdown-toggle hide-arrow"
+              type="button" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown" style="height: 40px;">
               <div class="d-flex align-items-center">
                 <i class="ri-checkbox-circle-line me-2 text-muted"></i>
                 <span>
@@ -98,7 +100,7 @@
         <div id="reset-container"
           class="{{ $search || ($filter_status !== null && $filter_status !== '') ? '' : 'd-none' }}">
           <a href="{{ route('perusahaan.alat.index') }}"
-            class="btn btn-outline-secondary btn-wave d-flex align-items-center" id="resetBtn" style="height: 38px;">
+            class="btn btn-outline-secondary btn-wave d-flex align-items-center" id="resetBtn" style="height: 40px;">
             <i class="ri-close-line me-2"></i>Reset
           </a>
         </div>

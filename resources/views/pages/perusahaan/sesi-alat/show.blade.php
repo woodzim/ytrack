@@ -19,7 +19,8 @@
 
     .pin-wrapper i {
       font-size: 40px;
-      color: #0F2854; /* My Blue */
+      color: #0F2854;
+      /* My Blue */
       filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.3));
       z-index: 2;
     }
@@ -28,7 +29,8 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      background: rgba(15, 40, 84, 0.4); /* My Blue Transparent */
+      background: rgba(15, 40, 84, 0.4);
+      /* My Blue Transparent */
       border-radius: 50%;
       z-index: 1;
       animation: pulse-animation 2s infinite;
@@ -159,7 +161,8 @@
     }
 
     /* Ensure icon inside is visible */
-    .leaflet-control-tracking i, .leaflet-control-fullscreen i {
+    .leaflet-control-tracking i,
+    .leaflet-control-fullscreen i {
       display: block;
       line-height: 1;
     }
@@ -218,7 +221,7 @@
   <div class="page-header-section d-flex align-items-center justify-content-between">
     <div>
       <h1>Detail Perjalanan</h1>
-      <p>Informasi lengkap sesi GPS tracking</p>
+      <p>Informasi lengkap perjalanan GPS tracking</p>
     </div>
     <div>
       <a href="{{ route('perusahaan.perjalanan.index') }}" class="btn btn-light btn-wave">
@@ -231,13 +234,13 @@
     <div class="col-xl-8 col-lg-7">
       <div class="detail-card h-100 mb-0">
         <div class="card-header">
-          <h5>Informasi Sesi</h5>
+          <h5>Informasi Perjalanan</h5>
         </div>
         <div class="card-body">
           <div class="row">
             <div class="col-md-6">
               <div class="detail-group mb-3 d-flex flex-column">
-                <span class="detail-label mb-1">Nama Sesi</span>
+                <span class="detail-label mb-1">Nama Perjalanan</span>
                 <span class="detail-value fw-bold text-dark">{{ $sesiAlat->nama ?? '-' }}</span>
               </div>
               <div class="detail-group mb-3 d-flex flex-column">
@@ -271,7 +274,7 @@
     <div class="col-xl-4 col-lg-5">
       <div class="detail-card h-100 mb-0 d-flex flex-column">
         <div class="card-header">
-          <h5>Status & Kontrol Sesi</h5>
+          <h5>Status & Kontrol Perjalanan</h5>
         </div>
         <div class="card-body d-flex flex-column align-items-center justify-content-center py-4 flex-grow-1">
           @php
@@ -279,9 +282,9 @@
             $batLevel = (int) ($lastRiwayat?->battery ?? 0);
           @endphp
           <div class="d-flex w-100 align-items-stretch flex-grow-1">
-            <div class="flex-fill d-flex flex-column align-items-center justify-content-center border-end">
+            <div class="flex-fill d-flex flex-column align-items-center justify-content-center border-end w-50">
               <span class="detail-label mb-3 d-block text-center text-uppercase text-nowrap">Baterai Alat</span>
-              <div class="my-auto">
+              <div class="my-auto d-flex flex-column align-items-center justify-content-start" style="height: 120px;">
                 @if ($lastRiwayat && $lastRiwayat->battery !== null)
                   <x-battery-circle :level="$batLevel" size="85px" />
                 @else
@@ -289,22 +292,24 @@
                 @endif
               </div>
             </div>
-            <div class="flex-fill d-flex flex-column align-items-center justify-content-center">
+            <div class="flex-fill d-flex flex-column align-items-center justify-content-center w-50">
               <label class="detail-label mb-3 d-block text-uppercase text-center text-nowrap">Kontrol Daya</label>
-              <div class="my-auto d-flex flex-column align-items-center">
+              <div class="my-auto d-flex flex-column align-items-center justify-content-start" style="height: 120px;">
                 <form id="toggle-power-form" action="{{ route('perusahaan.perjalanan.toggle', $sesiAlat->id) }}"
                   method="POST">
                   @csrf
                   @method('PUT')
                   <button type="submit" id="toggle-power-btn"
                     class="btn btn-icon btn-lg rounded-circle shadow-lg {{ $sesiAlat->aktif ? 'btn-success pulse-active' : 'btn-danger' }}"
-                    style="width: 80px; height: 80px;" title="{{ $sesiAlat->aktif ? 'Matikan Sesi' : 'Aktifkan Sesi' }}">
+                    style="width: 85px; height: 85px;"
+                    title="{{ $sesiAlat->aktif ? 'Selesaikan Perjalanan' : 'Aktifkan Perjalanan' }}"
+                    data-is-active="{{ $sesiAlat->aktif ? '1' : '0' }}">
                     <i id="toggle-power-icon" class="ri-shut-down-line fs-40"></i>
                   </button>
                 </form>
                 <span id="power-status-badge"
                   class="badge rounded-pill mt-3 {{ $sesiAlat->aktif ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} px-3">
-                  {{ $sesiAlat->aktif ? 'SESI AKTIF' : 'SESI NONAKTIF' }}
+                  {{ $sesiAlat->aktif ? 'AKTIF' : 'NONAKTIFKAN' }}
                 </span>
               </div>
             </div>
@@ -354,8 +359,6 @@
 
 @section('scripts')
   <script>
-    if (typeof window.Echo === 'undefined') console.warn('Echo is not defined.');
-
     window.SESI_ALAT_ID = "{{ $sesiAlat->id }}";
     const rawRiwayatData = @json($riwayatPerjalanan);
     let currentIndex = 0;
@@ -468,7 +471,8 @@
           const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
           perusahaanTrackingBtn = L.DomUtil.create('a', 'leaflet-control-tracking', container);
           perusahaanTrackingBtn.href = '#';
-          perusahaanTrackingBtn.innerHTML = '<i class="ri-focus-3-line" style="font-size: 20px;"></i>'; // Icon only
+          perusahaanTrackingBtn.innerHTML =
+            '<i class="ri-focus-3-line" style="font-size: 20px;"></i>'; // Icon only
           perusahaanTrackingBtn.title = 'Tracking Mode';
 
           L.DomEvent.on(perusahaanTrackingBtn, 'click', function(e) {
@@ -617,7 +621,8 @@
               map.removeLayer(selectedMarker);
               selectedMarker = null;
             }
-            document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
+            document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove(
+              'table-active-row'));
           });
 
           const mapEl = document.getElementById('map-container');
@@ -670,45 +675,89 @@
               map.panTo(latLng); // Normal auto pan
             }
 
-            document.getElementById('history-table-body').insertAdjacentHTML('afterbegin', getRowHtml(mappedItem, 0));
+            document.getElementById('history-table-body').insertAdjacentHTML('afterbegin', getRowHtml(mappedItem,
+              0));
           });
       }
 
-      // AJAX Power Toggle
+      // AJAX Power Toggle dengan Konfirmasi Modal
       const powerForm = document.getElementById('toggle-power-form');
       if (powerForm) {
         powerForm.addEventListener('submit', function(e) {
           e.preventDefault();
           const btn = document.getElementById('toggle-power-btn');
           const icon = document.getElementById('toggle-power-icon');
+          const badge = document.getElementById('power-status-badge');
           const originalClass = icon.className;
-          icon.className = 'ri-loader-4-line fs-40 spin';
-          btn.disabled = true;
 
-          fetch(powerForm.action, {
-              method: 'POST',
-              headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-              },
-              body: JSON.stringify({
-                _method: 'PUT'
+          const isActive = btn.getAttribute('data-is-active') === '1';
+          const confirmTitle = isActive ? 'Selesaikan Perjalanan?' : 'Aktifkan Perjalanan?';
+          const confirmText = isActive ?
+            'Perjalanan ini akan diselesaikan dan alat akan dinonaktifkan.' :
+            'Perjalanan ini akan diaktifkan dan alat akan mulai melacak.';
+
+          window.showConfirmModal(confirmText, () => {
+            icon.className = 'ri-loader-4-line fs-40 spin';
+            btn.disabled = true;
+
+            fetch(powerForm.action, {
+                method: 'POST',
+                headers: {
+                  'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                  _method: 'PUT'
+                })
               })
-            })
-            .then(r => r.json())
-            .then(data => {
-              if (data.success) location.reload();
-              else {
+              .then(r => r.json())
+              .then(data => {
+                if (data.success) {
+                  // Update the UI dynamically
+                  const isNowActive = data.aktif;
+                  btn.setAttribute('data-is-active', isNowActive ? '1' : '0');
+
+                  if (isNowActive) {
+                    btn.className = 'btn btn-icon btn-lg rounded-circle shadow-lg btn-success pulse-active';
+                    badge.className = 'badge rounded-pill mt-3 bg-success-transparent text-success px-3';
+                    badge.innerText = 'AKTIF';
+                    btn.title = 'Selesaikan Perjalanan';
+                  } else {
+                    btn.className = 'btn btn-icon btn-lg rounded-circle shadow-lg btn-danger';
+                    badge.className = 'badge rounded-pill mt-3 bg-danger-transparent text-danger px-3';
+                    badge.innerText = 'NONAKTIFKAN';
+                    btn.title = 'Aktifkan Perjalanan';
+                  }
+                  icon.className = 'ri-shut-down-line fs-40';
+                  btn.disabled = false;
+
+                  if (window.showAlertModal) {
+                    window.showAlertModal(data.message || 'Status berhasil diubah', 'success');
+                  } else if (window.Swal) {
+                    Swal.fire('Berhasil', data.message || 'Status berhasil diubah', 'success');
+                  }
+                } else {
+                  icon.className = originalClass;
+                  btn.disabled = false;
+                  if (window.showAlertModal) {
+                    window.showAlertModal(data.message || 'Gagal mengubah status', 'error');
+                  } else if (window.Swal) {
+                    Swal.fire('Gagal', data.message || 'Gagal mengubah status', 'error');
+                  }
+                }
+              })
+              .catch(err => {
+                console.error(err);
                 icon.className = originalClass;
-                showAlertModal(data.message || 'Gagal', 'error');
-              }
-            })
-            .catch(() => {
-              icon.className = originalClass;
-              showAlertModal('Kesalahan sistem', 'error');
-            })
-            .finally(() => btn.disabled = false);
+                btn.disabled = false;
+                if (window.showAlertModal) {
+                  window.showAlertModal('Kesalahan sistem', 'error');
+                } else if (window.Swal) {
+                  Swal.fire('Error', 'Kesalahan sistem', 'error');
+                }
+              });
+          });
         });
       }
 
