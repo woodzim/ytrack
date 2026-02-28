@@ -23,3 +23,5 @@
         <!-- Choices CSS -->
         <link rel="stylesheet" href="{{asset('build/assets/libs/choices.js/public/assets/styles/choices.min.css')}}">
         
+        <!-- GLightbox CSS -->
+        <link rel="stylesheet" href="{{asset('build/assets/libs/glightbox/css/glightbox.min.css')}}">

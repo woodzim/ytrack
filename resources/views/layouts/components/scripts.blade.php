@@ -31,6 +31,9 @@
          <!-- Choices JS -->
          <script src="{{asset('build/assets/libs/choices.js/public/assets/scripts/choices.min.js')}}"></script>
 
+         <!-- GLightbox JS -->
+         <script src="{{asset('build/assets/libs/glightbox/js/glightbox.min.js')}}"></script>
+
          <script>
             window.choicesInstances = new Map();
 
