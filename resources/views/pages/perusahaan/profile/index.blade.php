@@ -11,7 +11,7 @@
   <div class="row">
     <div class="col-xl-8">
       <div class="card custom-card overflow-hidden shadow-sm">
-        <div class="justify-content-between">
+        <div class="card-header p-0 mt-2">
           <div class="card-title fs-5">
             <i class="ri-edit-box-line fw-medium me-1 mb-1 align-middle text-primary"></i>
             <span class="fw-medium">Edit Profil</span>
