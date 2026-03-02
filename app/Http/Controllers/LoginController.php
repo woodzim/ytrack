@@ -48,9 +48,9 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             // Cek verifikasi email
-            // if (!Auth::user()->hasVerifiedEmail()) {
-            //     return redirect()->route('verification.notice');
-            // }
+            if (!Auth::user()->hasVerifiedEmail()) {
+                return redirect()->route('verification.notice');
+            }
 
             // LOGIKA REDIRECT
             // Prioritaskan Admin
@@ -62,12 +62,7 @@ class LoginController extends Controller
 
             if (Auth::user()->hasRole('perusahaan')) {
                 if (!Auth::user()->isValidated()) {
-                    Auth::logout();
-                    return back()
-                        ->withInput($request->only('email'))
-                        ->withErrors([
-                            'email' => 'Akun Anda belum diverifikasi oleh admin. Silakan tunggu atau hubungi admin.',
-                        ]);
+                    return redirect()->route('verification.wait');
                 }
 
                 // Redirect khusus Perusahaan

@@ -4,8 +4,7 @@
   <style>
     /* Force parent containers to allow overflow so dropdowns aren't cut off */
     .table-wrapper,
-    .table-wrapper .card-body,
-    .table-responsive {
+    .table-wrapper .card-body {
       overflow: visible !important;
     }
 
@@ -201,6 +200,24 @@
             <button type="submit" id="validateSubmitBtn" class="btn btn-primary">Validasi</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Viewer Modal -->
+  <div class="modal fade" id="pdfViewerModal" tabindex="-1" aria-labelledby="pdfViewerModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pdfViewerModalLabel">
+            <i class="ri-file-pdf-line me-2 text-danger"></i>Pratinjau Berkas
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0" style="height: 80vh;">
+          <iframe id="pdfViewerIframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
       </div>
     </div>
   </div>
@@ -406,6 +423,27 @@
               validateSubmitBtn.className = 'btn btn-success';
               validateUserForm.action = validateUrl;
             }
+          }
+        });
+      }
+
+      // PDF Viewer Modal setup
+      const pdfViewerModal = document.getElementById('pdfViewerModal');
+      const pdfViewerIframe = document.getElementById('pdfViewerIframe');
+
+      if (pdfViewerModal) {
+        // Use event delegation for dynamic content
+        document.body.addEventListener('show.bs.modal', function(event) {
+          if (event.target.id === 'pdfViewerModal') {
+            const button = event.relatedTarget;
+            const pdfUrl = button.getAttribute('data-pdf-url');
+            pdfViewerIframe.src = pdfUrl;
+          }
+        });
+
+        document.body.addEventListener('hidden.bs.modal', function(event) {
+          if (event.target.id === 'pdfViewerModal') {
+            pdfViewerIframe.src = '';
           }
         });
       }

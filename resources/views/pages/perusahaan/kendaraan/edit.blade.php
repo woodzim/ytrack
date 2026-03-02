@@ -83,8 +83,7 @@
                             </p>
                             <div class="d-flex gap-1">
                               <a href="{{ asset('storage/' . $img->image_path) }}"
-                                class="glightbox btn btn-sm btn-icon btn-info-light mb-0"
-                                data-gallery="kendaraan-gallery"
+                                class="glightbox btn btn-sm btn-icon btn-info-light mb-0" data-gallery="kendaraan-gallery"
                                 data-title="{{ $img->caption ?: 'Tanpa Keterangan' }}" title="Lihat Foto Utuh"
                                 aria-label="Lihat pratinjau foto">
                                 <i class="ri-eye-line"></i>
@@ -96,10 +95,10 @@
                                 <i class="ri-edit-line"></i>
                               </label>
                               <input type="file" id="update-img-{{ $img->id }}" name="new_image" accept="image/*"
-                                class="d-none" onchange="submitUpdateImage({{ $img->id }}, this)">
+                                class="d-none" onchange="submitUpdateImage('{{ $img->id }}', this)">
 
                               <button type="button" class="btn btn-sm btn-icon btn-danger-light" title="Hapus Foto"
-                                onclick="submitDeleteImage({{ $img->id }})">
+                                onclick="submitDeleteImage('{{ $img->id }}')">
                                 <i class="ri-delete-bin-line"></i>
                               </button>
                             </div>
@@ -122,6 +121,9 @@
                       <h6 class="fw-semibold mb-0 text-primary"><i class="ri-image-add-line me-2"></i>Unggah Foto
                         Kendaraan (Opsional)
                       </h6>
+                      <button type="button" id="dropzone-upload-btn" class="btn btn-primary-light btn-sm">
+                        <i class="ri-add-line me-1"></i>Tambahkan Gambar
+                      </button>
                     </div>
 
                     {{-- Area Dropzone with horizontal overflow --}}
@@ -506,10 +508,12 @@
     }
 
     /* Optimasi performa hover lambat pada tombol card gambar */
-    .card .btn-icon, .dropzone .btn-icon {
+    .card .btn-icon,
+    .dropzone .btn-icon {
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
-      transform: translateZ(0); /* Hardware acceleration */
+      transform: translateZ(0);
+      /* Hardware acceleration */
       will-change: transform, background-color, color, box-shadow;
       transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
     }
@@ -550,7 +554,8 @@
 
       // Fix ARIA error by blurring the trigger element when lightbox opens
       lightbox.on('open', () => {
-        if (document.activeElement && (document.activeElement.classList.contains('glightbox') || document.activeElement.closest('.glightbox'))) {
+        if (document.activeElement && (document.activeElement.classList.contains('glightbox') || document
+            .activeElement.closest('.glightbox'))) {
           document.activeElement.blur();
         }
       });
@@ -605,7 +610,13 @@
       }
 
       window.submitDeleteImage = function(imageId) {
-        if (confirm('Yakin ingin menghapus foto ini?')) {
+        if (window.showConfirmModal) {
+          window.showConfirmModal('Yakin ingin menghapus foto ini?', function() {
+            const form = document.getElementById('delete-image-form');
+            form.action = `{{ url('perusahaan/kendaraan') }}/{{ $kendaraan->id }}/images/${imageId}`;
+            form.submit();
+          });
+        } else if (confirm('Yakin ingin menghapus foto ini?')) {
           const form = document.getElementById('delete-image-form');
           form.action = `{{ url('perusahaan/kendaraan') }}/{{ $kendaraan->id }}/images/${imageId}`;
           form.submit();
@@ -655,6 +666,27 @@
       const hiddenInputsContainer = document.getElementById('hidden-inputs-container');
       const dropzoneElement = document.querySelector("#vehicle-dropzone-edit");
 
+      let rejectedAlerts = [];
+      let alertTimeout = null;
+
+      function showBatchedAlerts() {
+        if (rejectedAlerts.length > 0) {
+          const msg = rejectedAlerts.join('<br><br>');
+          if (window.showAlertModal) {
+            window.showAlertModal(msg, 'warning');
+          } else if (window.Swal) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Peringatan Upload',
+              html: msg
+            });
+          } else {
+            alert(msg.replace(/<br><br>/g, '\n\n'));
+          }
+          rejectedAlerts = [];
+        }
+      }
+
       if (dropzoneElement) {
         const myDropzone = new Dropzone("#vehicle-dropzone-edit", {
           url: "{{ route('perusahaan.kendaraan.update', $kendaraan->id) }}",
@@ -674,6 +706,28 @@
 
           init: function() {
             this.on("addedfile", async function(file) {
+              // Validation Logic
+              // Validation Logic: Check file size first
+              if (file.size > (this.options.maxFilesize * 1024 * 1024)) {
+                rejectedAlerts.push(
+                  `Gambar "${file.name}" terlalu besar (${(file.size / (1024 * 1024)).toFixed(2)}MB). Maksimal ${this.options.maxFilesize}MB.`
+                );
+                this.removeFile(file);
+                clearTimeout(alertTimeout);
+                alertTimeout = setTimeout(showBatchedAlerts, 100);
+                return;
+              }
+
+              if (this.files.length > this.options.maxFiles) {
+                rejectedAlerts.push(
+                  `Gambar "${file.name}" tidak dapat diupload karena batas maksimal 4 foto telah tercapai.`
+                );
+                this.removeFile(file);
+                clearTimeout(alertTimeout);
+                alertTimeout = setTimeout(showBatchedAlerts, 100);
+                return;
+              }
+
               const captionInput = Dropzone.createElement(
                 '<input type="text" class="dz-caption-input form-control" placeholder="Keterangan...">');
               file.previewElement.appendChild(captionInput);
@@ -702,7 +756,7 @@
                 let progress = 0;
                 let fase = 0;
                 let requestId;
-                
+
                 // Optimasi: Hindari getTotalLength setiap frame (performa berat)
                 const panjangTotal = 220; // 2 * PI * r (35)
                 garisFill.style.strokeDasharray = panjangTotal;
@@ -759,7 +813,8 @@
                 // Fallback to URL.createObjectURL if Dropzone thumbnail is missing
                 const url = file.dataURL || (file.previewElement.querySelector('img') ? file
                   .previewElement.querySelector('img').src : URL.createObjectURL(file));
-                let caption = captionInput.value || '<span class="text-muted fst-italic">Tanpa Keterangan</span>';
+                let caption = captionInput.value ||
+                  '<span class="text-muted fst-italic">Tanpa Keterangan</span>';
 
                 // Tambahkan peringatan jika file terlalu besar
                 if (file.size > (this.options.maxFilesize * 1024 * 1024)) {
@@ -783,7 +838,8 @@
               file.previewElement.querySelector('.dz-image').addEventListener('click', () => {
                 const url = file.dataURL || (file.previewElement.querySelector('img') ? file
                   .previewElement.querySelector('img').src : URL.createObjectURL(file));
-                let caption = captionInput.value || '<span class="text-muted fst-italic">Tanpa Keterangan</span>';
+                let caption = captionInput.value ||
+                  '<span class="text-muted fst-italic">Tanpa Keterangan</span>';
 
                 // Tambahkan peringatan jika file terlalu besar
                 if (file.size > (this.options.maxFilesize * 1024 * 1024)) {
@@ -821,16 +877,22 @@
 
             try {
               const dataTransfer = new DataTransfer();
-              
+
               // Optimasi: Konversi file HEIC secara paralel untuk mempercepat performa
               const conversionPromises = queuedFiles.map(async (file) => {
                 const webpFile = file.webpFile || await convertToWebP(file);
-                return { file, webpFile };
+                return {
+                  file,
+                  webpFile
+                };
               });
-              
+
               const results = await Promise.all(conversionPromises);
-              
-              results.forEach(({ file, webpFile }) => {
+
+              results.forEach(({
+                file,
+                webpFile
+              }) => {
                 dataTransfer.items.add(webpFile);
 
                 const hiddenCaption = document.createElement('input');

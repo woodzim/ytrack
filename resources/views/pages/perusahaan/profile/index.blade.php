@@ -45,6 +45,7 @@
           <form action="{{ route('perusahaan.profile.update') }}" method="POST">
             @csrf
             @method('PUT')
+            <input type="hidden" name="logo_base64" id="logo_base64">
 
             <div class="row g-4">
               <div class="col-md-6">
@@ -126,11 +127,29 @@
               style="background-image: url('data:image/svg+xml,%3Csvg width=\"100\" height=\"100\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 86c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm66 3c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-46-15c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm45-68c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-28 45c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-23-39c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zM9 26c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm89 70c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zM5 8c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm81 5c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-2-1c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-57 59c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm0-24c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm0 24c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\" fill=\"%23ffffff\" fill-opacity=\"1\" fill-rule=\"evenodd\"/%3E%3C/svg%3E'); background-repeat: repeat;">
             </div>
             <div class="position-relative z-1 mt-3">
-              <div class="avatar avatar-xxl avatar-rounded border border-4 border-white-transparent shadow-lg mb-3">
-                <img src="{{ auth()->user()->avatar_url }}" alt="img">
-                <span class="avatar-badge bg-success rounded-circle"
-                  style="width: 14px; height: 14px; bottom: 8px; right: 8px; border: 3px solid #fff;"></span>
+              <div class="avatar avatar-xxl avatar-rounded border border-4 border-white-transparent shadow-lg mb-3"
+                style="cursor: pointer;" onclick="document.getElementById('logo_input').click()" title="Ubah Logo">
+                <img src="{{ auth()->user()->avatar_url }}" alt="img" id="avatar_preview"
+                  style="object-fit: cover; width: 100%; height: 100%;">
+                <span class="avatar-badge bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                  style="width: 24px; height: 24px; bottom: 8px; right: 8px; border: 3px solid #fff;">
+                  <i class="ri-pencil-line text-white" style="font-size: 12px;"></i>
+                </span>
+                <input type="file" id="logo_input" accept="image/*" class="d-none">
               </div>
+
+              @if ($perusahaan->logo)
+                <div class="mb-3">
+                  <form action="{{ route('perusahaan.profile.delete-logo') }}" method="POST" class="d-inline"
+                    data-confirm="Apakah Anda yakin ingin menghapus logo ini?" data-confirm-btn="Hapus Logo">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-danger border border-white">
+                      <i class="ri-delete-bin-line me-1"></i> Hapus Logo
+                    </button>
+                  </form>
+                </div>
+              @endif
               <h5 class="fw-semibold text-fixed-white mb-1">{{ auth()->user()->name }}</h5>
               <p class="text-fixed-white op-8 small mb-0">{{ ucfirst(auth()->user()->roles->first()?->name) }}</p>
             </div>
@@ -188,4 +207,131 @@
       </div>
     </div>
   </div>
+
+  <!-- Cropper Modal -->
+  <div class="modal fade" id="cropperModal" tabindex="-1" aria-labelledby="cropperModalLabel" aria-hidden="true"
+    data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cropperModalLabel">Sesuaikan Logo Perusahaan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center p-0">
+          <div style="max-height: 400px; overflow: hidden; background: #f8f9fa;">
+            <img id="image-to-crop" src="" style="max-width: 100%; display: block; margin: 0 auto;">
+          </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+          <div>
+            <button type="button" class="btn btn-icon btn-light" id="rotate-left" title="Putar Kiri"><i
+                class="ri-anticlockwise-2-line"></i></button>
+            <button type="button" class="btn btn-icon btn-light" id="rotate-right" title="Putar Kanan"><i
+                class="ri-clockwise-2-line"></i></button>
+          </div>
+          <div>
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+            <button type="button" class="btn btn-primary" id="crop-btn">Terapkan Logo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+@endsection
+
+@section('styles')
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+  <style>
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 50%;
+    }
+
+    .cropper-modal {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+  </style>
+@endsection
+
+@section('scripts')
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const logoInput = document.getElementById('logo_input');
+      const imageToCrop = document.getElementById('image-to-crop');
+      const cropperModal = new bootstrap.Modal(document.getElementById('cropperModal'));
+      const cropBtn = document.getElementById('crop-btn');
+      let cropper;
+
+      logoInput.addEventListener('change', function(e) {
+        if (e.target.files && e.target.files.length > 0) {
+          const file = e.target.files[0];
+
+          if (!file.type.match('image.*')) {
+            alert('File harus berupa gambar (JPEG, PNG, dll)');
+            return;
+          }
+
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            imageToCrop.src = event.target.result;
+            cropperModal.show();
+          };
+          reader.readAsDataURL(file);
+        }
+        // Reset input agar dapat memilih file yang sama lagi jika dibatalkan
+        e.target.value = '';
+      });
+
+      document.getElementById('cropperModal').addEventListener('shown.bs.modal', function() {
+        cropper = new Cropper(imageToCrop, {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 0.9,
+          restore: false,
+          guides: false,
+          center: false,
+          highlight: false,
+          cropBoxMovable: true,
+          cropBoxResizable: true,
+          toggleDragModeOnDblclick: false,
+        });
+      });
+
+      document.getElementById('cropperModal').addEventListener('hidden.bs.modal', function() {
+        if (cropper) {
+          cropper.destroy();
+          cropper = null;
+        }
+      });
+
+      document.getElementById('rotate-left').addEventListener('click', function() {
+        if (cropper) cropper.rotate(-90);
+      });
+
+      document.getElementById('rotate-right').addEventListener('click', function() {
+        if (cropper) cropper.rotate(90);
+      });
+
+      cropBtn.addEventListener('click', function() {
+        if (cropper) {
+          const canvas = cropper.getCroppedCanvas({
+            width: 300,
+            height: 300,
+            fillColor: '#fff',
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+          });
+
+          const base64Image = canvas.toDataURL('image/webp', 0.8);
+
+          document.getElementById('avatar_preview').src = base64Image;
+          document.getElementById('logo_base64').value = base64Image;
+
+          cropperModal.hide();
+        }
+      });
+    });
+  </script>
 @endsection

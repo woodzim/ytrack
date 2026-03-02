@@ -79,6 +79,10 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function getAvatarUrlAttribute(): string
     {
+        if ($this->hasRole('perusahaan') && $this->perusahaan && $this->perusahaan->logo) {
+            return asset('storage/' . $this->perusahaan->logo);
+        }
+        
         $name = urlencode($this->name);
         return "https://ui-avatars.com/api/?name={$name}&background=0F2854&color=fff&bold=true&format=svg";
     }

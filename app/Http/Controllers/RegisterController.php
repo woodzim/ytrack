@@ -91,4 +91,40 @@ class RegisterController extends Controller
 
         return redirect()->route('verification.notice');
     }
+
+    /**
+     * Handle berkas upload for perusahaan validation.
+     */
+    public function uploadBerkas(Request $request)
+    {
+        $request->validate([
+            'berkas' => 'required|file|mimes:pdf|max:4096', // Max 4MB
+        ], [
+            'berkas.required' => 'File berkas wajib diunggah',
+            'berkas.mimes' => 'Format file harus berupa PDF',
+            'berkas.max' => 'Ukuran file maksimal 4MB',
+        ]);
+
+        $user = Auth::user();
+        
+        if ($user && $user->hasRole('perusahaan') && $user->id_perusahaan) {
+            $perusahaan = Perusahaan::find($user->id_perusahaan);
+            
+            if ($perusahaan->berkas) {
+                return back()->with('error', 'Berkas sudah diunggah, silakan tunggu validasi admin.');
+            }
+            
+            if ($request->hasFile('berkas')) {
+                $file = $request->file('berkas');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('perusahaan/berkas', $fileName, 'public');
+                
+                $perusahaan->update(['berkas' => $filePath]);
+                
+                return back()->with('success', 'Berkas perusahaan berhasil diunggah. Silakan tunggu validasi admin.');
+            }
+        }
+        
+        return back()->with('error', 'Gagal mengunggah berkas.');
+    }
 }

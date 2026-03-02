@@ -19,7 +19,8 @@
             <div class="row g-4">
               <div class="col-12">
                 <div class="">
-                  <h6 class="fw-semibold mb-3"><i class="ri-information-line me-2 text-primary"></i>Informasi Kendaraan</h6>
+                  <h6 class="fw-semibold mb-3"><i class="ri-information-line me-2 text-primary"></i>Informasi Kendaraan
+                  </h6>
                   <div class="row">
                     <div class="col-md-4 d-flex flex-column">
                       <label for="id_jenis_kendaraan" class="form-label fw-medium">Jenis Kendaraan <span
@@ -65,8 +66,12 @@
               <div class="col-12 border-top pt-4">
                 <div class="mb-0">
                   <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="fw-semibold mb-0"><i class="ri-image-add-line me-2 text-primary"></i>Unggah Foto Kendaraan (Opsional)
+                    <h6 class="fw-semibold mb-0"><i class="ri-image-add-line me-2 text-primary"></i>Unggah Foto Kendaraan
+                      (Opsional)
                     </h6>
+                    <button type="button" id="dropzone-upload-btn" class="btn btn-primary-light btn-sm">
+                      <i class="ri-add-line me-1"></i>Tambahkan Gambar
+                    </button>
                   </div>
 
                   {{-- Area Dropzone with horizontal overflow --}}
@@ -294,7 +299,8 @@
     }
 
     .dropzone .dz-preview .dz-error-message:after {
-      display: none !important; /* Remove the default arrow */
+      display: none !important;
+      /* Remove the default arrow */
     }
 
     .dropzone .dz-preview .dz-error-mark,
@@ -304,10 +310,13 @@
 
     .dropzone .dz-preview .dz-error-mark {
       position: absolute !important;
-      top: 12px !important; /* Top padding of card */
-      left: 12px !important; /* Left padding of card */
+      top: 12px !important;
+      /* Top padding of card */
+      left: 12px !important;
+      /* Left padding of card */
       width: calc(100% - 24px) !important;
-      height: 140px !important; /* Height of the image area */
+      height: 140px !important;
+      /* Height of the image area */
       background: transparent !important;
       margin: 0 !important;
       display: flex !important;
@@ -344,7 +353,8 @@
 
     /* Eye icon lights up when card is hovered */
     .dropzone .dz-preview:hover .btn-info-light {
-      background-color: #0dcaf0 !important; /* Solid info color */
+      background-color: #0dcaf0 !important;
+      /* Solid info color */
       color: #fff !important;
       box-shadow: 0 4px 8px rgba(13, 202, 240, 0.3) !important;
       border-color: #0dcaf0 !important;
@@ -400,7 +410,8 @@
 
     .dz-webp-loader .progress-ring .progress-ring-fill {
       stroke: var(--primary-color);
-      transition: stroke-dashoffset 0.1s linear; /* Faster transition for smoother wave animation */
+      transition: stroke-dashoffset 0.1s linear;
+      /* Faster transition for smoother wave animation */
     }
 
     .dz-webp-loader .progress-text {
@@ -456,10 +467,12 @@
     }
 
     /* Optimasi performa hover lambat pada tombol card gambar */
-    .card .btn-icon, .dropzone .btn-icon {
+    .card .btn-icon,
+    .dropzone .btn-icon {
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
-      transform: translateZ(0); /* Hardware acceleration */
+      transform: translateZ(0);
+      /* Hardware acceleration */
       will-change: transform, background-color, color, box-shadow;
       transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
     }
@@ -498,7 +511,8 @@
 
       // Fix ARIA error by blurring the trigger element when lightbox opens
       lightbox.on('open', () => {
-        if (document.activeElement && (document.activeElement.classList.contains('glightbox') || document.activeElement.closest('.glightbox'))) {
+        if (document.activeElement && (document.activeElement.classList.contains('glightbox') || document
+            .activeElement.closest('.glightbox'))) {
           document.activeElement.blur();
         }
       });
@@ -558,6 +572,27 @@
       const form = document.getElementById('kendaraan-form');
       const hiddenInputsContainer = document.getElementById('hidden-inputs-container');
 
+      let rejectedAlerts = [];
+      let alertTimeout = null;
+
+      function showBatchedAlerts() {
+        if (rejectedAlerts.length > 0) {
+          const msg = rejectedAlerts.join('<br><br>');
+          if (window.showAlertModal) {
+            window.showAlertModal(msg, 'warning');
+          } else if (window.Swal) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Peringatan Upload',
+              html: msg
+            });
+          } else {
+            alert(msg.replace(/<br><br>/g, '\n\n'));
+          }
+          rejectedAlerts = [];
+        }
+      }
+
       const myDropzone = new Dropzone("#vehicle-dropzone", {
         url: "{{ route('perusahaan.kendaraan.store') }}",
         autoProcessQueue: false, // Jangan upload langsung
@@ -576,6 +611,28 @@
 
         init: function() {
           this.on("addedfile", async function(file) {
+            // Validation Logic
+            // Validation Logic: Check file size first
+            if (file.size > (this.options.maxFilesize * 1024 * 1024)) {
+              rejectedAlerts.push(
+                `Gambar "<strong>${file.name}</strong>" terlalu besar (${(file.size / (1024 * 1024)).toFixed(2)}MB). Maksimal ${this.options.maxFilesize}MB.`
+              );
+              this.removeFile(file);
+              clearTimeout(alertTimeout);
+              alertTimeout = setTimeout(showBatchedAlerts, 100);
+              return;
+            }
+
+            if (this.files.length > this.options.maxFiles) {
+              rejectedAlerts.push(
+                `Gambar "<strong>${file.name}</strong>" tidak dapat diupload karena batas maksimal 4 foto telah tercapai.`
+              );
+              this.removeFile(file);
+              clearTimeout(alertTimeout);
+              alertTimeout = setTimeout(showBatchedAlerts, 100);
+              return;
+            }
+
             // Buat input keterangan untuk setiap file
             const captionInput = Dropzone.createElement(
               '<input type="text" class="dz-caption-input form-control" placeholder="Keterangan...">');
@@ -585,7 +642,7 @@
             // Handle HEIC Preview (Only convert HEIC for preview)
             if (file.type === 'image/heic' || file.name.toLowerCase().endsWith('.heic') || file.name
               .toLowerCase().endsWith('.heif')) {
-              
+
               const loader = Dropzone.createElement(
                 `<div class="dz-webp-loader">
                   <div class="progress-container">
@@ -636,7 +693,7 @@
                 const webpFile = await convertToWebP(file);
                 clearInterval(interval);
                 progress = 100;
-                
+
                 setTimeout(() => {
                   cancelAnimationFrame(requestId);
                   file.webpFile = webpFile;
@@ -658,14 +715,17 @@
             imgEl.style.cursor = 'pointer';
             imgEl.addEventListener('click', () => {
               // Jika dataURL tidak ada (karena error size), buat URL objek manual dari file asli
-              const url = file.dataURL || (file.previewElement.querySelector('img') ? file.previewElement.querySelector('img').src : URL.createObjectURL(file));
-              let caption = captionInput.value || '<span class="text-muted fst-italic">Tanpa Keterangan</span>';
-              
+              const url = file.dataURL || (file.previewElement.querySelector('img') ? file
+                .previewElement.querySelector('img').src : URL.createObjectURL(file));
+              let caption = captionInput.value ||
+                '<span class="text-muted fst-italic">Tanpa Keterangan</span>';
+
               // Tambahkan peringatan jika file terlalu besar
               if (file.size > (myDropzone.options.maxFilesize * 1024 * 1024)) {
-                caption = `<span class="text-danger fw-bold"><i class="ri-error-warning-line me-1"></i> PERINGATAN: File ini terlalu besar (${(file.size / (1024 * 1024)).toFixed(2)}MB) dan tidak akan ikut tersimpan.</span><br>${caption}`;
+                caption =
+                  `<span class="text-danger fw-bold"><i class="ri-error-warning-line me-1"></i> PERINGATAN: File ini terlalu besar (${(file.size / (1024 * 1024)).toFixed(2)}MB) dan tidak akan ikut tersimpan.</span><br>${caption}`;
               }
-              
+
               GLightbox({
                 elements: [{
                   href: url,
@@ -682,12 +742,15 @@
             eyeBtn.addEventListener('click', (e) => {
               e.preventDefault();
               e.stopPropagation();
-              const url = file.dataURL || (file.previewElement.querySelector('img') ? file.previewElement.querySelector('img').src : URL.createObjectURL(file));
-              let caption = captionInput.value || '<span class="text-muted fst-italic">Tanpa Keterangan</span>';
+              const url = file.dataURL || (file.previewElement.querySelector('img') ? file
+                .previewElement.querySelector('img').src : URL.createObjectURL(file));
+              let caption = captionInput.value ||
+                '<span class="text-muted fst-italic">Tanpa Keterangan</span>';
 
               // Tambahkan peringatan jika file terlalu besar
               if (file.size > (myDropzone.options.maxFilesize * 1024 * 1024)) {
-                caption = `<span class="text-danger fw-bold"><i class="ri-error-warning-line me-1"></i> PERINGATAN: File ini terlalu besar (${(file.size / (1024 * 1024)).toFixed(2)}MB) dan tidak akan ikut tersimpan.</span><br>${caption}`;
+                caption =
+                  `<span class="text-danger fw-bold"><i class="ri-error-warning-line me-1"></i> PERINGATAN: File ini terlalu besar (${(file.size / (1024 * 1024)).toFixed(2)}MB) dan tidak akan ikut tersimpan.</span><br>${caption}`;
               }
 
               GLightbox({
@@ -728,16 +791,22 @@
 
         try {
           const dataTransfer = new DataTransfer();
-          
+
           // Optimasi: Konversi file HEIC secara paralel untuk mempercepat performa
           const conversionPromises = acceptedFiles.map(async (file) => {
             const webpFile = file.webpFile || await convertToWebP(file);
-            return { file, webpFile };
+            return {
+              file,
+              webpFile
+            };
           });
-          
+
           const results = await Promise.all(conversionPromises);
-          
-          results.forEach(({ file, webpFile }) => {
+
+          results.forEach(({
+            file,
+            webpFile
+          }) => {
             dataTransfer.items.add(webpFile);
 
             // Tambahkan keterangan sebagai input hidden

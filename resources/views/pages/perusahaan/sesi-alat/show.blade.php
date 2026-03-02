@@ -439,10 +439,11 @@
     };
 
     function createCustomIcon(type) {
-      let iconClass = type === 'start' ? 'ri-map-pin-line' : 'ri-map-pin-user-line';
+      let iconClass = type === 'start' ? 'ri-map-pin-5-fill' : 'ri-map-pin-user-fill';
+      let iconColor = type === 'start' ? '#10b981' : '#0F2854';
       let pulseHtml = type === 'end' ? '<div class="pin-pulse"></div>' : '';
       return L.divIcon({
-        html: `<div class="pin-wrapper">${pulseHtml}<i class="${iconClass}"></i></div>`,
+        html: `<div class="pin-wrapper">${pulseHtml}<i class="${iconClass}" style="color: ${iconColor};"></i></div>`,
         className: 'custom-pin-icon',
         iconSize: [50, 50],
         iconAnchor: [25, 45]

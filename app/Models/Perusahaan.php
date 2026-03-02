@@ -17,6 +17,8 @@ class Perusahaan extends Model
     protected $fillable = [
         'nama',
         'alamat',
+        'logo',
+        'berkas',
     ];
 
     // Relationships
