@@ -212,41 +212,42 @@
               }
 
               document.addEventListener('DOMContentLoaded', function() {
-                let myDropzone = new Dropzone("#berkas-dropzone", {
-                  url: "{{ route('verification.berkas') }}",
-                  autoProcessQueue: false,
-                  paramName: "berkas",
-                  maxFilesize: 4, // MB
-                  acceptedFiles: ".pdf",
-                  maxFiles: 1,
-                  addRemoveLinks: true,
-                  dictRemoveFile: "Ganti File",
-                  headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                  },
-                  init: function() {
-                    var submitButton = document.querySelector("#submit-berkas");
-                    var dz = this;
+                if (document.getElementById('berkas-dropzone')) {
+                  let myDropzone = new Dropzone("#berkas-dropzone", {
+                    url: "{{ route('verification.berkas') }}",
+                    autoProcessQueue: false,
+                    paramName: "berkas",
+                    maxFilesize: 4, // MB
+                    acceptedFiles: ".pdf",
+                    maxFiles: 1,
+                    addRemoveLinks: true,
+                    dictRemoveFile: "Ganti File",
+                    headers: {
+                      'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    init: function() {
+                      var submitButton = document.querySelector("#submit-berkas");
+                      var dz = this;
 
-                    submitButton.addEventListener("click", function(e) {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      if (dz.getQueuedFiles().length > 0) {
-                        dz.processQueue();
-                      } else {
-                        alert("Silakan pilih file berkas terlebih dahulu.");
-                      }
-                    });
+                      submitButton.addEventListener("click", function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (dz.getQueuedFiles().length > 0) {
+                          dz.processQueue();
+                        } else {
+                          alert("Silakan pilih file berkas terlebih dahulu.");
+                        }
+                      });
 
-                    this.on("addedfile", function(file) {
-                      if (this.files.length > 1) {
-                        this.removeFile(this.files[0]);
-                      }
-                    });
+                      this.on("addedfile", function(file) {
+                        if (this.files.length > 1) {
+                          this.removeFile(this.files[0]);
+                        }
+                      });
 
-                    this.on("sending", function(file, xhr, formData) {
-                      const loader = Dropzone.createElement(
-                        `<div class="dz-wavy-loader">
+                      this.on("sending", function(file, xhr, formData) {
+                        const loader = Dropzone.createElement(
+                          `<div class="dz-wavy-loader">
                             <div class="progress-container">
                               <svg class="progress-ring" viewBox="0 0 100 100">
                                 <circle class="progress-ring-bg" cx="50" cy="50" r="35"></circle>
@@ -256,64 +257,65 @@
                             </div>
                             <span>Mengunggah...</span>
                           </div>`
-                      );
+                        );
 
-                      // Append the loader to the preview element
-                      const dzDetails = file.previewElement.querySelector('.dz-details');
-                      if (dzDetails) dzDetails.appendChild(loader);
-                      else file.previewElement.appendChild(loader);
+                        // Append the loader to the preview element
+                        const dzDetails = file.previewElement.querySelector('.dz-details');
+                        if (dzDetails) dzDetails.appendChild(loader);
+                        else file.previewElement.appendChild(loader);
 
-                      const garisFill = loader.querySelector('.progress-ring-fill');
-                      const text = loader.querySelector('.progress-text');
+                        const garisFill = loader.querySelector('.progress-ring-fill');
+                        const text = loader.querySelector('.progress-text');
 
-                      let fase = 0;
-                      let requestId;
-                      const panjangTotal = 220; // 2 * PI * r (35)
-                      garisFill.style.strokeDasharray = panjangTotal;
-                      garisFill.style.strokeDashoffset = panjangTotal;
+                        let fase = 0;
+                        let requestId;
+                        const panjangTotal = 220; // 2 * PI * r (35)
+                        garisFill.style.strokeDasharray = panjangTotal;
+                        garisFill.style.strokeDashoffset = panjangTotal;
 
-                      const animate = () => {
-                        fase += 0.04;
-                        const wavyPathData = buatJalurGelombang(50, 50, 35, 10, 2, fase);
-                        garisFill.setAttribute('d', wavyPathData);
+                        const animate = () => {
+                          fase += 0.04;
+                          const wavyPathData = buatJalurGelombang(50, 50, 35, 10, 2, fase);
+                          garisFill.setAttribute('d', wavyPathData);
+                          requestId = requestAnimationFrame(animate);
+                        };
+
                         requestId = requestAnimationFrame(animate);
-                      };
 
-                      requestId = requestAnimationFrame(animate);
+                        // Store variables to file object for update in uploadprogress
+                        file.wavyRequestId = requestId;
+                        file.wavyGarisFill = garisFill;
+                        file.wavyText = text;
+                        file.wavyLoader = loader;
+                      });
 
-                      // Store variables to file object for update in uploadprogress
-                      file.wavyRequestId = requestId;
-                      file.wavyGarisFill = garisFill;
-                      file.wavyText = text;
-                      file.wavyLoader = loader;
-                    });
+                      this.on("uploadprogress", function(file, progress, bytesSent) {
+                        if (file.wavyGarisFill) {
+                          const offset = 220 - (progress / 100 * 220);
+                          file.wavyGarisFill.style.strokeDashoffset = offset;
+                          file.wavyText.innerText = Math.round(progress) + '%';
+                        }
+                      });
 
-                    this.on("uploadprogress", function(file, progress, bytesSent) {
-                      if (file.wavyGarisFill) {
-                        const offset = 220 - (progress / 100 * 220);
-                        file.wavyGarisFill.style.strokeDashoffset = offset;
-                        file.wavyText.innerText = Math.round(progress) + '%';
-                      }
-                    });
+                      this.on("success", function(file, response) {
+                        if (file.wavyRequestId) cancelAnimationFrame(file.wavyRequestId);
+                        window.location.reload();
+                      });
 
-                    this.on("success", function(file, response) {
-                      if (file.wavyRequestId) cancelAnimationFrame(file.wavyRequestId);
-                      window.location.reload();
-                    });
+                      this.on("error", function(file, response) {
+                        if (file.wavyRequestId) cancelAnimationFrame(file.wavyRequestId);
+                        if (file.wavyLoader) file.wavyLoader.remove();
 
-                    this.on("error", function(file, response) {
-                      if (file.wavyRequestId) cancelAnimationFrame(file.wavyRequestId);
-                      if (file.wavyLoader) file.wavyLoader.remove();
-
-                      var msg = response.message || response || "Gagal mengunggah berkas";
-                      if (typeof msg === 'object' && msg.errors && msg.errors.berkas) {
-                        msg = msg.errors.berkas[0];
-                      }
-                      alert(msg);
-                      dz.removeFile(file);
-                    });
-                  }
-                });
+                        var msg = response.message || response || "Gagal mengunggah berkas";
+                        if (typeof msg === 'object' && msg.errors && msg.errors.berkas) {
+                          msg = msg.errors.berkas[0];
+                        }
+                        alert(msg);
+                        dz.removeFile(file);
+                      });
+                    }
+                  });
+                }
               });
             </script>
           @endsection

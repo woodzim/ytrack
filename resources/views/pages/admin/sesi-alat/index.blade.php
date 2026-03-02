@@ -10,8 +10,7 @@
       overflow-y: visible !important;
     }
 
-    /* Memungkinkan konten dropdown keluar dari container kartu */
-    #table-container,
+    /* Force parent containers to allow overflow so dropdowns aren't cut off */
     .table-wrapper,
     .table-wrapper .card-body {
       overflow: visible !important;

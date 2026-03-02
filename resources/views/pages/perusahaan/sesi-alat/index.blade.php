@@ -11,11 +11,9 @@
     }
 
     /* Memastikan card tidak memotong konten yang keluar (seperti dropdown) */
-    .custom-card {
-      overflow: visible !important;
-    }
-
-    .custom-card .card-body {
+    /* Force parent containers to allow overflow so dropdowns aren't cut off */
+    .table-wrapper,
+    .table-wrapper .card-body {
       overflow: visible !important;
     }
 

@@ -90,8 +90,14 @@
 
     .main-content.app-content>.container {
       margin-inline: auto !important;
-      max-width: 1320px !important;
+      max-width: 100% !important;
       width: 100% !important;
+    }
+
+    @media (min-width: 1400px) {
+      .main-content.app-content>.container {
+        max-width: 1920px !important;
+      }
     }
 
     .main-sidebar-header .header-logo {
@@ -320,14 +326,16 @@
         top: 0 !important;
         height: 100vh !important;
         overflow-y: auto !important;
-        z-index: 100 !important; /* Diatur rendah agar modal (1050+) bisa menutupi */
+        z-index: 100 !important;
+        /* Diatur rendah agar modal (1050+) bisa menutupi */
         /* Higher than header to stay on top when expanded */
       }
 
       .app-header {
         position: sticky !important;
         top: 0 !important;
-        z-index: 99 !important; /* Diatur rendah agar modal (1050+) bisa menutupi */
+        z-index: 99 !important;
+        /* Diatur rendah agar modal (1050+) bisa menutupi */
         width: 100% !important;
         padding-inline-start: 0 !important;
         /* Remove excessive gap to bring toggle closer to sidebar */
@@ -359,33 +367,65 @@
     /* Mobile Fallback */
     @media (max-width: 991.98px) {
       .content-center-wrapper {
-        padding-block-start: 4.25rem;
-        padding-inline: 1rem;
+        padding-block-start: 1.25rem !important;
+        /* Kept a small padding since the main container handles the header gap */
+        padding-inline: 1rem !important;
+        margin-block: 0 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+
+      /* Mobile Sidebar Overlay */
+      #responsive-overlay {
+        cursor: pointer;
+        visibility: hidden;
+        opacity: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 101;
+        /* Above mobile header, below sidebar (102) */
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+
+      [data-toggled="open"] #responsive-overlay {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      [data-toggled="open"] .app-sidebar {
+        z-index: 102 !important;
       }
     }
 
     /* Force .page to hug content with grid */
     .page {
       display: grid !important;
-      grid-template-rows: auto 1fr auto !important; /* Header, Content, Footer */
+      grid-template-rows: auto 1fr auto !important;
+      /* Header, Content, Footer */
       height: auto !important;
       min-height: auto !important;
     }
 
     /* Force Global Modals to be on TOP of everything - REMOVED TO FIX Z-INDEX ISSUES */
-    /* 
+    /*
     #globalConfirmModal, #globalAlertModal {
         z-index: 9999 !important;
     }
     .modal-backdrop {
         z-index: 9998 !important;
-    } 
+    }
     */
   </style>
 
 </head>
 
 <body class="">
+
+  <div id="responsive-overlay"></div>
 
   <div class="progress-top-bar"></div>
 
@@ -511,48 +551,49 @@
      * @param {string} confirmBtnText - Optional confirm button text
      * @param {string} confirmBtnClass - Optional confirm button class
      */
-    window.showConfirmModal = function(message, onConfirm, title = 'Konfirmasi Tindakan', confirmBtnText = 'Ya, Lanjutkan', confirmBtnClass = 'btn-danger') {
-        const modalEl = document.getElementById('globalConfirmModal');
-        const modal = new bootstrap.Modal(modalEl);
-        const messageEl = document.getElementById('globalConfirmModalMessage');
-        const titleEl = document.getElementById('globalConfirmModalLabel');
-        const confirmBtn = document.getElementById('globalConfirmModalBtn');
-        
-        messageEl.textContent = message;
-        titleEl.textContent = title;
-        confirmBtn.textContent = confirmBtnText;
-        
-        // Reset classes and add the requested one
-        confirmBtn.className = 'btn btn-wave shadow-sm ' + confirmBtnClass;
-        
-        // Clone button to remove old event listeners
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
-        
-        newConfirmBtn.addEventListener('click', function() {
-            onConfirm();
-            modal.hide();
-        });
-        
-        modal.show();
+    window.showConfirmModal = function(message, onConfirm, title = 'Konfirmasi Tindakan', confirmBtnText =
+      'Ya, Lanjutkan', confirmBtnClass = 'btn-danger') {
+      const modalEl = document.getElementById('globalConfirmModal');
+      const modal = new bootstrap.Modal(modalEl);
+      const messageEl = document.getElementById('globalConfirmModalMessage');
+      const titleEl = document.getElementById('globalConfirmModalLabel');
+      const confirmBtn = document.getElementById('globalConfirmModalBtn');
+
+      messageEl.textContent = message;
+      titleEl.textContent = title;
+      confirmBtn.textContent = confirmBtnText;
+
+      // Reset classes and add the requested one
+      confirmBtn.className = 'btn btn-wave shadow-sm ' + confirmBtnClass;
+
+      // Clone button to remove old event listeners
+      const newConfirmBtn = confirmBtn.cloneNode(true);
+      confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+      newConfirmBtn.addEventListener('click', function() {
+        onConfirm();
+        modal.hide();
+      });
+
+      modal.show();
     };
 
     // Global listener for forms with data-confirm
     document.addEventListener('submit', function(e) {
-        const form = e.target;
-        if (form.hasAttribute('data-confirm')) {
-            e.preventDefault();
-            const message = form.getAttribute('data-confirm') || 'Apakah Anda yakin ingin melanjutkan?';
-            const title = form.getAttribute('data-confirm-title') || 'Konfirmasi Tindakan';
-            const btnText = form.getAttribute('data-confirm-btn') || 'Ya, Lanjutkan';
-            const btnClass = form.getAttribute('data-confirm-btn-class') || 'btn-danger';
+      const form = e.target;
+      if (form.hasAttribute('data-confirm')) {
+        e.preventDefault();
+        const message = form.getAttribute('data-confirm') || 'Apakah Anda yakin ingin melanjutkan?';
+        const title = form.getAttribute('data-confirm-title') || 'Konfirmasi Tindakan';
+        const btnText = form.getAttribute('data-confirm-btn') || 'Ya, Lanjutkan';
+        const btnClass = form.getAttribute('data-confirm-btn-class') || 'btn-danger';
 
-            window.showConfirmModal(message, function() {
-                // Submit form without triggering this listener again
-                form.removeAttribute('data-confirm');
-                form.submit();
-            }, title, btnText, btnClass);
-        }
+        window.showConfirmModal(message, function() {
+          // Submit form without triggering this listener again
+          form.removeAttribute('data-confirm');
+          form.submit();
+        }, title, btnText, btnClass);
+      }
     });
 
     /**
@@ -562,33 +603,33 @@
      * @param {string} title - Optional title
      */
     window.showAlertModal = function(message, type = 'info', title = 'Informasi') {
-        const modal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
-        const messageEl = document.getElementById('globalAlertModalMessage');
-        const titleEl = document.getElementById('globalAlertModalLabel');
-        const iconContainer = document.getElementById('globalAlertModalIcon');
-        
-        messageEl.textContent = message;
-        titleEl.textContent = title;
-        
-        // Set icon and colors based on type
-        let iconHtml = '<i class="ri-information-line fs-24"></i>';
-        let bgClass = 'bg-primary-transparent text-primary';
-        
-        if (type === 'success') {
-            iconHtml = '<i class="ri-checkbox-circle-line fs-24"></i>';
-            bgClass = 'bg-success-transparent text-success';
-        } else if (type === 'error') {
-            iconHtml = '<i class="ri-error-warning-line fs-24"></i>';
-            bgClass = 'bg-danger-transparent text-danger';
-        } else if (type === 'warning') {
-            iconHtml = '<i class="ri-alert-line fs-24"></i>';
-            bgClass = 'bg-warning-transparent text-warning';
-        }
-        
-        iconContainer.innerHTML = iconHtml;
-        iconContainer.className = 'flex-shrink-0 p-2 rounded-3 ' + bgClass;
-        
-        modal.show();
+      const modal = new bootstrap.Modal(document.getElementById('globalAlertModal'));
+      const messageEl = document.getElementById('globalAlertModalMessage');
+      const titleEl = document.getElementById('globalAlertModalLabel');
+      const iconContainer = document.getElementById('globalAlertModalIcon');
+
+      messageEl.textContent = message;
+      titleEl.textContent = title;
+
+      // Set icon and colors based on type
+      let iconHtml = '<i class="ri-information-line fs-24"></i>';
+      let bgClass = 'bg-primary-transparent text-primary';
+
+      if (type === 'success') {
+        iconHtml = '<i class="ri-checkbox-circle-line fs-24"></i>';
+        bgClass = 'bg-success-transparent text-success';
+      } else if (type === 'error') {
+        iconHtml = '<i class="ri-error-warning-line fs-24"></i>';
+        bgClass = 'bg-danger-transparent text-danger';
+      } else if (type === 'warning') {
+        iconHtml = '<i class="ri-alert-line fs-24"></i>';
+        bgClass = 'bg-warning-transparent text-warning';
+      }
+
+      iconContainer.innerHTML = iconHtml;
+      iconContainer.className = 'flex-shrink-0 p-2 rounded-3 ' + bgClass;
+
+      modal.show();
     };
 
     // Override default window.confirm and window.alert if needed? 
@@ -606,6 +647,16 @@
 
   <!-- App JS-->
 
+  <!-- Responsive Sidebar Toggle JS -->
+  <script>
+    document.addEventListener('click', function(e) {
+      if (e.target.id === 'responsive-overlay' || e.target.closest('#sidebar-close-mobile')) {
+        if (window.innerWidth < 992) {
+          document.documentElement.setAttribute("data-toggled", "close");
+        }
+      }
+    });
+  </script>
   <!-- End Scripts -->
 
 </body>

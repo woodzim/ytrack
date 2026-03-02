@@ -553,7 +553,7 @@
             .listen('.LokasiBaru', (e) => {
               const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
               const battery = parseInt(e.battery || 0);
-              const isLowBat = battery <= 20;
+              const isLowBat = battery <= 30;
 
               if (markers[loc.id_sesi]) {
                 const marker = markers[loc.id_sesi];
@@ -651,13 +651,14 @@
         series: [@json($batteryStats['good']), @json($batteryStats['moderate']), @json($batteryStats['low'])],
         chart: {
           type: 'donut',
-          height: 280,
+          height: 300,
           width: '100%'
         },
         labels: ['Bagus (>70%)', 'Cukup (30-70%)', 'Lemah (<30%)'],
         colors: ['#10b981', '#f59e0b', '#ef4444'],
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          height: 60
         },
         plotOptions: {
           pie: {
@@ -687,7 +688,8 @@
         labels: ['Bergerak', 'Berhenti'],
         colors: ['#3b82f6', '#94a3b8'],
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          height: 60
         },
         plotOptions: {
           pie: {
@@ -717,7 +719,8 @@
         labels: ['Aktif', 'Nonaktif'],
         colors: ['#f59e0b', '#cbd5e1'],
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          height: 60
         },
         plotOptions: {
           pie: {

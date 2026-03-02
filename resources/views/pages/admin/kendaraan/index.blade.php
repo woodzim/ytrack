@@ -3,10 +3,8 @@
 @section('styles')
   <style>
     /* Force parent containers to allow overflow so dropdowns aren't cut off */
-    #table-container,
     .table-wrapper,
-    .table-wrapper .card-body,
-    .table-responsive {
+    .table-wrapper .card-body {
       overflow: visible !important;
     }
 

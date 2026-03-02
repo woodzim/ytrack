@@ -76,7 +76,7 @@ class DashboardsController extends Controller
                     'lat' => $latestLocation->lat,
                     'long' => $latestLocation->long,
                     'battery' => $battery,
-                    'is_low_bat' => $battery <= 20,
+                    'is_low_bat' => $battery <= 30,
                     'last_update' => $latestLocation->created_at->diffForHumans(),
                     'status' => $isActive ? 'Aktif' : 'Tidak Aktif',
                     'id_sesi' => $lastSession->id

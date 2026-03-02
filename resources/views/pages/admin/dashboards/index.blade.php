@@ -31,6 +31,10 @@
       .page-header-breadcrumb {
         margin-bottom: 0.75rem !important;
       }
+
+      .chart-container-fixed {
+        min-height: 250px !important;
+      }
     }
 
     /* Fixed height for chart containers to keep dashboard uniform */
@@ -221,32 +225,32 @@
         <div id="travel-chart"></div>
       </div>
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-12">
+    <div class="col-12">
       <div class="card h-100">
         <div class="card-header">
           <h5 class="card-title fw-semibold mb-0">Distribusi Kendaraan per Perusahaan</h5>
         </div>
-        <div class="card-body p-0 chart-container-fixed d-flex align-items-center justify-content-center">
+        <div class="card-body p-0 chart-container-fixed d-flex align-items-start justify-content-center pt-3">
           <div id="company-chart" class="w-100"></div>
         </div>
       </div>
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-12">
+    <div class="col-xl-6 col-lg-6 col-md-6 col-12">
       <div class="card h-100">
         <div class="card-header">
           <h5 class="card-title fw-semibold mb-0">Status Baterai Semua Alat</h5>
         </div>
-        <div class="card-body p-0 chart-container-fixed d-flex align-items-center justify-content-center">
+        <div class="card-body p-0 chart-container-fixed d-flex align-items-start justify-content-center pt-3">
           <div id="battery-chart" class="w-100"></div>
         </div>
       </div>
     </div>
-    <div class="col-xl-4 col-lg-4 col-md-12">
+    <div class="col-xl-6 col-lg-6 col-md-6 col-12">
       <div class="card h-100">
         <div class="card-header">
           <h5 class="card-title fw-semibold mb-0">Penggunaan Semua Alat</h5>
         </div>
-        <div class="card-body p-0 chart-container-fixed d-flex align-items-center justify-content-center">
+        <div class="card-body p-0 chart-container-fixed d-flex align-items-start justify-content-center pt-3">
           <div id="tool-usage-chart" class="w-100"></div>
         </div>
       </div>
@@ -444,7 +448,7 @@
             .listen('.LokasiBaru', (e) => {
               const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
               const battery = parseInt(e.battery || 0);
-              const isLowBat = battery <= 20;
+              const isLowBat = battery <= 30;
 
               // 1. Update Map Marker
               if (markers[loc.id_sesi]) {
@@ -483,7 +487,7 @@
           container.innerHTML = `<div class="alert alert-danger d-flex align-items-center mb-3 shadow-sm border-0" role="alert">
             <i class="ri-error-warning-fill fs-20 me-2"></i>
             <div>
-              <strong>Peringatan!</strong> Terdapat <b>${count}</b> perangkat dengan baterai lemah (<20%).
+              <strong>Peringatan!</strong> Terdapat <b>${count}</b> perangkat dengan baterai lemah (<30%).
             </div>
           </div>`;
         } else {
@@ -639,7 +643,7 @@
         labels: @json($perusahaanChart->pluck('nama')),
         colors: ['#09637E', '#088395', '#7AB2B2', '#28a745', '#ffc107'],
         legend: {
-          show: true,
+          show: false,
           position: 'bottom',
           horizontalAlign: 'center',
           offsetY: 0
@@ -662,16 +666,20 @@
           }
         },
         responsive: [{
-          breakpoint: 480,
+          breakpoint: 576,
           options: {
             chart: {
+              height: 320,
               width: '100%'
             },
             legend: {
-              position: 'bottom'
+              show: false
             }
           }
-        }]
+        }],
+        dataLabels: {
+          enabled: false
+        }
       };
       var companyChart = new ApexCharts(document.querySelector("#company-chart"), companyOptions);
       companyChart.render();
@@ -681,14 +689,15 @@
         series: [batteryStats.good, batteryStats.moderate, batteryStats.low],
         chart: {
           type: 'donut',
-          height: 280,
+          height: 300,
           width: '100%'
         },
         labels: ['Bagus (>70%)', 'Cukup (30-70%)', 'Lemah (<30%)'],
         colors: ['#10b981', '#f59e0b', '#ef4444'],
         legend: {
           position: 'bottom',
-          fontWeight: 600
+          fontWeight: 600,
+          height: 60
         },
         plotOptions: {
           pie: {
@@ -709,7 +718,15 @@
         },
         dataLabels: {
           enabled: false
-        }
+        },
+        responsive: [{
+          breakpoint: 576,
+          options: {
+            chart: {
+              height: 250,
+            }
+          }
+        }]
       };
       var batteryChart = new ApexCharts(document.querySelector("#battery-chart"), batteryOptions);
       batteryChart.render();
@@ -726,7 +743,8 @@
         colors: ['#f59e0b', '#cbd5e1'],
         legend: {
           position: 'bottom',
-          fontWeight: 600
+          fontWeight: 600,
+          height: 60
         },
         plotOptions: {
           pie: {
@@ -745,7 +763,15 @@
         },
         dataLabels: {
           enabled: false
-        }
+        },
+        responsive: [{
+          breakpoint: 576,
+          options: {
+            chart: {
+              height: 250,
+            }
+          }
+        }]
       };
       var toolUsageChart = new ApexCharts(document.querySelector("#tool-usage-chart"), toolStatusOptions);
       toolUsageChart.render();
