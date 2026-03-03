@@ -6,6 +6,7 @@
     .choices__list--dropdown .choices__item--selectable {
       padding-right: 10px;
     }
+
     .choices__list--dropdown .choices__item--disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -25,13 +26,13 @@
       <div class="form-card">
         <div class="card-header py-3">
           <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Edit Sesi</h5>
+            <h5 class="card-title mb-0">Edit Perjalanan</h5>
           </div>
         </div>
         <div class="card-body">
           <div class="meta-info mb-4 p-3 bg-light rounded border">
             <div class="row">
-              <div class="col-md-4"><strong>ID Sesi:</strong> #{{ $sesiAlat->id }}</div>
+              <div class="col-md-4"><strong>ID Perjalanan:</strong> #{{ $sesiAlat->id }}</div>
               <div class="col-md-4"><strong>Status:</strong>
                 @if ($sesiAlat->aktif)
                   <span class="badge bg-success">Aktif</span>
@@ -44,7 +45,7 @@
             </div>
           </div>
 
-          <form action="{{ route('sesi-alat.update', $sesiAlat->id) }}" method="POST">
+          <form action="{{ route('perjalanan.update', $sesiAlat->id) }}" method="POST">
             @csrf
             @method('PUT')
 
@@ -67,7 +68,8 @@
               <label for="id_alat" class="form-label">
                 Alat GPS <span class="text-danger">*</span>
               </label>
-              <select name="id_alat" id="id_alat" class="form-select select-choices-ajax @error('id_alat') is-invalid @enderror" required>
+              <select name="id_alat" id="id_alat"
+                class="form-select select-choices-ajax @error('id_alat') is-invalid @enderror" required>
                 @if ($sesiAlat->alat)
                   <option value="{{ $sesiAlat->id_alat }}" selected>{{ $sesiAlat->alat->id }}</option>
                 @endif
@@ -79,10 +81,10 @@
 
             <div class="mb-4">
               <label for="nama" class="form-label">
-                Nama Sesi <span class="text-muted">(Opsional)</span>
+                Nama Perjalanan <span class="text-muted">(Opsional)</span>
               </label>
               <input type="text" name="nama" id="nama" class="form-control @error('nama') is-invalid @enderror"
-                placeholder="Contoh: Sesi Tracking Koransi" value="{{ old('nama', $sesiAlat->nama) }}">
+                placeholder="Contoh: Perjalanan Tracking Koransi" value="{{ old('nama', $sesiAlat->nama) }}">
               @error('nama')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
@@ -92,7 +94,7 @@
               <button type="submit" class="btn btn-primary btn-wave">
                 <i class="ri-save-line me-2"></i>Simpan Perubahan
               </button>
-              <a href="{{ route('sesi-alat.index') }}" class="btn btn-light btn-wave">
+              <a href="{{ route('perjalanan.index') }}" class="btn btn-light btn-wave">
                 <i class="ri-close-line me-2"></i>Batal
               </a>
             </div>
@@ -119,7 +121,9 @@
         itemSelectText: '',
         callbackOnCreateTemplates: function(strToEl) {
           return {
-            item: ({ classNames }, data) => {
+            item: ({
+              classNames
+            }, data) => {
               return strToEl(`
                 <div class="${classNames.item} ${data.highlighted ? classNames.highlightedState : classNames.itemSelectable}" 
                   data-item 
@@ -131,10 +135,13 @@
                 </div>
               `);
             },
-            choice: ({ classNames }, data) => {
-              const isActive = data.customProperties && (data.customProperties.active === 'true' || data.customProperties.active === true);
+            choice: ({
+              classNames
+            }, data) => {
+              const isActive = data.customProperties && (data.customProperties.active === 'true' || data
+                .customProperties.active === true);
               const info = data.customProperties ? data.customProperties.info : '';
-              
+
               return strToEl(`
                 <div class="${classNames.item} ${classNames.itemChoice} ${data.disabled ? classNames.itemDisabled : classNames.itemSelectable} ${isActive ? 'text-muted opacity-75' : ''}" 
                   data-select-text="" 
@@ -165,7 +172,7 @@
         if (!idPerusahaan) return;
 
         // --- A. LOAD KENDARAAN ---
-        fetch(`{{ url('sesi-alat-kendaraan') }}/${idPerusahaan}`)
+        fetch(`{{ url('perjalanan-kendaraan') }}/${idPerusahaan}`)
           .then(res => res.json())
           .then(data => {
             choicesKendaraan.clearChoices();
@@ -178,16 +185,21 @@
                 disabled: isDisabled,
                 customProperties: {
                   active: item.is_active && (String(item.id) !== String(currentKendaraanId)),
-                  info: item.is_active && (String(item.id) !== String(currentKendaraanId)) ? 'Kendaraan sedang dalam sesi aktif' : `${item.plat}`
+                  info: item.is_active && (String(item.id) !== String(currentKendaraanId)) ?
+                    'Kendaraan sedang dalam perjalanan aktif' : `${item.plat}`
                 }
               };
             });
-            choicesKendaraan.setChoices([{ value: '', label: '-- Pilih Kendaraan --', selected: false }, ...options], 'value', 'label', true);
+            choicesKendaraan.setChoices([{
+              value: '',
+              label: '-- Pilih Kendaraan --',
+              selected: false
+            }, ...options], 'value', 'label', true);
           })
           .catch(err => console.error('Error fetching kendaraan:', err));
 
         // --- B. LOAD ALAT ---
-        fetch(`{{ url('sesi-alat-alat') }}/${idPerusahaan}`)
+        fetch(`{{ url('perjalanan-alat') }}/${idPerusahaan}`)
           .then(res => res.json())
           .then(data => {
             choicesAlat.clearChoices();
@@ -200,11 +212,16 @@
                 disabled: isDisabled,
                 customProperties: {
                   active: item.is_active && (String(item.id) !== String(currentAlatId)),
-                  info: item.is_active && (String(item.id) !== String(currentAlatId)) ? (item.current_vehicle ? `Sedang dipakai di: ${item.current_vehicle}` : 'Sedang Aktif') : 'Siap digunakan'
+                  info: item.is_active && (String(item.id) !== String(currentAlatId)) ? (item.current_vehicle ?
+                    `Sedang dipakai di: ${item.current_vehicle}` : 'Sedang Aktif') : 'Siap digunakan'
                 }
               };
             });
-            choicesAlat.setChoices([{ value: '', label: '-- Pilih Alat --', selected: false }, ...options], 'value', 'label', true);
+            choicesAlat.setChoices([{
+              value: '',
+              label: '-- Pilih Alat --',
+              selected: false
+            }, ...options], 'value', 'label', true);
           })
           .catch(err => console.error('Error fetching alat:', err));
       }

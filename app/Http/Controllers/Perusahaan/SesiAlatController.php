@@ -93,7 +93,7 @@ class SesiAlatController extends Controller
                         ->where('aktif', true)
                         ->exists();
                     if ($exists) {
-                        $fail('Kendaraan ini sedang dalam sesi aktif lain.');
+                        $fail('Kendaraan ini sedang dalam perjalanan aktif lain.');
                     }
                 },
             ],
@@ -105,7 +105,7 @@ class SesiAlatController extends Controller
                         ->where('aktif', true)
                         ->exists();
                     if ($exists) {
-                        $fail('Alat GPS ini sedang digunakan di sesi lain.');
+                        $fail('Alat GPS ini sedang digunakan di perjalanan lain.');
                     }
                 },
             ],
@@ -143,7 +143,7 @@ class SesiAlatController extends Controller
         ]);
         // -----------------------------
 
-        return redirect()->route('perusahaan.sesi-alat.index')
+        return redirect()->route('perusahaan.perjalanan.index')
                         ->with('success', 'Perjalanan berhasil dibuat.');
     }
 
@@ -212,12 +212,12 @@ class SesiAlatController extends Controller
             return response()->json([
                 'success' => true,
                 'aktif' => $sesi->aktif,
-                'message' => 'Sesi berhasil ' . ($sesi->aktif ? 'diaktifkan' : 'dinonaktifkan') . '.'
+                'message' => 'Perjalanan berhasil ' . ($sesi->aktif ? 'diaktifkan' : 'diselesaikan') . '.'
             ]);
         }
 
-        $statusMsg = $sesi->aktif ? 'diaktifkan' : 'dinonaktifkan';
-        return back()->with('success', 'Sesi berhasil ' . $statusMsg . '.');
+        $statusMsg = $sesi->aktif ? 'diaktifkan' : 'diselesaikan';
+        return back()->with('success', 'Perjalanan berhasil ' . $statusMsg . '.');
     }
 
     /**
@@ -246,7 +246,7 @@ class SesiAlatController extends Controller
         ]);
         // -----------------------------
 
-        return redirect()->route('perusahaan.sesi-alat.index')
-                            ->with('success', 'Sesi berhasil dihapus.');
+        return redirect()->route('perusahaan.perjalanan.index')
+                            ->with('success', 'Perjalanan berhasil dihapus.');
     }
 }

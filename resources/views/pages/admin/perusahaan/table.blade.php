@@ -33,7 +33,8 @@
                 </td>
                 <td data-label="Aksi" class="text-center">
                   <div class="dropdown">
-                    <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button"
+                      data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="ri-more-2-fill"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
@@ -47,7 +48,9 @@
                           <i class="ri-edit-line me-2 align-middle text-warning"></i>Edit Perusahaan
                         </a>
                       </li>
-                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
                       <li>
                         <form action="{{ route('admin.perusahaan.destroy', $item->id) }}" method="POST"
                           data-confirm="Anda yakin ingin menghapus perusahaan ini?">
@@ -82,11 +85,6 @@
             <i class="ri-arrow-left-line me-2"></i>Kembali ke Daftar
           </a>
         @else
-          <h5 class="text-muted mb-2">Tidak ada data perusahaan</h5>
-          <p class="text-muted mb-3">Mulai dengan menambahkan perusahaan pertama Anda</p>
-          <a href="{{ route('admin.perusahaan.create') }}" class="btn btn-primary btn-wave">
-            <i class="ri-add-line me-2"></i>Tambah Perusahaan
-          </a>
         @endif
       </div>
     @endif

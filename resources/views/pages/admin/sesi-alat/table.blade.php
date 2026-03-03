@@ -23,7 +23,7 @@
             @foreach ($sesiAlat as $item)
               @php
                 $lastTrack = $item->riwayatPerjalanan->sortByDesc('created_at')->first();
-                $battery = $lastTrack ? (int)$lastTrack->battery : 0;
+                $battery = $lastTrack ? (int) $lastTrack->battery : 0;
               @endphp
               <tr>
                 <td class="ps-3" data-label="Perusahaan">
@@ -32,14 +32,17 @@
                 <td data-label="Kendaraan">
                   <div class="d-flex align-items-center">
                     <i class="ri-truck-line me-2 text-primary"></i>
-                    <span class="fw-medium text-muted small">{{ $item->kendaraan ? $item->kendaraan?->nama : '-' }}</span>
+                    <span
+                      class="fw-medium text-muted small">{{ $item->kendaraan ? $item->kendaraan?->nama : '-' }}</span>
                   </div>
                 </td>
                 <td data-label="Alat">
-                  <span class="badge bg-primary-transparent text-primary">{{ $item->alat ? $item->alat?->id : '-' }}</span>
+                  <span
+                    class="badge bg-primary-transparent text-primary">{{ $item->alat ? $item->alat?->id : '-' }}</span>
                 </td>
                 <td data-label="Status">
-                  <span class="badge rounded-pill {{ $item->aktif ? 'bg-success-transparent text-success' : 'bg-secondary-transparent text-muted' }}">
+                  <span
+                    class="badge rounded-pill {{ $item->aktif ? 'bg-success-transparent text-success' : 'bg-secondary-transparent text-muted' }}">
                     <i class="ri-checkbox-blank-circle-fill fs-8 me-1"></i> {{ $item->aktif ? 'Aktif' : 'Nonaktif' }}
                   </span>
                 </td>
@@ -61,33 +64,39 @@
 
                 <td data-label="Aksi" class="text-center">
                   <div class="dropdown">
-                    <button class="btn btn-sm btn-icon btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-sm btn-icon btn-light btn-wave dropdown-toggle hide-arrow" type="button"
+                      data-bs-toggle="dropdown" aria-expanded="false">
                       <i class="ri-more-2-fill"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                       <li>
-                        <a class="dropdown-item" href="{{ route('sesi-alat.show', $item->id) }}">
+                        <a class="dropdown-item" href="{{ route('perjalanan.show', $item->id) }}">
                           <i class="ri-map-2-line me-2 align-middle text-info"></i>Lihat Tracking
                         </a>
                       </li>
                       <li>
-                        <form action="{{ route('sesi-alat.toggle', $item->id) }}" method="POST">
+                        <form action="{{ route('perjalanan.toggle', $item->id) }}" method="POST"
+                          data-confirm="Ubah status perjalanan ini?" data-confirm-title="Konfirmasi Perjalanan"
+                          data-confirm-btn="Ya, Ubah" data-confirm-btn-class="btn-primary">
                           @csrf
                           @method('PUT')
-                          <button type="submit" class="dropdown-item {{ $item->aktif ? 'text-warning' : 'text-success' }}">
+                          <button type="submit"
+                            class="dropdown-item {{ $item->aktif ? 'text-warning' : 'text-success' }}">
                             <i class="ri-{{ $item->aktif ? 'pause' : 'play' }}-line me-2 align-middle"></i>
-                            {{ $item->aktif ? 'Nonaktifkan Sesi' : 'Aktifkan Sesi' }}
+                            {{ $item->aktif ? 'Selesaikan Perjalanan' : 'Aktifkan Perjalanan' }}
                           </button>
                         </form>
                       </li>
-                      <li><hr class="dropdown-divider"></li>
                       <li>
-                        <form action="{{ route('sesi-alat.destroy', $item->id) }}" method="POST"
-                          data-confirm="Hapus sesi ini?">
+                        <hr class="dropdown-divider">
+                      </li>
+                      <li>
+                        <form action="{{ route('perjalanan.destroy', $item->id) }}" method="POST"
+                          data-confirm="Hapus perjalanan ini?">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="dropdown-item text-danger">
-                            <i class="ri-delete-bin-line me-2 align-middle"></i>Hapus Sesi
+                            <i class="ri-delete-bin-line me-2 align-middle"></i>Hapus Perjalanan
                           </button>
                         </form>
                       </li>

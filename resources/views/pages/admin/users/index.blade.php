@@ -4,8 +4,7 @@
   <style>
     /* Force parent containers to allow overflow so dropdowns aren't cut off */
     .table-wrapper,
-    .table-wrapper .card-body,
-    .table-responsive {
+    .table-wrapper .card-body {
       overflow: visible !important;
     }
 
@@ -53,27 +52,29 @@
   <div class="row">
     <div class="col-12">
       <!-- Filter & Search Section -->
-      <div class="card mb-3 border-0 shadow-none bg-transparent">
-        <div class="p-0">
+      <div class="card custom-card mb-3">
+        <div class="card-body p-3">
           <form action="{{ route('users.index') }}" method="GET" id="filterForm"
-            class="d-flex gap-2 flex-wrap align-items-end">
+            class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
             <div class="flex-grow-1" style="min-width: 250px;">
-              <label for="searchInput" class="form-label mb-2">Cari Pengguna</label>
+              <label for="searchInput" class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari
+                Pengguna</label>
               <div class="input-group">
-                <span class="input-group-text bg-white border-end-0" style="height: 38px;">
-                  <i class="ri-search-line text-muted"></i>
+                <span class="input-group-text bg-white border-end-0 border-light" style="height: 40px;">
+                  <i class="ri-search-line"></i>
                 </span>
-                <input type="text" id="searchInput" name="search" class="form-control border-start-0 ps-1"
-                  placeholder="Cari nama atau email..." value="{{ $search }}" autocomplete="off"
-                  style="height: 38px;">
+                <input type="text" id="searchInput" name="search"
+                  class="form-control border-start-0 border-light bg-white" placeholder="Cari nama atau email..."
+                  value="{{ $search }}" autocomplete="off" style="height: 40px;">
               </div>
             </div>
             <div style="min-width: 180px;">
-              <label class="form-label mb-2">Role</label>
+              <label class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Role</label>
               <input type="hidden" name="role" id="role_input" value="{{ $filter_role }}">
-              <div class="dropdown">
-                <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown"
-                  aria-expanded="false" id="roleDropdown">
+              <div class="dropdown w-100">
+                <button
+                  class="btn bg-white border text-dark w-100 d-flex justify-content-between align-items-center dropdown-toggle hide-arrow"
+                  type="button" data-bs-toggle="dropdown" aria-expanded="false" id="roleDropdown" style="height: 40px;">
                   <div class="d-flex align-items-center text-truncate">
                     <i class="ri-user-settings-line me-2 text-muted"></i>
                     <span class="text-truncate">
@@ -99,7 +100,7 @@
 
             <div id="reset-container" class="{{ $search || $filter_role !== '' ? '' : 'd-none' }}">
               <a href="{{ route('users.index') }}" class="btn btn-outline-secondary btn-wave d-flex align-items-center"
-                id="resetBtn" style="height: 38px;">
+                id="resetBtn" style="height: 40px;">
                 <i class="ri-close-line me-2"></i>Reset
               </a>
             </div>
@@ -199,6 +200,24 @@
             <button type="submit" id="validateSubmitBtn" class="btn btn-primary">Validasi</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF Viewer Modal -->
+  <div class="modal fade" id="pdfViewerModal" tabindex="-1" aria-labelledby="pdfViewerModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pdfViewerModalLabel">
+            <i class="ri-file-pdf-line me-2 text-danger"></i>Pratinjau Berkas
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0" style="height: 80vh;">
+          <iframe id="pdfViewerIframe" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
       </div>
     </div>
   </div>
@@ -404,6 +423,27 @@
               validateSubmitBtn.className = 'btn btn-success';
               validateUserForm.action = validateUrl;
             }
+          }
+        });
+      }
+
+      // PDF Viewer Modal setup
+      const pdfViewerModal = document.getElementById('pdfViewerModal');
+      const pdfViewerIframe = document.getElementById('pdfViewerIframe');
+
+      if (pdfViewerModal) {
+        // Use event delegation for dynamic content
+        document.body.addEventListener('show.bs.modal', function(event) {
+          if (event.target.id === 'pdfViewerModal') {
+            const button = event.relatedTarget;
+            const pdfUrl = button.getAttribute('data-pdf-url');
+            pdfViewerIframe.src = pdfUrl;
+          }
+        });
+
+        document.body.addEventListener('hidden.bs.modal', function(event) {
+          if (event.target.id === 'pdfViewerModal') {
+            pdfViewerIframe.src = '';
           }
         });
       }

@@ -59,7 +59,7 @@
     </div>
     <div class="ms-auto">
       {{-- TOMBOL BUAT SESI --}}
-      <a href="{{ route('perusahaan.sesi-alat.create') }}" class="btn btn-light btn-wave">
+      <a href="{{ route('perusahaan.perjalanan.create') }}" class="btn btn-light btn-wave">
         <i class="ri-add-line me-2"></i>Buat Sesi Baru
       </a>
     </div>
@@ -67,34 +67,35 @@
   <div class="row">
     <div class="col-12">
 
-      <div class="card mb-0 border-0 shadow-none bg-transparent">
-        <div class="p-0">
-          <form action="{{ route('perusahaan.sesi-alat.index') }}" method="GET" id="filterForm"
-            class="d-flex gap-3 flex-wrap align-items-end">
+      <div class="card custom-card">
+        <div class="card-body p-0">
+          <form action="{{ route('perusahaan.perjalanan.index') }}" method="GET" id="filterForm"
+            class="d-flex flex-column flex-md-row gap-3 align-items-md-end border-bottom">
 
             {{-- SEARCH INPUT --}}
-            <div class="grow" style="min-width: 250px;">
-              <label for="searchInput" class="form-label fw-medium mb-2">Cari Sesi</label>
+            <div class="flex-grow-1" style="min-width: 250px;">
+              <label for="searchInput" class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari
+                Sesi</label>
               <div class="input-group">
-                <span class="input-group-text bg-white border-end-0" style="height: 38px;"><i
-                    class="ri-search-line text-muted"></i></span>
-                {{-- Input pencarian --}}
-                <input type="text" id="searchInput" name="search" class="form-control border-start-0 ps-1"
+                <span class="input-group-text bg-white border-end-0 border-light"><i class="ri-search-line"></i></span>
+                <input type="text" id="searchInput" name="search"
+                  class="form-control border-start-0 border-light bg-white"
                   placeholder="Cari nama sesi, serial number alat, atau kendaraan..." value="{{ request('search') }}"
-                  autocomplete="off" style="height: 38px;">
+                  autocomplete="off" style="height: 40px;">
               </div>
             </div>
 
             {{-- FILTER STATUS --}}
             <div style="min-width: 180px;">
-              <label class="form-label fw-medium mb-2">Status</label>
+              <label class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Status</label>
               <input type="hidden" name="status" id="status_input" value="{{ request('status') }}">
               <div class="dropdown">
-                <button class="custom-filter-dropdown dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown"
-                  aria-expanded="false" id="statusDropdown">
+                <button class="btn bg-white border text-dark w-100 d-flex justify-content-between align-items-center"
+                  type="button" data-bs-toggle="dropdown" aria-expanded="false" id="statusDropdown"
+                  style="height: 40px;">
                   <div class="d-flex align-items-center">
-                    <i class="ri-checkbox-circle-line me-2 text-muted"></i>
-                    <span>
+                    <i class="ri-filter-3-line me-2 text-muted"></i>
+                    <span class="fw-medium">
                       @if (request('status') === '1')
                         Aktif
                       @elseif(request('status') === '0')
@@ -106,23 +107,28 @@
                   </div>
                   <i class="ri-arrow-down-s-line text-muted"></i>
                 </button>
-                <ul class="dropdown-menu w-100 shadow-sm">
+                <ul class="dropdown-menu w-100 shadow-sm border-0 mt-1">
                   <li><a
-                      class="dropdown-item {{ request('status') === null || request('status') === '' ? 'active' : '' }}"
+                      class="dropdown-item py-2 {{ request('status') === null || request('status') === '' ? 'active bg-primary-transparent text-primary' : '' }}"
                       href="#" onclick="selectFilter(this, 'status', '', 'Semua Status')">Semua Status</a></li>
-                  <li><a class="dropdown-item {{ request('status') === '1' ? 'active' : '' }}" href="#"
-                      onclick="selectFilter(this, 'status', '1', 'Aktif')">Aktif</a></li>
-                  <li><a class="dropdown-item {{ request('status') === '0' ? 'active' : '' }}" href="#"
-                      onclick="selectFilter(this, 'status', '0', 'Nonaktif')">Nonaktif</a></li>
+                  <li><a
+                      class="dropdown-item py-2 {{ request('status') === '1' ? 'active bg-success-transparent text-success' : '' }}"
+                      href="#" onclick="selectFilter(this, 'status', '1', 'Aktif')"><i
+                        class="ri-checkbox-circle-line me-2"></i>Aktif</a></li>
+                  <li><a
+                      class="dropdown-item py-2 {{ request('status') === '0' ? 'active bg-danger-transparent text-danger' : '' }}"
+                      href="#" onclick="selectFilter(this, 'status', '0', 'Nonaktif')"><i
+                        class="ri-close-circle-line me-2"></i>Nonaktif</a></li>
                 </ul>
               </div>
             </div>
 
             <div id="reset-container"
               class="{{ request()->filled('search') || (request()->has('status') && request('status') !== '') ? '' : 'd-none' }}">
-              <a href="{{ route('perusahaan.sesi-alat.index') }}"
-                class="btn btn-outline-secondary btn-wave d-flex align-items-center" id="resetBtn" style="height: 38px;">
-                <i class="ri-close-line me-2"></i>Reset
+              <a href="{{ route('perusahaan.perjalanan.index') }}"
+                class="btn btn-danger-transparent btn-wave d-flex align-items-center justify-content-center"
+                id="resetBtn" style="height: 40px; min-width: 100px;">
+                <i class="ri-refresh-line me-2"></i>Reset
               </a>
             </div>
 
@@ -130,16 +136,12 @@
         </div>
       </div>
 
-      <div class="card custom-card">
-        <div class="card-header justify-content-between">
-        </div>
-
-        <div class="card-body p-0" id="table-container">
-          @include('pages.perusahaan.sesi-alat.table')
-        </div>
+      <div class="card-body p-0" id="table-container">
+        @include('pages.perusahaan.sesi-alat.table')
       </div>
-
     </div>
+
+  </div>
   </div>
 @endsection
 
@@ -268,6 +270,48 @@
       });
 
       formatDates();
+
+      // AJAX Logic untuk Toggle Status
+      tableContainer.addEventListener('click', (e) => {
+        const toggleBtn = e.target.closest('.toggle-status-btn');
+        if (toggleBtn) {
+          e.preventDefault();
+          const url = toggleBtn.dataset.url;
+          const token = toggleBtn.dataset.token;
+          const isActive = toggleBtn.dataset.active === '1';
+
+          const title = "Konfirmasi Perjalanan";
+          const message = "Ubah status perjalanan ini?";
+          const btnText = "Ya, Ubah";
+          const btnClass = "btn-primary";
+
+          window.showConfirmModal(message, () => {
+            // Lakukan fetch
+            fetch(url, {
+                method: 'PUT',
+                headers: {
+                  'X-CSRF-TOKEN': token,
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                }
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.status === 'success') {
+                  window.showAlertModal(data.message || 'Status berhasil diubah', 'success');
+                  // Refresh tabel saja tanpa refresh halaman
+                  triggerFetch();
+                } else {
+                  window.showAlertModal(data.message || 'Gagal mengubah status', 'error');
+                }
+              })
+              .catch(error => {
+                console.error('Error:', error);
+                window.showAlertModal('Terjadi kesalahan jaringan.', 'error');
+              });
+          }, title, btnText, btnClass);
+        }
+      });
     });
   </script>
 @endsection

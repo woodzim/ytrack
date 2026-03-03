@@ -84,4 +84,6 @@ Route::middleware(['auth'])->group(function () {
         }
         return view('pages.verification-wait');
     })->name('verification.wait');
+
+    Route::post('/verification/berkas', [RegisterController::class, 'uploadBerkas'])->name('verification.berkas');
 });

@@ -57,10 +57,10 @@
 
 @section('content')
   <!-- Start::page-header -->
-  <div class="d-flex align-items-center justify-content-between mb-3 page-header-breadcrumb flex-wrap gap-2">
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
       <h1 class="page-title fw-medium fs-20 mb-0">Beranda Admin YA-Track</h1>
-      <p class="text-muted mb-0">Dashboard Monitoring Seluruh Alat YA-Track</p>
+      <p class="">Dashboard Monitoring Seluruh Alat YA-Track</p>
     </div>
   </div>
   <!-- End::page-header -->
@@ -166,7 +166,7 @@
             <p class="text-muted mb-0 small">Perangkat yang sedang aktif melacak secara real-time</p>
           </div>
           <div class="card-footer border-top mt-auto">
-            <a href="{{ route('sesi-alat.index') }}" class="btn btn-sm btn-outline-primary">
+            <a href="{{ route('perjalanan.index') }}" class="btn btn-sm btn-outline-primary">
               Lihat Semua <i class="ri-arrow-right-line ms-1"></i>
             </a>
           </div>

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('nama');
             $table->string('alamat');
+            $table->string('logo')->nullable();
+            $table->string('berkas')->nullable();
             $table->timestamps();
         });
     }

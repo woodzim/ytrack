@@ -14,7 +14,7 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header py-3">
+                <div class="card-header p-0 mt-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Edit Profil</h5>
                     </div>
@@ -116,7 +116,7 @@
 
             <!-- Account Info Card -->
             <div class="card mt-4">
-                <div class="card-header py-3">
+                <div class="card-header p-0 mt-2">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="card-title mb-0">Informasi Akun</h5>
                     </div>

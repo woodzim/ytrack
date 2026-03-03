@@ -6,12 +6,12 @@ use App\Http\Controllers\Admin\RiwayatPerjalananController;
 use App\Http\Controllers\Admin\TrackingTidakLengkapController;
 
 /******** Perjalanan (Admin) ********/
-Route::resource('sesi-alat', SesiAlatController::class);
-Route::put('sesi-alat/{sesiAlat}/toggle', [SesiAlatController::class, 'toggle'])->name('sesi-alat.toggle');
+Route::resource('perjalanan', SesiAlatController::class)->parameters(['perjalanan' => 'sesi_alat']);
+Route::put('perjalanan/{sesiAlat}/toggle', [SesiAlatController::class, 'toggle'])->name('perjalanan.toggle');
 
 // Helper routes untuk AJAX/Dropdown
-Route::get('sesi-alat-kendaraan/{idPerusahaan}', [SesiAlatController::class, 'getKendaraanByPerusahaan'])->name('sesi-alat.kendaraan');
-Route::get('sesi-alat-alat/{idPerusahaan}', [SesiAlatController::class, 'getAlatByPerusahaan'])->name('sesi-alat.alat');
+Route::get('perjalanan-kendaraan/{idPerusahaan}', [SesiAlatController::class, 'getKendaraanByPerusahaan'])->name('perjalanan.kendaraan');
+Route::get('perjalanan-alat/{idPerusahaan}', [SesiAlatController::class, 'getAlatByPerusahaan'])->name('perjalanan.alat');
 
 /******** Riwayat Perjalanan ********/
 Route::resource('riwayat-perjalanan', RiwayatPerjalananController::class, [

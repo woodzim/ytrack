@@ -8,3 +8,4 @@ Route::get('dashboard', [PerusahaanDashboardController::class, 'index'])->name('
 
 Route::get('profile', [PerusahaanProfileController::class, 'index'])->name('profile.index');
 Route::put('profile', [PerusahaanProfileController::class, 'update'])->name('profile.update');
+Route::delete('profile/logo', [PerusahaanProfileController::class, 'deleteLogo'])->name('profile.delete-logo');

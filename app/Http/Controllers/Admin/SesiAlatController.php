@@ -126,7 +126,7 @@ class SesiAlatController extends Controller
         ]);
         // -----------------------------
 
-        return redirect()->route('sesi-alat.index')->with('success', 'Perjalanan berhasil dibuat');
+        return redirect()->route('perjalanan.index')->with('success', 'Perjalanan berhasil dibuat');
     }
 
     /**
@@ -236,7 +236,7 @@ class SesiAlatController extends Controller
         ]);
         // ------------------------------------
 
-        return redirect()->route('sesi-alat.index')->with('success', 'Perjalanan berhasil diperbarui');
+        return redirect()->route('perjalanan.index')->with('success', 'Perjalanan berhasil diperbarui');
     }
 
     /**
@@ -379,6 +379,6 @@ class SesiAlatController extends Controller
         ]);
         // -----------------------------
 
-        return redirect()->route('sesi-alat.index')->with('success', 'Perjalanan berhasil dihapus');
+        return redirect()->route('perjalanan.index')->with('success', 'Perjalanan berhasil dihapus');
     }
 }

@@ -3,7 +3,7 @@
     <table class="table table-hover mb-0">
       <thead class="bg-light">
         <tr>
-          <th scope="col">Nama Sesi</th>
+          <th scope="col">Nama Perjalanan</th>
           <th scope="col">Kendaraan</th>
           <th scope="col">Alat GPS (SN)</th>
           <th scope="col">Status</th>
@@ -21,7 +21,7 @@
                   <i class="ri-route-line fs-5"></i>
                 </div>
                 <span class="fw-medium {{ empty($item->nama) ? 'fst-italic text-muted' : '' }}">
-                  {{ $item->nama ?? '(Sesi Tanpa Nama)' }}
+                  {{ $item->nama ?? '(Perjalanan Tanpa Nama)' }}
                 </span>
               </div>
             </td>
@@ -82,28 +82,28 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                   <li>
-                    <a class="dropdown-item" href="{{ route('perusahaan.sesi-alat.show', $item->id) }}">
+                    <a class="dropdown-item" href="{{ route('perusahaan.perjalanan.show', $item->id) }}">
                       <i class="ri-eye-line me-2 align-middle text-info"></i>Lihat Tracking
                     </a>
                   </li>
                   <li>
-                    <form action="{{ route('perusahaan.sesi-alat.toggle', $item->id) }}" method="POST"
-                      data-confirm="Ubah status sesi ini?" data-confirm-title="Konfirmasi Sesi" data-confirm-btn="Ya, Ubah" data-confirm-btn-class="btn-primary">
-                      @csrf
-                      @method('PUT')
-                      <button type="submit" class="dropdown-item">
-                        <i
-                          class="ri-{{ $item->aktif ? 'stop-circle-line text-warning' : 'play-circle-line text-success' }} me-2 align-middle"></i>
-                        {{ $item->aktif ? 'Matikan Sesi' : 'Aktifkan Sesi' }}
-                      </button>
-                    </form>
+                    <button type="button" class="dropdown-item toggle-status-btn" data-id="{{ $item->id }}"
+                      data-active="{{ $item->aktif ? '1' : '0' }}"
+                      data-url="{{ route('perusahaan.perjalanan.toggle', $item->id) }}"
+                      data-token="{{ csrf_token() }}">
+                      <i
+                        class="ri-{{ $item->aktif ? 'stop-circle-line text-warning' : 'play-circle-line text-success' }} me-2 align-middle"></i>
+                      <span
+                        class="toggle-text">{{ $item->aktif ? 'Selesaikan Perjalanan' : 'Aktifkan Perjalanan' }}</span>
+                    </button>
                   </li>
                   <li>
                     <hr class="dropdown-divider">
                   </li>
                   <li>
-                    <form action="{{ route('perusahaan.sesi-alat.destroy', $item->id) }}" method="POST"
-                      data-confirm="Hapus sesi ini? Data tracking mungkin akan hilang." data-confirm-title="Hapus Sesi">
+                    <form action="{{ route('perusahaan.perjalanan.destroy', $item->id) }}" method="POST"
+                      data-confirm="Hapus perjalanan ini? Data tracking mungkin akan hilang."
+                      data-confirm-title="Hapus Perjalanan">
                       @csrf
                       @method('DELETE')
                       <button type="submit" class="dropdown-item text-danger">
@@ -131,9 +131,9 @@
       </div>
     </div>
     <h5 class="fw-bold">Belum Ada Perjalanan</h5>
-    <p class="text-muted mb-4">Buat sesi baru untuk mulai menghubungkan Alat GPS dengan Kendaraan.</p>
-    <a href="{{ route('perusahaan.sesi-alat.create') }}" class="btn btn-primary btn-wave">
-      <i class="ri-add-line me-2"></i>Buat Sesi Sekarang
+    <p class="text-muted mb-4">Buat perjalanan baru untuk mulai menghubungkan Alat GPS dengan Kendaraan.</p>
+    <a href="{{ route('perusahaan.perjalanan.create') }}" class="btn btn-primary btn-wave">
+      <i class="ri-add-line me-2"></i>Buat Perjalanan Sekarang
     </a>
   </div>
 @endif

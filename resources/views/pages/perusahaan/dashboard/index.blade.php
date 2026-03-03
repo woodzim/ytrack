@@ -110,10 +110,10 @@
 
 @section('content')
   <!-- Start::page-header -->
-  <div class="d-flex align-items-center justify-content-between mb-4 page-header-breadcrumb flex-wrap gap-2">
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
     <div>
-      <h1 class="page-title fw-bold fs-24 mb-1">Beranda YA-Track</h1>
-      <p class="text-muted mb-0">Pantau kendaraan Anda secara langsung dengan data akurat.</p>
+      <h1 class="page-title fw-medium fs-20 mb-0">Beranda YA-Track</h1>
+      <p class="">Pantau kendaraan Anda secara langsung dengan data akurat.</p>
     </div>
   </div>
   <!-- End::page-header -->
@@ -201,7 +201,7 @@
                     </td>
                     <td class="text-center">
                       @if ($alat['id_sesi'])
-                        <a href="{{ route('perusahaan.sesi-alat.show', $alat['id_sesi']) }}"
+                        <a href="{{ route('perusahaan.perjalanan.show', $alat['id_sesi']) }}"
                           class="btn btn-sm btn-icon btn-primary-transparent rounded-circle">
                           <i class="ri-map-2-line"></i>
                         </a>
@@ -268,7 +268,7 @@
       <div class="card mb-4 custom-card-enhanced">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0">Riwayat Perjalanan Terakhir</h5>
-          <a href="{{ route('perusahaan.sesi-alat.index') }}"
+          <a href="{{ route('perusahaan.perjalanan.index') }}"
             class="btn btn-sm btn-outline-primary px-3 rounded-pill fw-bold">
             LIHAT SEMUA
           </a>

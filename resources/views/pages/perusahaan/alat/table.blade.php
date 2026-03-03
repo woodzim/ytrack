@@ -48,7 +48,7 @@
 
           <td class="text-end pe-4">
             @if ($item->sesi_id)
-              <a href="{{ route('perusahaan.sesi-alat.show', $item->sesi_id) }}" class="btn btn-sm btn-outline-primary"
+              <a href="{{ route('perusahaan.perjalanan.show', $item->sesi_id) }}" class="btn btn-sm btn-outline-primary"
                 title="Lihat Lokasi">
                 <i class="ri-map-2-line"></i> Track
               </a>
