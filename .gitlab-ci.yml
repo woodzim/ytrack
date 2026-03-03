@@ -51,6 +51,7 @@ deploy_to_server:
         echo '📦 Installing Composer dependencies...' && \
         composer install --no-dev --optimize-autoloader --no-interaction && \
         echo '🔄 Running Laravel commands...' && \
+        php artisan migrate && \
         php artisan optimize:clear && \
         php artisan optimize && \
         echo '✅ Deployment completed!'"
