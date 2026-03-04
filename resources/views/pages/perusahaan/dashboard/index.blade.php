@@ -130,7 +130,7 @@
           Terdapat <b id="alert-low-bat-count">{{ $lowBatCount }}</b> perangkat yang memerlukan pengisian daya segera.
         </div>
         <div class="ms-auto text-end d-none d-sm-block">
-          <span class="badge bg-white-transparent text-white border-0 py-2">Klik untuk Lihat <i
+          <span class="badge bg-danger text-white border-0 py-2">Klik untuk Lihat <i
               class="ri-arrow-right-line ms-1"></i></span>
         </div>
       </div>

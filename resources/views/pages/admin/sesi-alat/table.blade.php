@@ -76,8 +76,9 @@
                       </li>
                       <li>
                         <form action="{{ route('perjalanan.toggle', $item->id) }}" method="POST"
-                          data-confirm="Ubah status perjalanan ini?" data-confirm-title="Konfirmasi Perjalanan"
-                          data-confirm-btn="Ya, Ubah" data-confirm-btn-class="btn-primary">
+                          data-confirm="Aktifkan/nonaktifkan sesi perjalanan ini?"
+                          data-confirm-title="Konfirmasi Perjalanan" data-confirm-btn="Ya, Ubah"
+                          data-confirm-btn-class="btn-primary">
                           @csrf
                           @method('PUT')
                           <button type="submit"

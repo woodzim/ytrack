@@ -279,8 +279,8 @@
           const isActive = toggleBtn.dataset.active === '1';
 
           const title = "Konfirmasi Perjalanan";
-          const message = "Ubah status perjalanan ini?";
-          const btnText = "Ya, Ubah";
+          const message = "Aktifkan/nonaktifkan sesi perjalanan ini?";
+          const btnText = "Ya";
           const btnClass = "btn-primary";
 
           window.showConfirmModal(message, () => {
@@ -295,8 +295,7 @@
               })
               .then(response => response.json())
               .then(data => {
-                if (data.status === 'success') {
-                  window.showAlertModal(data.message || 'Status berhasil diubah', 'success');
+                if (data.success) {
                   // Refresh tabel saja tanpa refresh halaman
                   triggerFetch();
                 } else {

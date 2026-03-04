@@ -309,7 +309,7 @@
                 </form>
                 <span id="power-status-badge"
                   class="badge rounded-pill mt-3 {{ $sesiAlat->aktif ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} px-3">
-                  {{ $sesiAlat->aktif ? 'AKTIF' : 'NONAKTIFKAN' }}
+                  {{ $sesiAlat->aktif ? 'AKTIF' : 'NONAKTIF' }}
                 </span>
               </div>
             </div>
@@ -426,21 +426,38 @@
     const loadMoreData = () => {
       if (isLoading || currentIndex >= rawRiwayatData.length) return;
       isLoading = true;
+
       const spinner = document.getElementById('loading-spinner');
       if (spinner) spinner.style.display = 'block';
+
       const tbody = document.getElementById('history-table-body');
       const limit = Math.min(currentIndex + itemsPerPage, rawRiwayatData.length);
+
       let chunkHtml = '';
-      for (let i = currentIndex; i < limit; i++) chunkHtml += getRowHtml(rawRiwayatData[i], i);
+      for (let i = currentIndex; i < limit; i++) {
+        chunkHtml += getRowHtml(rawRiwayatData[i], i);
+      }
+
       tbody.insertAdjacentHTML('beforeend', chunkHtml);
       currentIndex = limit;
+
       if (spinner) spinner.style.display = 'none';
       isLoading = false;
+
+      const sentinel = document.getElementById('scroll-sentinel');
+      if (sentinel) {
+        const rect = sentinel.getBoundingClientRect();
+        if (currentIndex < rawRiwayatData.length && rect.top < window.innerHeight + 400) {
+          setTimeout(loadMoreData, 50);
+        } else if (currentIndex >= rawRiwayatData.length) {
+          sentinel.style.display = 'none';
+        }
+      }
     };
 
     function createCustomIcon(type) {
-      let iconClass = type === 'start' ? 'ri-map-pin-5-fill' : 'ri-map-pin-user-fill';
-      let iconColor = type === 'start' ? '#10b981' : '#0F2854';
+      let iconClass = type === 'start' ? 'ri-map-pin-4-line' : 'ri-map-pin-user-fill';
+      let iconColor = type === 'start' ? '#0F2854' : '#0F2854';
       let pulseHtml = type === 'end' ? '<div class="pin-pulse"></div>' : '';
       return L.divIcon({
         html: `<div class="pin-wrapper">${pulseHtml}<i class="${iconClass}" style="color: ${iconColor};"></i></div>`,
@@ -497,6 +514,38 @@
           btn.classList.remove('is-tracking');
         }
       }
+
+      // --- CUSTOM CONTROL: LEGEND ---
+      const LegendControl = L.Control.extend({
+        options: {
+          position: 'bottomleft'
+        },
+        onAdd: function(map) {
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control custom-map-legend');
+          container.style =
+            "background: white; padding: 12px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); margin-bottom: 20px; margin-left: 10px;";
+          container.innerHTML = `
+            <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 8px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px;">Legenda</div>
+            <div class="d-flex align-items-center mb-2">
+              <i class="ri-map-pin-4-line" style="color: #0F2854; font-size: 20px; width: 24px; text-align: center; margin-right: 6px;"></i>
+              <span style="font-size: 12px; color: #4b5563;">Titik Awal</span>
+            </div>
+            <div class="d-flex align-items-center mb-2">
+              <div style="position: relative; width: 24px; height: 24px; text-align: center; margin-right: 6px; display: flex; align-items: center; justify-content: center;">
+                <div style="position: absolute; width:100%; height:100%; background:rgba(15,40,84,0.3); border-radius:50%; animation: pulse-animation 2s infinite; transform: scaleX(1) scaleY(0.5); bottom: 1px; z-index: 1;"></div>
+                <i class="ri-map-pin-user-fill" style="color: #0F2854; font-size: 20px; position: relative; z-index: 2;"></i>
+              </div>
+              <span style="font-size: 12px; color: #4b5563;">Lokasi Terkini</span>
+            </div>
+            <div class="d-flex align-items-center mt-3">
+              <div style="width: 12px; height: 12px; border-radius: 50%; background: #0ea5e9; border: 2px solid white; box-shadow: 0 0 0 1px #0ea5e9; margin: 0 6px 0 6px; margin-right: 12px;"></div>
+              <span style="font-size: 12px; color: #4b5563;">Posisi Riwayat (klik tabel)</span>
+            </div>
+          `;
+          return container;
+        }
+      });
+      map.addControl(new LegendControl());
 
       // --- CUSTOM CONTROL: FULLSCREEN ---
       const FullscreenControl = L.Control.extend({
@@ -561,10 +610,29 @@
         }
       });
 
+      // B. INIT DATA TABEL & MAP
       if (rawRiwayatData.length > 0) {
         loadMoreData();
-        const pathLatLngs = rawRiwayatData.map(i => [parseFloat(i.lat), parseFloat(i.long)]).filter(c => !isNaN(c[0]))
-          .reverse();
+
+        const observer = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && !isLoading) {
+            loadMoreData();
+          }
+        }, {
+          rootMargin: '400px',
+          threshold: 0.01
+        });
+
+        const sentinel = document.getElementById('scroll-sentinel');
+        if (sentinel) observer.observe(sentinel);
+
+        rawRiwayatData.forEach(item => {
+          const lat = parseFloat(item.lat);
+          const lng = parseFloat(item.long);
+          if (!isNaN(lat) && !isNaN(lng)) liveLatLngs.push([lat, lng]);
+        });
+
+        const pathLatLngs = [...liveLatLngs].reverse();
         if (pathLatLngs.length > 0) {
           startMarker = L.marker(pathLatLngs[0], {
             icon: createCustomIcon('start')
@@ -581,8 +649,22 @@
           map.fitBounds(polyline.getBounds(), {
             padding: [50, 50]
           });
-          liveLatLngs = [...pathLatLngs];
         }
+      } else {
+        const tbody = document.getElementById('history-table-body');
+        if (tbody) {
+          tbody.innerHTML = `
+                <tr id="empty-row">
+                    <td colspan="8">
+                        <div style="text-align: center; padding: 40px 20px; color: #999;">
+                            <i class="ri-map-pin-2-line" style="font-size: 48px; margin-bottom: 16px; display: block; opacity: 0.5;"></i>
+                            <p style="margin: 0;">Belum ada data riwayat perjalanan</p>
+                        </div>
+                    </td>
+                </tr>`;
+        }
+        const sentinel = document.getElementById('scroll-sentinel');
+        if (sentinel) sentinel.style.display = 'none';
       }
 
       // Klik Tabel Interaction
@@ -696,6 +778,8 @@
           const confirmText = isActive ?
             'Perjalanan ini akan diselesaikan dan alat akan dinonaktifkan.' :
             'Perjalanan ini akan diaktifkan dan alat akan mulai melacak.';
+          const confirmBtnText = "Ya";
+          const confirmBtnClass = "btn-primary";
 
           window.showConfirmModal(confirmText, () => {
             icon.className = 'ri-loader-4-line fs-40 spin';
@@ -715,11 +799,10 @@
               .then(r => r.json())
               .then(data => {
                 if (data.success) {
-                  // Update the UI dynamically
-                  const isNowActive = data.aktif;
-                  btn.setAttribute('data-is-active', isNowActive ? '1' : '0');
+                  // Update UI without reload
+                  btn.setAttribute('data-is-active', data.aktif ? '1' : '0');
 
-                  if (isNowActive) {
+                  if (data.aktif) {
                     btn.className = 'btn btn-icon btn-lg rounded-circle shadow-lg btn-success pulse-active';
                     badge.className = 'badge rounded-pill mt-3 bg-success-transparent text-success px-3';
                     badge.innerText = 'AKTIF';
@@ -733,32 +816,20 @@
                   icon.className = 'ri-shut-down-line fs-40';
                   btn.disabled = false;
 
-                  if (window.showAlertModal) {
-                    window.showAlertModal(data.message || 'Status berhasil diubah', 'success');
-                  } else if (window.Swal) {
-                    Swal.fire('Berhasil', data.message || 'Status berhasil diubah', 'success');
-                  }
+                  // Removed success popup
                 } else {
                   icon.className = originalClass;
                   btn.disabled = false;
-                  if (window.showAlertModal) {
-                    window.showAlertModal(data.message || 'Gagal mengubah status', 'error');
-                  } else if (window.Swal) {
-                    Swal.fire('Gagal', data.message || 'Gagal mengubah status', 'error');
-                  }
+                  window.showAlertModal(data.message || 'Gagal mengubah status', 'error');
                 }
               })
-              .catch(err => {
-                console.error(err);
+              .catch(error => {
+                console.error('Error toggle power:', error);
                 icon.className = originalClass;
                 btn.disabled = false;
-                if (window.showAlertModal) {
-                  window.showAlertModal('Kesalahan sistem', 'error');
-                } else if (window.Swal) {
-                  Swal.fire('Error', 'Kesalahan sistem', 'error');
-                }
+                window.showAlertModal('Terjadi kesalahan jaringan.', 'error');
               });
-          });
+          }, confirmTitle, confirmBtnText, confirmBtnClass);
         });
       }
 
