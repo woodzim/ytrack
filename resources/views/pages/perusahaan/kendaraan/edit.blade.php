@@ -522,14 +522,13 @@
 
 @section('scripts')
   @php
-    $dzFilesize = '{{ filesize }}';
-    $dzMaxFilesize = '{{ maxFilesize }}';
+    // Variables used for Dropzone initialization
   @endphp
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Menggunakan escape sequence hexadecimal agar tidak terdeteksi oleh Blade/Formatter
-      const dz_fs = "\x7b\x7bfilesize\x7d\x7d";
-      const dz_mfs = "\x7b\x7bmaxFilesize\x7d\x7d";
+      // Use JS array join to bypass Blade and Formatters separating the curly braces
+      const dz_fs = ['{', '{', 'filesize', '}', '}'].join('');
+      const dz_mfs = ['{', '{', 'maxFilesize', '}', '}'].join('');
 
       // Fungsi untuk membuat jalur SVG bergelombang (Wavy)
       function buatJalurGelombang(cx, cy, r, gelombang, tinggi, fase = 0) {

@@ -93,38 +93,105 @@ class RegisterController extends Controller
     }
 
     /**
-     * Handle berkas upload for perusahaan validation.
+     * Handle multi-file berkas upload for perusahaan validation per document type.
      */
     public function uploadBerkas(Request $request)
     {
         $request->validate([
             'berkas' => 'required|file|mimes:pdf|max:4096', // Max 4MB
+            'type' => 'required|string|in:akta,npwp_badan,nib,domisili,ktp_pj,npwp_pj,izin_usaha,siup',
         ], [
             'berkas.required' => 'File berkas wajib diunggah',
             'berkas.mimes' => 'Format file harus berupa PDF',
             'berkas.max' => 'Ukuran file maksimal 4MB',
+            'type.required' => 'Tipe dokumen wajib disertakan',
+            'type.in' => 'Tipe dokumen tidak valid',
         ]);
 
         $user = Auth::user();
         
         if ($user && $user->hasRole('perusahaan') && $user->id_perusahaan) {
             $perusahaan = Perusahaan::find($user->id_perusahaan);
-            
-            if ($perusahaan->berkas) {
-                return back()->with('error', 'Berkas sudah diunggah, silakan tunggu validasi admin.');
-            }
+            $type = $request->type;
+            $column = 'berkas_' . $type;
             
             if ($request->hasFile('berkas')) {
                 $file = $request->file('berkas');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $filePath = $file->storeAs('perusahaan/berkas', $fileName, 'public');
+                $fileName = time() . '_' . $type . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('perusahaan/berkas/' . $perusahaan->id, $fileName, 'public');
                 
-                $perusahaan->update(['berkas' => $filePath]);
+                // Hapus file lama di disk jika ada
+                if ($perusahaan->{$column}) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($perusahaan->{$column});
+                }
                 
-                return back()->with('success', 'Berkas perusahaan berhasil diunggah. Silakan tunggu validasi admin.');
+                $perusahaan->update([$column => $filePath]);
+                
+                return response()->json([
+                    'success' => true, 
+                    'message' => 'Berkas berhasil diunggah.',
+                    'path' => $filePath
+                ]);
             }
         }
         
-        return back()->with('error', 'Gagal mengunggah berkas.');
+        return response()->json(['success' => false, 'message' => 'Gagal mengunggah berkas.'], 400);
+    }
+
+    /**
+     * Delete an uploaded berkas.
+     */
+    public function deleteBerkas(Request $request, $type)
+    {
+        $user = Auth::user();
+        \Illuminate\Support\Facades\Log::info("Attempting to delete berkas type: $type for user: " . ($user ? $user->id : 'Guest'));
+        
+        if ($user && $user->hasRole('perusahaan') && $user->id_perusahaan) {
+            $perusahaan = \App\Models\Perusahaan::find($user->id_perusahaan);
+            $column = 'berkas_' . $type;
+            
+            \Illuminate\Support\Facades\Log::info("Perusahaan ID: " . ($perusahaan ? $perusahaan->id : 'Not Found') . ", Column: $column, Value: " . ($perusahaan ? $perusahaan->{$column} : 'N/A'));
+
+            if ($perusahaan && $perusahaan->{$column}) {
+                $deleted = \Illuminate\Support\Facades\Storage::disk('public')->delete($perusahaan->{$column});
+                \Illuminate\Support\Facades\Log::info("File deletion status: " . ($deleted ? 'Success' : 'Failed'));
+                
+                $perusahaan->update([$column => null]);
+                return response()->json(['success' => true]);
+            } else {
+                \Illuminate\Support\Facades\Log::warning("File not found or column empty for type: $type");
+            }
+        } else {
+            \Illuminate\Support\Facades\Log::error("User not authorized or missing perusahaan ID");
+        }
+        
+        return response()->json(['success' => false, 'message' => 'Berkas tidak ditemukan atau Anda tidak memiliki akses.'], 400);
+    }
+
+    /**
+     * Finalize submission of verification documents
+     */
+    public function submitBerkas(Request $request)
+    {
+        $user = Auth::user();
+        if ($user && $user->hasRole('perusahaan') && $user->id_perusahaan) {
+            $perusahaan = Perusahaan::find($user->id_perusahaan);
+            
+            // Validasi bidang wajib minimum
+            $mandatory = ['berkas_akta', 'berkas_npwp_badan', 'berkas_nib', 'berkas_domisili', 'berkas_ktp_pj', 'berkas_npwp_pj'];
+            foreach ($mandatory as $field) {
+                if (empty($perusahaan->{$field})) {
+                    return back()->with('error', 'Semua dokumen dengan status WAJIB harus diunggah terlebih dahulu sebelum mengirim permohonan validasi.');
+                }
+            }
+            
+            // Flag submission as complete (untuk memicu status cek di sisi admin/UI)
+            if (empty($perusahaan->berkas)) {
+                $perusahaan->update(['berkas' => 'submitted_multi_flow']);
+            }
+            
+            return back()->with('success', 'Semua berkas wajib telah dikirim. Permohonan Anda sekarang dalam antrean validasi Administrator.');
+        }
+        return back()->with('error', 'Akses ditolak.');
     }
 }

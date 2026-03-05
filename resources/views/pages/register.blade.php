@@ -11,9 +11,9 @@
 
   <div class="container">
     <div class="row justify-content-center align-items-center authentication authentication-basic min-vh-100 py-4">
-      <div class="col-xxl-4 col-xl-5 col-lg-6 col-md-6 col-sm-8 col-12">
+      <div class="col-xxl-4 col-xl-5 col-lg-6 col-md-8 col-sm-10 col-12">
         <div class="card custom-card my-4">
-          <div class="card-body p-5">
+          <div class="card-body p-4 p-md-5">
             <div class="mb-4">
               <a href="{{ route('login') }}" class="d-flex justify-content-center">
                 <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-dark mt-3 mt-md-0">

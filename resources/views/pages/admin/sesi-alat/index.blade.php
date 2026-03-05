@@ -32,7 +32,7 @@
       <div class="card custom-card">
         <div class="card-body p-0">
           <form action="{{ route('perjalanan.index') }}" method="GET" id="filterForm"
-            class="d-flex flex-column flex-md-row gap-3 align-items-md-end border-bottom">
+            class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
             <div class="flex-grow-1" style="min-width: 250px;">
               <label for="searchInput" class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari
                 Sesi</label>

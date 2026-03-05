@@ -24,10 +24,10 @@
     <div class="col-12">
       <!-- Search Section -->
       <div class="card custom-card mb-3">
-        <div class="card-body p-3">
+        <div class="card-body p-0">
           <form action="{{ route('admin.perusahaan.index') }}" method="GET" id="filterForm"
             class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
-            <div class="grow" style="min-width: 250px;">
+            <div class="flex-grow-1 w-100">
               <label for="searchInput" class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari
                 Perusahaan</label>
               <div class="input-group">

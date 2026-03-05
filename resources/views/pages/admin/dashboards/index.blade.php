@@ -78,7 +78,7 @@
   <div class="row g-2">
     <!-- Statistics Cards -->
     <div class="col-6 col-md-6 col-lg-3">
-      <div class="card stats-card">
+      <div class="card custom-card stats-card">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between">
             <div>
@@ -94,7 +94,7 @@
     </div>
 
     <div class="col-6 col-md-6 col-lg-3">
-      <div class="card stats-card">
+      <div class="card custom-card stats-card">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between">
             <div>
@@ -110,7 +110,7 @@
     </div>
 
     <div class="col-6 col-md-6 col-lg-3">
-      <div class="card stats-card">
+      <div class="card custom-card stats-card">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between">
             <div>
@@ -126,7 +126,7 @@
     </div>
 
     <div class="col-6 col-md-6 col-lg-3">
-      <div class="card stats-card">
+      <div class="card custom-card stats-card">
         <div class="card-body">
           <div class="d-flex align-items-center justify-content-between">
             <div>
@@ -145,7 +145,7 @@
   <!-- Map Section -->
   <div class="row g-2 mt-1">
     <div class="col-12">
-      <div class="card overflow-hidden">
+      <div class="card custom-card overflow-hidden">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
           <div class="card-title mb-0 fw-bold fs-14 text-uppercase ls-1">
             <i class="ri-map-pin-2-fill me-2 text-primary"></i>Monitoring Lokasi Alat Terkini (Seluruh Perusahaan)
@@ -163,7 +163,7 @@
   <div class="row g-2 mt-1">
     <!-- Active Sessions -->
     <div class="col-12">
-      <div class="card h-100">
+      <div class="card custom-card h-100">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
           <div>
             <h5 class="card-title mb-0">Sesi Perjalanan Aktif</h5>
@@ -218,15 +218,17 @@
 
     <!-- Charts Section -->
     <div class="col-12">
-      <div class="mb-3">
-        <h5 class="fw-semibold mb-0">Statistik Perjalanan (7 Hari Terakhir)</h5>
-      </div>
-      <div class="chart-container-fixed" id="travel-chart-container">
-        <div id="travel-chart"></div>
+      <div class="card custom-card">
+        <div class="card-header">
+          <h5 class="card-title fw-semibold mb-0">Statistik Perjalanan (7 Hari Terakhir)</h5>
+        </div>
+        <div class="card-body p-0 chart-container-fixed" id="travel-chart-container">
+          <div id="travel-chart"></div>
+        </div>
       </div>
     </div>
     <div class="col-12">
-      <div class="card h-100">
+      <div class="card custom-card h-100">
         <div class="card-header">
           <h5 class="card-title fw-semibold mb-0">Distribusi Kendaraan per Perusahaan</h5>
         </div>
@@ -236,7 +238,7 @@
       </div>
     </div>
     <div class="col-xl-6 col-lg-6 col-md-6 col-12">
-      <div class="card h-100">
+      <div class="card custom-card h-100">
         <div class="card-header">
           <h5 class="card-title fw-semibold mb-0">Status Baterai Semua Alat</h5>
         </div>
@@ -246,7 +248,7 @@
       </div>
     </div>
     <div class="col-xl-6 col-lg-6 col-md-6 col-12">
-      <div class="card h-100">
+      <div class="card custom-card h-100">
         <div class="card-header">
           <h5 class="card-title fw-semibold mb-0">Penggunaan Semua Alat</h5>
         </div>
@@ -258,7 +260,7 @@
 
     <!-- Activity Logs -->
     <div class="col-12">
-      <div class="card h-100">
+      <div class="card custom-card h-100">
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
           <h5 class="card-title mb-0">Log Aktivitas Terbaru</h5>
           <a href="{{ route('logs.index') }}" class="btn btn-sm btn-primary-transparent">
@@ -310,7 +312,7 @@
 
     <!-- Error Tracking (Incomplete) -->
     <div class="col-12">
-      <div class="card h-100">
+      <div class="card custom-card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
           <div class="card-title mb-0">Tracking Tidak Lengkap</div>
           <a href="{{ route('tracking-tidak-lengkap.index') }}" class="btn btn-sm btn-primary-transparent">

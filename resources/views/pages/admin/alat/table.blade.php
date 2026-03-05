@@ -1,5 +1,5 @@
 <div class="card table-wrapper">
-  <div class="card-header py-3">
+  <div class=" py-3">
     <div class="d-flex justify-content-between align-items-center">
       <h5 class="card-title mb-0">Daftar Alat ({{ $alat->total() }})</h5>
       @if ($search)

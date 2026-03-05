@@ -53,7 +53,7 @@
     <div class="col-12">
       <!-- Filter & Search Section -->
       <div class="card custom-card mb-3">
-        <div class="card-body p-3">
+        <div class="card-body p-0">
           <form action="{{ route('users.index') }}" method="GET" id="filterForm"
             class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
             <div class="flex-grow-1" style="min-width: 250px;">

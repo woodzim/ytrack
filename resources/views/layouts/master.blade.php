@@ -375,6 +375,24 @@
         min-width: 0 !important;
       }
 
+      /* Fix alignment for card headers and page headers on mobile/tablet */
+      .card-header,
+      .page-header,
+      .page-header-section {
+        text-align: left !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+      }
+
+      .card-header .card-title,
+      .page-header-section .page-title,
+      .card-title {
+        text-align: left !important;
+        width: 100% !important;
+      }
+
       /* Mobile Sidebar Overlay */
       #responsive-overlay {
         cursor: pointer;

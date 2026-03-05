@@ -7,6 +7,11 @@
     .table-wrapper .card-body {
       overflow: visible !important;
     }
+
+    /* Hide the default Bootstrap caret */
+    .hide-arrow::after {
+      display: none !important;
+    }
   </style>
 @endsection
 
@@ -26,10 +31,10 @@
   <div class="row">
     <div class="col-12">
       <div class="card custom-card mb-3">
-        <div class="card-body p-3">
+        <div class="card-body p-0">
           <form action="{{ route('alat.index') }}" method="GET" id="filterForm"
             class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
-            <div class="grow" style="min-width: 250px;">
+            <div class="flex-grow-1 w-100">
               <label for="searchInput" class="form-label fw-semibold mb-1 text-muted fs-12 text-uppercase">Cari
                 Alat</label>
               <div class="input-group">

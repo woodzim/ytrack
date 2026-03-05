@@ -1,5 +1,5 @@
 <div class="card table-wrapper">
-  <div class="card-header py-3">
+  <div class=" py-3">
     <div class="d-flex justify-content-between align-items-center">
       <h5 class="card-title mb-0">Daftar Perjalanan ({{ $sesiAlat->total() }})</h5>
     </div>
@@ -7,16 +7,16 @@
   <div class="card-body p-0">
     @if ($sesiAlat->count() > 0)
       <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
+        <table class="table table-hover table-sm align-middle mb-0">
           <thead class="bg-light text-uppercase fs-11 fw-bold text-muted border-bottom">
             <tr>
-              <th class="ps-3" style="min-width: 150px;">Perusahaan</th>
-              <th style="min-width: 150px;">Kendaraan</th>
-              <th style="min-width: 120px;">Alat</th>
-              <th style="min-width: 100px;">Status</th>
-              <th style="min-width: 150px;">Baterai</th>
-              <th style="min-width: 180px;">Waktu Track Terakhir</th>
-              <th style="min-width: 100px;" class="text-center">Aksi</th>
+              <th class="ps-3" style="min-width: 120px;">Perusahaan</th>
+              <th style="min-width: 120px;">Kendaraan</th>
+              <th style="min-width: 100px;">Alat</th>
+              <th style="min-width: 80px;">Status</th>
+              <th style="min-width: 60px;">Baterai</th>
+              <th style="min-width: 150px;">Waktu Track Terakhir</th>
+              <th style="min-width: 80px;" class="text-center">Aksi</th>
             </tr>
           </thead>
           <tbody>

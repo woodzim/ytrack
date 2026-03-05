@@ -86,4 +86,6 @@ Route::middleware(['auth'])->group(function () {
     })->name('verification.wait');
 
     Route::post('/verification/berkas', [RegisterController::class, 'uploadBerkas'])->name('verification.berkas');
+    Route::delete('/verification/berkas/{type}', [RegisterController::class, 'deleteBerkas'])->name('verification.berkas.delete');
+    Route::post('/verification/submit', [RegisterController::class, 'submitBerkas'])->name('verification.submit');
 });

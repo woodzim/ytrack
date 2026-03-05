@@ -14,7 +14,7 @@ use Carbon\Carbon;
 
 class DashboardsController extends Controller
 {
-      
+    
     public function index()
     {
         $totalSesiAlatAktif = SesiAlat::where('aktif', true)->count();

@@ -20,9 +20,9 @@
     <div class="col-12">
       <!-- Search Section -->
       <div class="card mb-3 border-0 shadow-none bg-transparent">
-        <div class="p-0">
+        <div class="p-0 ">
           <form action="{{ route('kendaraan.index') }}" method="GET" class="d-flex gap-2 flex-wrap align-items-end">
-            <div class="flex-grow-1" style="min-width: 250px;">
+            <div class="flex-grow-1">
               <label for="searchInput" class="form-label mb-2">Cari Kendaraan</label>
               <input type="text" id="searchInput" name="search" class="form-control"
                 placeholder="Cari berdasarkan nama..." value="{{ $search }}">

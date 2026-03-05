@@ -9,12 +9,8 @@
   </div>
 
   <div class="card">
-    <div class="card-body">
+    <div class="card-body p-0">
       <div class="table-responsive">
-        {{-- 
-             align-middle: Agar konten vertikal di tengah 
-             table-striped: Opsional, agar baris selang-seling warnanya 
-        --}}
         <table class="table table-hover align-middle">
           <thead class="bg-light">
             <tr>

@@ -38,9 +38,9 @@
           </li>
 
           <li
-            class="slide has-sub {{ Route::is('perjalanan.*', 'perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active open' : '' }}">
+            class="slide has-sub {{ Route::is('perjalanan.*', 'admin.perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);"
-              class="side-menu__item {{ Route::is('perjalanan.*', 'perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active' : '' }}">
+              class="side-menu__item {{ Route::is('perjalanan.*', 'admin.perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active' : '' }}">
               <i class="ri-archive-line side-menu__icon text-primary"></i>
               <span class="side-menu__label">Menu Utama</span>
               <i class="ri-arrow-right-s-line side-menu__angle"></i>

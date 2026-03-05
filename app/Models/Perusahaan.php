@@ -19,6 +19,14 @@ class Perusahaan extends Model
         'alamat',
         'logo',
         'berkas',
+        'berkas_akta',
+        'berkas_npwp_badan',
+        'berkas_nib',
+        'berkas_domisili',
+        'berkas_ktp_pj',
+        'berkas_npwp_pj',
+        'berkas_izin_usaha',
+        'berkas_siup',
     ];
 
     // Relationships

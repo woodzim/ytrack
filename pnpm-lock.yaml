@@ -50,6 +50,9 @@ importers:
       cleave.js:
         specifier: ^1.6.0
         version: 1.6.0
+      cropperjs:
+        specifier: ^1.5.13
+        version: 1.5.13
       cssnano:
         specifier: ^7.0.4
         version: 7.1.2(postcss@8.5.6)
@@ -1063,6 +1066,9 @@ packages:
   cors@2.8.5:
     resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
     engines: {node: '>= 0.10'}
+
+  cropperjs@1.5.13:
+    resolution: {integrity: sha512-by7jKAo73y5/Do0K6sxdTKHgndY0NMjG2bEdgeJxycbcmHuCiMXqw8sxy5C5Y5WTOTcDGmbT7Sr5CgKOXR06OA==}
 
   crossvent@1.5.5:
     resolution: {integrity: sha512-MY4xhBYEnVi+pmTpHCOCsCLYczc0PVtGdPBz6NXNXxikLaUZo4HdAeUb1UqAo3t3yXAloSelTmfxJ+/oUqkW5w==}
@@ -3393,6 +3399,8 @@ snapshots:
     dependencies:
       object-assign: 4.1.1
       vary: 1.1.2
+
+  cropperjs@1.5.13: {}
 
   crossvent@1.5.5:
     dependencies:

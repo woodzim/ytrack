@@ -281,8 +281,9 @@
             $lastRiwayat = $riwayatPerjalanan->sortByDesc('created_at')->first();
             $batLevel = (int) ($lastRiwayat?->battery ?? 0);
           @endphp
-          <div class="d-flex w-100 align-items-stretch flex-grow-1">
-            <div class="flex-fill d-flex flex-column align-items-center justify-content-center border-end w-50">
+          <div class="d-flex w-100 flex-column flex-md-row align-items-stretch flex-grow-1 gap-3 gap-md-0">
+            <div
+              class="flex-fill d-flex flex-column align-items-center justify-content-center border-bottom border-md-bottom-0 border-md-end pb-3 pb-md-0 w-100 w-md-50">
               <span class="detail-label mb-3 d-block text-center text-uppercase text-nowrap">Baterai Alat</span>
               <div class="my-auto d-flex flex-column align-items-center justify-content-start" style="height: 120px;">
                 @if ($lastRiwayat && $lastRiwayat->battery !== null)
@@ -292,7 +293,8 @@
                 @endif
               </div>
             </div>
-            <div class="flex-fill d-flex flex-column align-items-center justify-content-center w-50">
+            <div
+              class="flex-fill d-flex flex-column align-items-center justify-content-center pt-3 pt-md-0 w-100 w-md-50">
               <label class="detail-label mb-3 d-block text-uppercase text-center text-nowrap">Kontrol Daya</label>
               <div class="my-auto d-flex flex-column align-items-center justify-content-start" style="height: 120px;">
                 <form id="toggle-power-form" action="{{ route('perusahaan.perjalanan.toggle', $sesiAlat->id) }}"
@@ -327,23 +329,34 @@
         </div>
         <div class="card-body">
           <div id="map-container"></div>
-          <div class="table-responsive">
-            <table class="table table-hover" id="history-table">
-              <thead class="bg-light">
+
+          {{-- Desktop View: Table --}}
+          <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover table-sm align-middle" id="history-table">
+              <thead class="bg-light text-uppercase fs-10 fw-bold text-muted">
                 <tr>
-                  <th>No</th>
-                  <th>Waktu</th>
-                  <th>Latitude</th>
-                  <th>Longitude</th>
-                  <th>Ketinggian</th>
-                  <th>Satelit</th>
-                  <th>Kecepatan</th>
-                  <th>Battery</th>
+                  <th class="py-2">No</th>
+                  <th class="py-2">Waktu</th>
+                  <th class="py-2">Latitude</th>
+                  <th class="py-2">Longitude</th>
+                  <th class="py-2">Ketinggian</th>
+                  <th class="py-2">Satelit</th>
+                  <th class="py-2">Kecepatan</th>
+                  <th class="py-2">Battery</th>
                 </tr>
               </thead>
               <tbody id="history-table-body"></tbody>
             </table>
           </div>
+
+          {{-- Mobile View: Cards --}}
+          <div class="d-block d-md-none mt-3">
+            <div class="list-group list-group-flush rounded-bottom" id="history-cards-container">
+              <!-- Cards will be dynamically injected here by JS -->
+            </div>
+          </div>
+          {{-- End Mobile View --}}
+
           <div id="scroll-sentinel" style="height: 50px; margin-top: 10px;"
             class="d-flex align-items-center justify-content-center">
             <div class="spinner-border spinner-border-sm text-primary" role="status" id="loading-spinner"
@@ -413,14 +426,50 @@
 
     const getRowHtml = (item, index) => {
       const dateStr = formatDateJS(item.created_at);
-      return `<tr class="clickable-row" data-lat="${item.lat}" data-lng="${item.long}" data-time="${item.created_at}" data-speed="${item.speed || 0}">
-                <td><span class="rounded-circle py-1 px-2 bg-primary text-white number-badge">${rawRiwayatData.length - index}</span></td>
-                <td><i class="ri-time-line me-1"></i>${dateStr}</td>
-                <td>${item.lat}</td><td>${item.long}</td><td>${item.alt || '-'} m</td>
-                <td>${item.sat ? '<span class="badge bg-primary">' + item.sat + '</span>' : '-'}</td>
-                <td><span style="color: #10b981; font-weight: 600;">${item.speed || 0} km/h</span></td>
-                <td>${getBatteryHtml(item.battery)}</td>
-              </tr>`;
+      const no = rawRiwayatData.length - index;
+      const batteryHtml = getBatteryHtml(item.battery);
+      const batteryHtmlSmall = getBatteryHtml(item.battery, '28px', '7px', '2.5px');
+
+      // Return object with separate desktop and mobile HTML to avoid breaking table DOM
+      return {
+        desktop: `
+              <tr class="clickable-row desktop-row" data-lat="${item.lat}" data-lng="${item.long}" data-time="${item.created_at}" data-speed="${item.speed || 0}">
+                <td class="py-2"><span class="rounded-circle py-1 px-2 bg-primary text-white number-badge" style="font-size:0.75rem;">${no}</span></td>
+                <td class="py-2"><i class="ri-time-line me-1"></i>${dateStr}</td>
+                <td class="py-2">${item.lat}</td><td class="py-2">${item.long}</td><td class="py-2">${item.alt || '-'} m</td>
+                <td class="py-2">${item.sat ? '<span class="badge bg-primary px-2 py-1">' + item.sat + '</span>' : '-'}</td>
+                <td class="py-2"><span style="color: #10b981; font-weight: 600;">${item.speed || 0} km/h</span></td>
+                <td class="py-2">${batteryHtml}</td>
+              </tr>
+            `,
+        mobile: `
+              <div class="list-group-item p-3 clickable-card mobile-card" data-lat="${item.lat}" data-lng="${item.long}" data-time="${item.created_at}" data-speed="${item.speed || 0}" style="cursor: pointer; border-bottom: 1px solid #eee;">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="rounded-circle py-1 px-2 bg-primary text-white" style="font-size: 0.7rem; font-weight:bold;">${no}</span>
+                    <div class="fw-bold text-dark" style="font-size: 0.85rem;"><i class="ri-time-line me-1 text-muted"></i>${dateStr}</div>
+                  </div>
+                  <div>
+                    ${batteryHtmlSmall}
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <div class="d-flex flex-column gap-1">
+                    <div class="text-muted d-flex gap-2" style="font-size: 0.75rem;">
+                      <span><i class="ri-map-pin-line me-1"></i>Lat: ${item.lat}</span>
+                      <span>Lng: ${item.long}</span>
+                    </div>
+                    <div class="text-muted" style="font-size: 0.75rem;">
+                      <i class="ri-base-station-line me-1"></i>Sat: ${item.sat || '-'} | Alt: ${item.alt || '-'}m
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <span class="badge bg-success-transparent text-success px-2 py-1" style="font-size: 0.75rem;">${item.speed || 0} km/h</span>
+                  </div>
+                </div>
+              </div>
+            `
+      };
     };
 
     const loadMoreData = () => {
@@ -431,14 +480,21 @@
       if (spinner) spinner.style.display = 'block';
 
       const tbody = document.getElementById('history-table-body');
+      const mobileContainer = document.getElementById('history-cards-container');
       const limit = Math.min(currentIndex + itemsPerPage, rawRiwayatData.length);
 
-      let chunkHtml = '';
+      let desktopHtml = '';
+      let mobileHtml = '';
+
       for (let i = currentIndex; i < limit; i++) {
-        chunkHtml += getRowHtml(rawRiwayatData[i], i);
+        const htmlObj = getRowHtml(rawRiwayatData[i], i);
+        desktopHtml += htmlObj.desktop;
+        mobileHtml += htmlObj.mobile;
       }
 
-      tbody.insertAdjacentHTML('beforeend', chunkHtml);
+      if (tbody) tbody.insertAdjacentHTML('beforeend', desktopHtml);
+      if (mobileContainer) mobileContainer.insertAdjacentHTML('beforeend', mobileHtml);
+
       currentIndex = limit;
 
       if (spinner) spinner.style.display = 'none';
@@ -677,14 +733,15 @@
             if (perusahaanTrackingBtn) perusahaanTrackingBtn.classList.remove('is-tracking');
           }
 
-          const lat = parseFloat(row.dataset.lat);
-          const lng = parseFloat(row.dataset.lng);
-          const timeRaw = row.dataset.time;
+          const lat = parseFloat(target.dataset.lat);
+          const lng = parseFloat(target.dataset.lng);
+          const timeRaw = target.dataset.time;
           const timeDisplay = formatDateJS(timeRaw);
-          const speed = row.dataset.speed;
+          const speed = target.dataset.speed;
 
-          document.querySelectorAll('.table-active-row').forEach(r => r.classList.remove('table-active-row'));
-          row.classList.add('table-active-row');
+          document.querySelectorAll('.table-active-row, .bg-light').forEach(r => r.classList.remove(
+            'table-active-row', 'bg-light'));
+          target.classList.add(target.classList.contains('clickable-row') ? 'table-active-row' : 'bg-light');
 
           if (selectedMarker) map.removeLayer(selectedMarker);
           selectedMarker = L.circleMarker([lat, lng], {
