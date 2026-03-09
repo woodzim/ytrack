@@ -53,7 +53,7 @@
     <div class="col-12">
       <!-- Filter & Search Section -->
       <div class="card custom-card mb-3">
-        <div class="card-body p-3">
+        <div class="card-body p-0">
           <form action="{{ route('users.index') }}" method="GET" id="filterForm"
             class="d-flex flex-column flex-md-row gap-3 align-items-md-end">
             <div class="flex-grow-1" style="min-width: 250px;">
@@ -198,6 +198,39 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
             <button type="submit" id="validateSubmitBtn" class="btn btn-primary">Validasi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reject User Modal -->
+  <div class="modal fade" id="rejectUserModal" tabindex="-1" aria-labelledby="rejectUserLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-danger" id="rejectUserLabel">
+            <i class="ri-close-circle-line me-2"></i>Tolak Pendaftaran Akun
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="rejectUserForm" method="POST">
+          @csrf
+          @method('PUT')
+          <div class="modal-body">
+            <div class="alert alert-warning mb-3" role="alert">
+              <i class="ri-error-warning-line me-2"></i>
+              Anda yakin menolak perusahaan <strong id="rejectUserNameDisplay"></strong>?
+            </div>
+            <div class="mb-3">
+              <label for="alasan_tolak" class="form-label">Alasan Penolakan <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="alasan_tolak" name="alasan_tolak" rows="3" required
+                placeholder="Tuliskan alasan penolakan untuk dikirimkan melalui email ke perusahaan..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-danger">Simpan & Tolak</button>
           </div>
         </form>
       </div>
@@ -423,6 +456,28 @@
               validateSubmitBtn.className = 'btn btn-success';
               validateUserForm.action = validateUrl;
             }
+          }
+        });
+      }
+
+      // Reject User Modal setup
+      const rejectUserModal = document.getElementById('rejectUserModal');
+      const rejectUserForm = document.getElementById('rejectUserForm');
+      const rejectUserNameDisplay = document.getElementById('rejectUserNameDisplay');
+      const alasanTolakInput = document.getElementById('alasan_tolak');
+
+      if (rejectUserModal) {
+        document.body.addEventListener('show.bs.modal', function(event) {
+          if (event.target.id === 'rejectUserModal') {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userName = button.getAttribute('data-user-name');
+
+            rejectUserNameDisplay.textContent = userName;
+            alasanTolakInput.value = '';
+
+            const rejectUrl = `{{ route('users.reject', '__ID__') }}`.replace('__ID__', userId);
+            rejectUserForm.action = rejectUrl;
           }
         });
       }

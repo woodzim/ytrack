@@ -1,6 +1,6 @@
 <aside class="app-sidebar sticky" id="sidebar">
 
-  <div class="main-sidebar-header">
+  <div class="main-sidebar-header d-flex align-items-center justify-content-between position-relative">
     <a href="{{ route('dashboard') }}" class="header-logo">
       <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-logo">
       <img src="{{ asset('images/square-logo.webp') }}" alt="logo" class="toggle-logo">
@@ -14,9 +14,14 @@
         <img src="{{ asset('images/square-logo.webp') }}">
       </div>
       <ul class="main-menu">
-        <div class="text-center mb-4 mt-3 d-block d-md-none">
+        <div
+          class="text-center mb-4 mt-3 d-flex justify-content-center align-items-center d-lg-none position-relative px-3">
           <img src="{{ asset('images/long-logo.webp') }}" width="160" height="35" alt="logo"
-            class="desktop-logo">
+            class="desktop-logo object-fit-cover">
+          <button type="button" class="btn btn-icon btn-sm btn-light btn-wave" id="sidebar-close-mobile"
+            aria-label="Close Sidebar" style="position: absolute; right: 15px;">
+            <i class="ri-close-line fs-20"></i>
+          </button>
         </div>
 
         {{-- ================================================= --}}
@@ -33,9 +38,9 @@
           </li>
 
           <li
-            class="slide has-sub {{ Route::is('perjalanan.*', 'perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active open' : '' }}">
+            class="slide has-sub {{ Route::is('perjalanan.*', 'admin.perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active open' : '' }}">
             <a href="javascript:void(0);"
-              class="side-menu__item {{ Route::is('perjalanan.*', 'perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active' : '' }}">
+              class="side-menu__item {{ Route::is('perjalanan.*', 'admin.perusahaan.*', 'alat.*', 'kendaraan.*', 'jenis-kendaraan.*', 'tracking-tidak-lengkap.*') ? 'active' : '' }}">
               <i class="ri-archive-line side-menu__icon text-primary"></i>
               <span class="side-menu__label">Menu Utama</span>
               <i class="ri-arrow-right-s-line side-menu__angle"></i>

@@ -120,19 +120,19 @@
 
     <div class="col-xl-4">
       <div class="card custom-card shadow-sm border-0 overflow-hidden">
-        <div class="card-body p-0">
+        <div class="card-body p-0 border border-black">
           <div class="p-4 text-center bg-primary text-fixed-white position-relative overflow-hidden"
             style="min-height: 160px;">
             <div class="position-absolute top-0 start-0 w-100 h-100 op-1"
               style="background-image: url('data:image/svg+xml,%3Csvg width=\"100\" height=\"100\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 86c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm66 3c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm-46-15c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm45-68c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-28 45c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-23-39c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zM9 26c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm89 70c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zM5 8c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm81 5c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-2-1c.552 0 1-.448 1-1s-.448-1-1-1-1 .448-1 1 .448 1 1 1zm-57 59c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm0-24c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zm0 24c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z\" fill=\"%23ffffff\" fill-opacity=\"1\" fill-rule=\"evenodd\"/%3E%3C/svg%3E'); background-repeat: repeat;">
             </div>
             <div class="position-relative z-1 mt-3">
-              <div class="avatar avatar-xxl avatar-rounded border border-4 border-white-transparent shadow-lg mb-3"
+              <div class="avatar avatar-xxl avatar-rounded border border-4 border-white-transparent shadow-lg"
                 style="cursor: pointer;" onclick="document.getElementById('logo_input').click()" title="Ubah Logo">
                 <img src="{{ auth()->user()->avatar_url }}" alt="img" id="avatar_preview"
                   style="object-fit: cover; width: 100%; height: 100%;">
                 <span class="avatar-badge bg-primary rounded-circle d-flex align-items-center justify-content-center"
-                  style="width: 24px; height: 24px; bottom: 8px; right: 8px; border: 3px solid #fff;">
+                  style="width: 24px; height: 24px; bottom: -8px; right: -8px; border: 3px solid #fff;">
                   <i class="ri-pencil-line text-white" style="font-size: 12px;"></i>
                 </span>
                 <input type="file" id="logo_input" accept="image/*" class="d-none">
@@ -144,7 +144,7 @@
                     data-confirm="Apakah Anda yakin ingin menghapus logo ini?" data-confirm-btn="Hapus Logo">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="btn btn-sm btn-danger border border-white">
+                    <button type="submit" class="btn btn-link text-danger">
                       <i class="ri-delete-bin-line me-1"></i> Hapus Logo
                     </button>
                   </form>
@@ -240,7 +240,6 @@
 @endsection
 
 @section('styles')
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
   <style>
     .cropper-view-box,
     .cropper-face {
@@ -254,7 +253,6 @@
 @endsection
 
 @section('scripts')
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const logoInput = document.getElementById('logo_input');

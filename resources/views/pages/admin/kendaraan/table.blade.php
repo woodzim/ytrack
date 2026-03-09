@@ -1,5 +1,5 @@
 <div class="card table-wrapper">
-  <div class="card-header py-3">
+  <div class="py-3">
     <div class="d-flex justify-content-between align-items-center">
       <h5 class="card-title mb-0">Daftar Kendaraan ({{ $kendaraan->total() }})</h5>
       @if ($search)
@@ -9,10 +9,11 @@
   </div>
   <div class="card-body p-0">
     @if ($kendaraan->count() > 0)
-        <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead class="bg-light">
-              <tr>              <th style="width: 5%;">No</th>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="bg-light">
+            <tr>
+              <th style="width: 5%;">No</th>
               <th>Nama Kendaraan</th>
               <th>Plat Nomor</th>
               <th>Jenis</th>
@@ -64,11 +65,14 @@
 
                 <td data-label="Aksi" class="text-center">
                   <div class="dropdown">
-                    <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                    <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button"
+                      data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="window">
                       <i class="ri-more-2-fill"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><hr class="dropdown-divider"></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
                       <li>
                         @if ($item->sedang_digunakan)
                           <button type="button" class="dropdown-item text-muted" title="Sedang digunakan" disabled>

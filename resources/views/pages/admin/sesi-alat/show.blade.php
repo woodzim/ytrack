@@ -518,15 +518,24 @@
 
     // --- 5. CUSTOM ICON MAP ---
     function createCustomIcon(type) {
-      let iconClass = type === 'start' ? 'ri-map-pin-5-fill' : 'ri-map-pin-user-fill';
-      let iconColor = type === 'start' ? '#10b981' : '#0F2854';
-      let pulseHtml = type === 'end' ? '<div class="pin-pulse"></div>' : '';
-      return L.divIcon({
-        html: `<div class="pin-wrapper">${pulseHtml}<i class="${iconClass}" style="color: ${iconColor};"></i></div>`,
-        className: 'custom-pin-icon',
-        iconSize: [50, 50],
-        iconAnchor: [25, 45]
-      });
+      if (type === 'start') {
+        return L.divIcon({
+          html: '<div class="pin-wrapper"><i class="ri-map-pin-fill" style="color: #0F2854; font-size: 32px;"></i></div>',
+          className: 'custom-pin-icon',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32]
+        });
+      } else {
+        return L.divIcon({
+          html: `<div style="position: relative; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                   <div style="position: absolute; width:100%; height:100%; background:rgba(15,40,84,0.3); border-radius:50%; animation: pulse-animation 2s infinite; z-index: 1;"></div>
+                   <div style="width: 14px; height: 14px; background-color: #0F2854; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 2px #0F2854; z-index: 2;"></div>
+                 </div>`,
+          className: 'custom-pin-icon',
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -601,6 +610,38 @@
           setTimeout(() => map.invalidateSize(), 100);
         }
       });
+
+      // --- CUSTOM CONTROL: LEGEND ---
+      const LegendControl = L.Control.extend({
+        options: {
+          position: 'bottomleft'
+        },
+        onAdd: function(map) {
+          const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control custom-map-legend');
+          container.style =
+            "background: white; padding: 12px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); margin-bottom: 20px; margin-left: 10px;";
+          container.innerHTML = `
+            <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 8px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px;">Legenda</div>
+            <div class="d-flex align-items-center mb-2">
+              <i class="ri-map-pin-fill" style="color: #0F2854; font-size: 20px; width: 24px; text-align: center; margin-right: 6px;"></i>
+              <span style="font-size: 12px; color: #4b5563;">Titik Awal</span>
+            </div>
+            <div class="d-flex align-items-center mb-2">
+              <div style="position: relative; width: 24px; height: 24px; text-align: center; margin-right: 6px; display: flex; align-items: center; justify-content: center;">
+                <div style="position: absolute; width:100%; height:100%; background:rgba(15,40,84,0.3); border-radius:50%; animation: pulse-animation 2s infinite; z-index: 1;"></div>
+                <div style="width: 12px; height: 12px; background-color: #0F2854; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 1.5px #0F2854; z-index: 2;"></div>
+              </div>
+              <span style="font-size: 12px; color: #4b5563;">Lokasi Terkini</span>
+            </div>
+            <div class="d-flex align-items-center mt-3">
+              <div style="width: 12px; height: 12px; border-radius: 50%; background: #0ea5e9; border: 2px solid white; box-shadow: 0 0 0 1px #0ea5e9; margin: 0 6px 0 6px; margin-right: 12px;"></div>
+              <span style="font-size: 12px; color: #4b5563;">Posisi Riwayat (klik tabel)</span>
+            </div>
+          `;
+          return container;
+        }
+      });
+      map.addControl(new LegendControl());
 
       function toggleTrackingMode(btn) {
         isTrackingMode = !isTrackingMode;
@@ -834,6 +875,8 @@
           const confirmText = isActive ?
             'Perjalanan ini akan diselesaikan dan alat akan dinonaktifkan.' :
             'Perjalanan ini akan diaktifkan dan alat akan mulai melacak.';
+          const confirmBtnText = "Ya";
+          const confirmBtnClass = "btn-primary";
 
           window.showConfirmModal(confirmText, () => {
             // Start Loading: Change icon to spinner (no text)
@@ -855,49 +898,42 @@
               .then(data => {
                 if (data.success) {
                   const isNowActive = data.aktif;
+                  // Update UI without reload
                   powerBtn.setAttribute('data-is-active', isNowActive ? '1' : '0');
 
-                  // Update Button
-                  powerBtn.className =
-                    `btn btn-icon btn-lg rounded-circle shadow-lg ${isNowActive ? 'btn-success pulse-active' : 'btn-danger'}`;
-                  powerBtn.title = isNowActive ? 'Selesaikan Perjalanan' : 'Aktifkan Perjalanan';
-
-                  // Update Icon
-                  powerIcon.className = 'ri-shut-down-line fs-40';
-
-                  // Update Badge
-                  statusBadge.className =
-                    `badge rounded-pill mt-3 ${isNowActive ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger'} px-3`;
-                  statusBadge.textContent = isNowActive ? 'AKTIF' : 'NONAKTIFKAN';
-
-                  if (window.showAlertModal) {
-                    window.showAlertModal(data.message || 'Status berhasil diubah', 'success');
-                  } else if (window.Swal) {
-                    Swal.fire('Berhasil', data.message || 'Status berhasil diubah', 'success');
+                  if (isNowActive) {
+                    powerBtn.classList.remove('btn-secondary');
+                    powerBtn.classList.add('btn-primary');
+                    powerBtn.classList.add('pulse-active');
+                    powerIcon.className = 'ri-shut-down-line fs-40';
+                    statusBadge.className =
+                      'badge rounded-pill mt-3 bg-success-transparent text-success px-3';
+                    statusBadge.innerText = 'AKTIF';
+                    powerBtn.title = 'Selesaikan Perjalanan';
+                  } else {
+                    powerBtn.classList.remove('btn-primary');
+                    powerBtn.classList.remove('pulse-active');
+                    powerBtn.classList.add('btn-secondary');
+                    powerIcon.className = 'ri-shut-down-line fs-40';
+                    statusBadge.className =
+                      'badge rounded-pill mt-3 bg-secondary-transparent text-secondary px-3';
+                    statusBadge.innerText = 'SELESAI';
+                    powerBtn.title = 'Aktifkan Perjalanan';
                   }
                 } else {
                   // Rollback on failure
                   powerIcon.className = originalIconClass;
-                  if (window.showAlertModal) {
-                    window.showAlertModal(data.message || 'Gagal mengubah status', 'error');
-                  } else if (window.Swal) {
-                    Swal.fire('Gagal', data.message || 'Gagal mengubah status', 'error');
-                  }
+                  powerBtn.disabled = false;
+                  window.showAlertModal(data.message || 'Terjadi kesalahan sistem.', 'error');
                 }
               })
               .catch(error => {
-                console.error('Error toggling power:', error);
+                console.error('Error toggle power:', error);
                 powerIcon.className = originalIconClass;
-                if (window.showAlertModal) {
-                  window.showAlertModal('Terjadi kesalahan sistem', 'error');
-                } else if (window.Swal) {
-                  Swal.fire('Error', 'Kesalahan sistem', 'error');
-                }
-              })
-              .finally(() => {
                 powerBtn.disabled = false;
+                window.showAlertModal('Terjadi kesalahan jaringan.', 'error');
               });
-          });
+          }, confirmTitle, confirmBtnText, confirmBtnClass);
         });
       }
 

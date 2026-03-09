@@ -130,7 +130,7 @@
           Terdapat <b id="alert-low-bat-count">{{ $lowBatCount }}</b> perangkat yang memerlukan pengisian daya segera.
         </div>
         <div class="ms-auto text-end d-none d-sm-block">
-          <span class="badge bg-white-transparent text-white border-0 py-2">Klik untuk Lihat <i
+          <span class="badge bg-danger text-white border-0 py-2">Klik untuk Lihat <i
               class="ri-arrow-right-line ms-1"></i></span>
         </div>
       </div>
@@ -150,60 +150,69 @@
 
       <!-- Data Alat Table -->
       <div class="card mb-4 custom-card-enhanced" id="daftar-alat-table">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">Daftar Alat & Status Terbaru</h5>
-          <span class="badge bg-primary-transparent text-primary px-3 rounded-pill">{{ count($lokasiAlat) }} Alat
-            Terdeteksi</span>
+        <div class="card-header py-2">
+          <div class="d-flex justify-content-between align-items-center w-100 flex-column flex-md-row gap-2">
+            <h5 class="card-title mb-0">Daftar Alat & Status Terbaru</h5>
+            <span
+              class="badge bg-primary-transparent text-primary px-3 rounded-pill align-self-start align-self-md-center">
+              {{ count($lokasiAlat) }} Alat Terdeteksi
+            </span>
+          </div>
         </div>
         <div class="card-body p-0">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead class="bg-light text-uppercase fs-11 fw-bold text-muted">
+
+          {{-- Desktop View: Table --}}
+          <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover table-sm align-middle mb-0" style="font-size: 0.85rem;">
+              <thead class="bg-light text-uppercase fs-10 fw-bold text-muted">
                 <tr>
-                  <th class="ps-3 border-0">Nama Alat / No. Seri</th>
-                  <th class="border-0">Kendaraan</th>
-                  <th class="border-0">Baterai</th>
-                  <th class="border-0">Status</th>
-                  <th class="border-0">Pembaruan</th>
-                  <th class="text-center border-0">Aksi</th>
+                  <th class="ps-3 py-2 border-0">Nama Alat / No. Seri</th>
+                  <th class="py-2 border-0">Kendaraan</th>
+                  <th class="py-2 border-0">Baterai</th>
+                  <th class="py-2 border-0">Status</th>
+                  <th class="py-2 border-0">Pembaruan</th>
+                  <th class="text-center py-2 border-0">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 @forelse($lokasiAlat as $alat)
                   <tr class="{{ $alat['is_low_bat'] ? 'table-danger' : '' }}" id="row-alat-{{ $alat['id_sesi'] }}"
                     @if ($alat['id_sesi']) onclick="focusMarker('{{ $alat['id_sesi'] }}')" @endif>
-                    <td class="ps-3">
-                      <div class="fw-bold text-dark name-cell">
+                    <td class="ps-3 py-2">
+                      <div class="fw-bold text-dark name-cell mb-0">
                         @if ($alat['is_low_bat'])
                           <i class="ri-error-warning-fill text-danger me-1"></i>
                         @endif
                         {{ $alat['nama_alat'] }}
                       </div>
-                      <code class="text-muted small">{{ $alat['serial_number'] }}</code>
+                      <code class="text-muted" style="font-size: 0.7rem;">{{ $alat['serial_number'] }}</code>
                     </td>
-                    <td>
+                    <td class="py-2">
                       <div class="d-flex align-items-center fw-medium text-dark">
-                        <i class="ri-truck-line me-2 text-primary fs-16"></i>
+                        <i class="ri-truck-line me-1 text-primary fs-14"></i>
                         {{ $alat['kendaraan'] }}
                       </div>
                     </td>
-                    <td class="battery-cell">
-                      <x-battery-circle :level="$alat['battery']" size="40px" />
+                    <td class="battery-cell py-2">
+                      <x-battery-circle :level="$alat['battery']" size="30px" stroke="3" />
                     </td>
-                    <td>
+                    <td class="py-2">
                       <span
-                        class="badge rounded-pill {{ $alat['status'] == 'Aktif' ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }}">
-                        <i class="ri-checkbox-blank-circle-fill fs-8 me-1"></i> {{ $alat['status'] }}
+                        class="badge rounded-pill {{ $alat['status'] == 'Aktif' ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} py-1 px-2"
+                        style="font-size: 0.7rem;">
+                        <i class="ri-checkbox-blank-circle-fill fs-9 me-1"></i> {{ $alat['status'] }}
                       </span>
                     </td>
-                    <td class="update-cell">
-                      <span class="text-muted small"><i class="ri-time-line me-1"></i>{{ $alat['last_update'] }}</span>
+                    <td class="update-cell py-2">
+                      <span class="text-muted" style="font-size: 0.75rem;"><i
+                          class="ri-time-line me-1"></i>{{ $alat['last_update'] }}</span>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center py-2">
                       @if ($alat['id_sesi'])
                         <a href="{{ route('perusahaan.perjalanan.show', $alat['id_sesi']) }}"
-                          class="btn btn-sm btn-icon btn-primary-transparent rounded-circle">
-                          <i class="ri-map-2-line"></i>
+                          class="btn btn-sm btn-icon btn-primary-transparent rounded-circle"
+                          style="width: 28px; height: 28px; line-height: 28px;">
+                          <i class="ri-map-2-line fs-14"></i>
                         </a>
                       @else
                         <span class="text-muted">-</span>
@@ -221,6 +230,66 @@
               </tbody>
             </table>
           </div>
+
+          {{-- Mobile View: Cards --}}
+          <div class="d-block d-md-none">
+            <div class="list-group list-group-flush rounded-bottom">
+              @forelse($lokasiAlat as $alat)
+                <div class="list-group-item p-3 {{ $alat['is_low_bat'] ? 'bg-danger-transparent' : '' }}"
+                  @if ($alat['id_sesi']) onclick="focusMarker('{{ $alat['id_sesi'] }}')" style="cursor: pointer;" @endif>
+                  <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                      <div class="fw-bold text-dark mb-1">
+                        @if ($alat['is_low_bat'])
+                          <i class="ri-error-warning-fill text-danger me-1"></i>
+                        @endif
+                        {{ $alat['nama_alat'] }}
+                      </div>
+                      <code class="text-muted d-block" style="font-size: 0.75rem;">{{ $alat['serial_number'] }}</code>
+                    </div>
+                    <div>
+                      <span
+                        class="badge rounded-pill {{ $alat['status'] == 'Aktif' ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} py-1 px-2"
+                        style="font-size: 0.7rem;">
+                        <i class="ri-checkbox-blank-circle-fill fs-9 me-1"></i> {{ $alat['status'] }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="d-flex flex-column gap-2">
+                      <div class="d-flex align-items-center text-dark" style="font-size: 0.85rem;">
+                        <i class="ri-truck-line me-2 text-primary"></i>
+                        <span class="fw-medium">{{ $alat['kendaraan'] }}</span>
+                      </div>
+                      <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
+                        <i class="ri-time-line me-2"></i>
+                        {{ $alat['last_update'] }}
+                      </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                      <x-battery-circle :level="$alat['battery']" size="36px" stroke="3" />
+                      @if ($alat['id_sesi'])
+                        <a href="{{ route('perusahaan.perjalanan.show', $alat['id_sesi']) }}"
+                          class="btn btn-sm btn-icon btn-primary rounded-circle shadow-sm"
+                          style="width: 32px; height: 32px; line-height: 32px;">
+                          <i class="ri-map-2-line fs-14"></i>
+                        </a>
+                      @endif
+                    </div>
+                  </div>
+                </div>
+              @empty
+                <div class="p-4 text-center text-muted">
+                  <i class="ri-inbox-line fs-40 d-block mb-2"></i>
+                  Tidak ada data alat aktif saat ini.
+                </div>
+              @endforelse
+            </div>
+          </div>
+          {{-- End Mobile View --}}
+
         </div>
       </div>
 
@@ -553,7 +622,7 @@
             .listen('.LokasiBaru', (e) => {
               const latLng = [parseFloat(e.lat), parseFloat(e.lng)];
               const battery = parseInt(e.battery || 0);
-              const isLowBat = battery <= 20;
+              const isLowBat = battery <= 30;
 
               if (markers[loc.id_sesi]) {
                 const marker = markers[loc.id_sesi];
@@ -651,13 +720,14 @@
         series: [@json($batteryStats['good']), @json($batteryStats['moderate']), @json($batteryStats['low'])],
         chart: {
           type: 'donut',
-          height: 280,
+          height: 300,
           width: '100%'
         },
         labels: ['Bagus (>70%)', 'Cukup (30-70%)', 'Lemah (<30%)'],
         colors: ['#10b981', '#f59e0b', '#ef4444'],
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          height: 60
         },
         plotOptions: {
           pie: {
@@ -687,7 +757,8 @@
         labels: ['Bergerak', 'Berhenti'],
         colors: ['#3b82f6', '#94a3b8'],
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          height: 60
         },
         plotOptions: {
           pie: {
@@ -717,7 +788,8 @@
         labels: ['Aktif', 'Nonaktif'],
         colors: ['#f59e0b', '#cbd5e1'],
         legend: {
-          position: 'bottom'
+          position: 'bottom',
+          height: 60
         },
         plotOptions: {
           pie: {

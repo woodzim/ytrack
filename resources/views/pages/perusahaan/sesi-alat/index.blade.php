@@ -11,11 +11,9 @@
     }
 
     /* Memastikan card tidak memotong konten yang keluar (seperti dropdown) */
-    .custom-card {
-      overflow: visible !important;
-    }
-
-    .custom-card .card-body {
+    /* Force parent containers to allow overflow so dropdowns aren't cut off */
+    .table-wrapper,
+    .table-wrapper .card-body {
       overflow: visible !important;
     }
 
@@ -281,8 +279,8 @@
           const isActive = toggleBtn.dataset.active === '1';
 
           const title = "Konfirmasi Perjalanan";
-          const message = "Ubah status perjalanan ini?";
-          const btnText = "Ya, Ubah";
+          const message = "Aktifkan/nonaktifkan sesi perjalanan ini?";
+          const btnText = "Ya";
           const btnClass = "btn-primary";
 
           window.showConfirmModal(message, () => {
@@ -297,8 +295,7 @@
               })
               .then(response => response.json())
               .then(data => {
-                if (data.status === 'success') {
-                  window.showAlertModal(data.message || 'Status berhasil diubah', 'success');
+                if (data.success) {
                   // Refresh tabel saja tanpa refresh halaman
                   triggerFetch();
                 } else {

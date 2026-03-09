@@ -1,4 +1,4 @@
-<div class="card-header py-3">
+<div class="py-3">
   <div class="d-flex justify-content-between align-items-center">
     <h5 class="card-title mb-0">Daftar Jenis ({{ $jenisKendaraan->total() }})</h5>
     @if ($search)
@@ -45,8 +45,7 @@
                 </a>
 
                 {{-- Tombol Hapus --}}
-                <form action="{{ route('jenis-kendaraan.destroy', $item->id) }}" method="POST"
-                  style="display: inline;"
+                <form action="{{ route('jenis-kendaraan.destroy', $item->id) }}" method="POST" style="display: inline;"
                   data-confirm="Hapus jenis kendaraan {{ $item->nama }}? Data kendaraan yang menggunakan jenis ini mungkin akan terdampak.">
                   @csrf
                   @method('DELETE')

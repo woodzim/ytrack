@@ -20,7 +20,7 @@
       <!-- End::header-element -->
 
       <!-- Start::header-element -->
-      <div class="header-element mx-lg-0 mx-2">
+      <div class="header-element mx-lg-0 my-auto mx-auto">
         <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle"
           data-bs-toggle="sidebar" href="javascript:void(0);">
           <i class="ri-menu-line header-link-icon side-menu__icon-hamburger"></i>

@@ -1,5 +1,5 @@
 <div class="card table-wrapper">
-  <div class="card-header py-3">
+  <div class=" py-3">
     <div class="d-flex justify-content-between align-items-center">
       <h5 class="card-title mb-0">Daftar Perusahaan ({{ $perusahaan->total() }})</h5>
       @if ($search)
@@ -34,7 +34,7 @@
                 <td data-label="Aksi" class="text-center">
                   <div class="dropdown">
                     <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button"
-                      data-bs-toggle="dropdown" aria-expanded="false">
+                      data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="window">
                       <i class="ri-more-2-fill"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">

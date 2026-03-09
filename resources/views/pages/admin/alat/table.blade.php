@@ -1,5 +1,5 @@
 <div class="card table-wrapper">
-  <div class="card-header py-3">
+  <div class=" py-3">
     <div class="d-flex justify-content-between align-items-center">
       <h5 class="card-title mb-0">Daftar Alat ({{ $alat->total() }})</h5>
       @if ($search)
@@ -43,7 +43,7 @@
               <td>
                 @php
                   // Alat dianggap 'Digunakan' jika memiliki SesiAlat yang status 'aktif' = true
-                  $sedangDigunakan = $item->sedang_digunakan; 
+                  $sedangDigunakan = $item->sedang_digunakan;
                 @endphp
 
                 @if ($sedangDigunakan)
@@ -61,7 +61,7 @@
                   @php
                     $sesiAktif = $item->sesiAlat->firstWhere('aktif', true);
                   @endphp
-                  @if($sesiAktif && $sesiAktif->kendaraan)
+                  @if ($sesiAktif && $sesiAktif->kendaraan)
                     <div class="d-flex flex-column">
                       <span class="fw-medium">{{ $sesiAktif->kendaraan->nama }}</span>
                       <small class="text-muted">{{ $sesiAktif->kendaraan->plat }}</small>
@@ -75,7 +75,8 @@
               </td>
               <td class="text-end pe-4">
                 <div class="dropdown">
-                  <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                  <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button"
+                    data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="window">
                     <i class="ri-more-2-fill"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
@@ -89,7 +90,9 @@
                         <i class="ri-edit-line me-2 align-middle text-warning"></i>Edit
                       </a>
                     </li>
-                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
                     <li>
                       <form action="{{ route('alat.destroy', $item->id) }}" method="POST"
                         data-confirm="Hapus alat ini? Semua data terkait (sesi & riwayat) mungkin terdampak.">

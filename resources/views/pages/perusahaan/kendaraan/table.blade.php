@@ -69,7 +69,7 @@
               <td class="text-center">
                 <div class="dropdown">
                   <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button"
-                    data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="viewport">
+                    data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="window">
                     <i class="ri-more-2-fill"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
@@ -92,7 +92,8 @@
                       @else
                         {{-- Jika parkir, tombol aktif --}}
                         <form action="{{ route('perusahaan.kendaraan.destroy', $item->id) }}" method="POST"
-                          data-confirm="Yakin ingin menghapus kendaraan {{ $item->plat }}?" data-confirm-title="Hapus Kendaraan">
+                          data-confirm="Yakin ingin menghapus kendaraan {{ $item->plat }}?"
+                          data-confirm-title="Hapus Kendaraan">
                           @csrf
                           @method('DELETE')
                           <button type="submit" class="dropdown-item text-danger">

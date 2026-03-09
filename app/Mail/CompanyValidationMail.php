@@ -16,7 +16,7 @@ class CompanyValidationMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public User $user, public bool $isValidated)
+    public function __construct(public User $user, public bool $isValidated, public ?string $reason = null)
     {
     }
 
@@ -44,6 +44,7 @@ class CompanyValidationMail extends Mailable
             with: [
                 'user' => $this->user,
                 'isValidated' => $this->isValidated,
+                'reason' => $this->reason,
             ],
         );
     }
