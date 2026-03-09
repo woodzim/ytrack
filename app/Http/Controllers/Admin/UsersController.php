@@ -27,7 +27,7 @@ class UsersController extends Controller
         if ($request->filled('search')) {
             $users->where(function($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
-                  ->orWhere('email', 'like', '%' . $search . '%');
+                    ->orWhere('email', 'like', '%' . $search . '%');
             });
         }
 
@@ -107,6 +107,11 @@ class UsersController extends Controller
             return redirect()->back()->with('error', 'Hanya akun dengan role perusahaan yang dapat divalidasi');
         }
 
+        // Check if company has submitted documents
+        if (!$user->perusahaan || $user->perusahaan->berkas !== 'submitted_multi_flow') {
+            return redirect()->back()->with('error', 'Perusahaan belum mengirimkan permohonan validasi berkas');
+        }
+
         // Update is_validated to true
         $user->update([
             'is_validated' => true,
@@ -136,7 +141,7 @@ class UsersController extends Controller
     /**
      * Reject/Unvalidate a perusahaan user account
      */
-    public function rejectUser($id)
+    public function rejectUser(Request $request, $id)
     {
         // Find the user
         $user = User::findOrFail($id);
@@ -146,10 +151,25 @@ class UsersController extends Controller
             return redirect()->back()->with('error', 'Hanya akun dengan role perusahaan yang dapat ditolak');
         }
 
+        // Check if company has submitted documents
+        if (!$user->perusahaan || $user->perusahaan->berkas !== 'submitted_multi_flow') {
+            return redirect()->back()->with('error', 'Perusahaan belum mengirimkan permohonan validasi berkas');
+        }
+
         // Update is_validated to false
         $user->update([
             'is_validated' => false,
         ]);
+
+        $reason = null;
+        if ($user->perusahaan) {
+            $reason = $request->input('alasan_tolak');
+            // If rejected, set status berkas to rejected and save the reason
+            $user->perusahaan->update([
+                'berkas' => 'rejected',
+                'alasan_tolak' => $reason
+            ]);
+        }
 
         // --- TAMBAHAN LOG: REJECT ---
         ActivityLog::create([
@@ -164,7 +184,7 @@ class UsersController extends Controller
 
         // Send rejection email
         try {
-            Mail::to($user->email)->send(new CompanyValidationMail($user, false));
+            Mail::to($user->email)->send(new CompanyValidationMail($user, false, $reason));
         } catch (\Exception $e) {
             Log::error('Failed to send rejection email to company: ' . $e->getMessage());
         }

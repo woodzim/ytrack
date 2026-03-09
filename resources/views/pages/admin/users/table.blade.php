@@ -28,9 +28,16 @@
               </td>
               <td data-label="Status">
                 @if ($user->hasRole('perusahaan'))
+                  @php
+                    $isRejected = $user->perusahaan && $user->perusahaan->berkas === 'rejected';
+                  @endphp
                   @if ($user->is_validated)
                     <span class="badge bg-success">
                       <i class="ri-check-line me-1"></i>Tervalidasi
+                    </span>
+                  @elseif ($isRejected)
+                    <span class="badge bg-danger">
+                      <i class="ri-close-circle-line me-1"></i>Ditolak
                     </span>
                   @else
                     <span class="badge bg-warning">
@@ -63,11 +70,10 @@
                         }
                     }
 
-                    $legacyFile = $user->perusahaan->berkas;
-                    $hasLegacyFile = !empty($legacyFile) && $legacyFile !== 'submitted_multi_flow';
+                    $hasSubmitted = $user->perusahaan && $user->perusahaan->berkas === 'submitted_multi_flow';
                   @endphp
 
-                  @if ($hasMultiFiles || $hasLegacyFile)
+                  @if ($hasMultiFiles)
                     <div class="dropdown">
                       <button class="btn btn-sm btn-outline-primary dropdown-toggle hide-arrow px-2" type="button"
                         data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="window"
@@ -75,28 +81,13 @@
                         <i class="ri-folder-open-line me-1"></i> Berkas
                       </button>
                       <ul class="dropdown-menu fs-13">
-                        @if ($hasLegacyFile)
-                          <li>
-                            <button type="button" class="dropdown-item d-flex align-items-center"
-                              data-bs-toggle="modal" data-bs-target="#pdfViewerModal"
-                              data-pdf-url="{{ Storage::url($legacyFile) }}">
-                              <i class="ri-file-pdf-line text-danger me-2"></i> Berkas Lama (Gabungan)
-                            </button>
-                          </li>
-                        @endif
-
-                        @if ($hasMultiFiles && $hasLegacyFile)
-                          <li>
-                            <hr class="dropdown-divider">
-                          </li>
-                        @endif
 
                         @foreach ($docs as $key => $label)
                           @if (!empty($user->perusahaan->{'berkas_' . $key}))
                             <li>
                               <button type="button" class="dropdown-item d-flex align-items-center"
                                 data-bs-toggle="modal" data-bs-target="#pdfViewerModal"
-                                data-pdf-url="{{ Storage::url($user->perusahaan->{'berkas_' . $key}) }}">
+                                data-pdf-url="{{ Storage::disk('public')->url($user->perusahaan->{'berkas_' . $key}) }}">
                                 <i class="ri-file-pdf-line text-danger me-2"></i> {{ $label }}
                               </button>
                             </li>
@@ -118,6 +109,9 @@
               </td>
               <td data-label="Aksi" class="text-center">
                 @if ($user->hasRole('perusahaan'))
+                  @php
+                    $isCompanySubmitted = $user->perusahaan && $user->perusahaan->berkas === 'submitted_multi_flow';
+                  @endphp
                   <div class="dropdown">
                     <button class="btn btn-sm btn-light btn-wave dropdown-toggle hide-arrow" type="button"
                       data-bs-toggle="dropdown" aria-expanded="false" data-bs-boundary="window">
@@ -125,14 +119,42 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                       @if (!$user->is_validated)
-                        <li>
-                          <button type="button" class="dropdown-item text-success" data-bs-toggle="modal"
-                            data-bs-target="#validateUserModal" data-user-id="{{ $user->id }}"
-                            data-user-name="{{ $user->name }}"
-                            data-is-validated="{{ $user->is_validated ? '1' : '0' }}">
-                            <i class="ri-check-line me-2 align-middle"></i>Validasi Akun
-                          </button>
-                        </li>
+                        @if ($isCompanySubmitted)
+                          <li>
+                            <button type="button" class="dropdown-item text-success" data-bs-toggle="modal"
+                              data-bs-target="#validateUserModal" data-user-id="{{ $user->id }}"
+                              data-user-name="{{ $user->name }}"
+                              data-is-validated="{{ $user->is_validated ? '1' : '0' }}">
+                              <i class="ri-check-line me-2 align-middle"></i>Validasi Akun
+                            </button>
+                          </li>
+                          <li>
+                            <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal"
+                              data-bs-target="#rejectUserModal" data-user-id="{{ $user->id }}"
+                              data-user-name="{{ $user->name }}">
+                              <i class="ri-close-circle-line me-2 align-middle"></i>Tolak Pendaftaran
+                            </button>
+                          </li>
+                        @else
+                          @php
+                            $isRejected = $user->perusahaan && $user->perusahaan->berkas === 'rejected';
+                            $tooltipText = $isRejected
+                                ? 'Pendaftaran telah ditolak, menunggu perusahaan mengirim ulang berkas'
+                                : 'Perusahaan belum mengirim berkas';
+                          @endphp
+                          <li>
+                            <button type="button" class="dropdown-item text-muted disabled" disabled="disabled"
+                              style="cursor: not-allowed;" title="{{ $tooltipText }}">
+                              <i class="ri-check-line me-2 align-middle"></i>Validasi Akun
+                            </button>
+                          </li>
+                          <li>
+                            <button type="button" class="dropdown-item text-muted disabled" disabled="disabled"
+                              style="cursor: not-allowed;" title="{{ $tooltipText }}">
+                              <i class="ri-close-circle-line me-2 align-middle"></i>Tolak Pendaftaran
+                            </button>
+                          </li>
+                        @endif
                       @else
                         <li>
                           <button type="button" class="dropdown-item text-warning" data-bs-toggle="modal"

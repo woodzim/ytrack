@@ -74,6 +74,13 @@
           Saat ini akun Anda sedang ditinjau ulang atau ditangguhkan validasinya oleh admin.
           Silakan hubungi kami jika Anda merasa ini adalah kesalahan.
         </p>
+        @if (!empty($reason))
+          <div
+            style="background-color: #fce4e4; padding: 15px; border-left: 4px solid #e74c3c; margin: 20px 0; border-radius: 4px;">
+            <h4 style="margin-top: 0; color: #c0392b; font-size: 16px;">Alasan Penolakan:</h4>
+            <p style="margin: 0; color: #5d6576; white-space: pre-wrap;">{{ $reason }}</p>
+          </div>
+        @endif
       @endif
 
       <p style="margin-bottom: 0; margin-top: 30px; color: #5d6576; font-size: 16px;">

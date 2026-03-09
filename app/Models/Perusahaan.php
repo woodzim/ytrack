@@ -27,6 +27,7 @@ class Perusahaan extends Model
         'berkas_npwp_pj',
         'berkas_izin_usaha',
         'berkas_siup',
+        'alasan_tolak',
     ];
 
     // Relationships

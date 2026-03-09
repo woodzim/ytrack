@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('berkas_npwp_pj')->nullable();
             $table->string('berkas_izin_usaha')->nullable();
             $table->string('berkas_siup')->nullable();
+            $table->text('alasan_tolak')->nullable();
             $table->timestamps();
         });
     }

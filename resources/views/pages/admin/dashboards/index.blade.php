@@ -4,12 +4,12 @@
   <style>
     @media (max-width: 575.98px) {
       .stats-card .card-body {
-        padding: 0.8rem;
+        /* padding: 0.8rem; */
       }
 
       .stats-card .card-title {
         font-size: 0.7rem !important;
-        margin-bottom: 0.25rem !important;
+        /* margin-bottom: 0.25rem !important; */
       }
 
       .stats-card h3 {
@@ -31,19 +31,9 @@
       .page-header-breadcrumb {
         margin-bottom: 0.75rem !important;
       }
-
-      .chart-container-fixed {
-        min-height: 250px !important;
-      }
     }
 
     /* Fixed height for chart containers to keep dashboard uniform */
-    .chart-container-fixed {
-      min-height: 380px;
-      position: relative;
-      width: 100%;
-    }
-
     #map-admin {
       height: 55vh;
       width: 100% !important;
@@ -61,7 +51,7 @@
 
 @section('content')
   <!-- Start::page-header -->
-  <div class="page-header-section d-flex align-items-center justify-content-between mb-4">
+  <div class="page-header-section d-flex align-items-center justify-content-between mb-2">
     <div>
       <h1 class="page-title fw-medium fs-20 mb-0">Beranda Admin YA-Track</h1>
       <p class="">Dashboard Monitoring Seluruh Alat YA-Track</p>
@@ -78,15 +68,15 @@
   <div class="row g-2">
     <!-- Statistics Cards -->
     <div class="col-6 col-md-6 col-lg-3">
-      <div class="card custom-card stats-card">
+      <div class="card bg-white h-100 border-0 shadow-sm stats-card">
         <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center h-100 justify-content-between">
             <div>
-              <h6 class="card-title text-muted mb-2">Sesi Aktif</h6>
+              <h6 class="card-title text-muted mb-3">Sesi Aktif</h6>
               <h3 class="mb-0" id="stat-active-sessions">{{ $totalSesiAlatAktif }}</h3>
             </div>
-            <div class="stats-icon bg-success-transparent">
-              <i class="ri-check-double-line fs-24 text-success"></i>
+            <div class="stats-icon">
+              <i class="ri-check-double-line fs-40 text-success"></i>
             </div>
           </div>
         </div>
@@ -94,15 +84,15 @@
     </div>
 
     <div class="col-6 col-md-6 col-lg-3">
-      <div class="card custom-card stats-card">
+      <div class="card bg-white h-100 border-0 shadow-sm stats-card">
         <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center h-100 justify-content-between">
             <div>
-              <h6 class="card-title text-muted mb-2">Total Alat GPS</h6>
+              <h6 class="card-title text-muted mb-3">Total Alat GPS</h6>
               <h3 class="mb-0">{{ $totalAlat }}</h3>
             </div>
-            <div class="stats-icon bg-info-transparent">
-              <i class="ri-radar-line fs-24 text-info"></i>
+            <div class="stats-icon">
+              <i class="ri-radar-line fs-40 text-info"></i>
             </div>
           </div>
         </div>
@@ -110,15 +100,15 @@
     </div>
 
     <div class="col-6 col-md-6 col-lg-3">
-      <div class="card custom-card stats-card">
+      <div class="card bg-white h-100 border-0 shadow-sm stats-card">
         <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center h-100 justify-content-between">
             <div>
-              <h6 class="card-title text-muted mb-2">Total Kendaraan</h6>
+              <h6 class="card-title text-muted mb-3">Total Kendaraan</h6>
               <h3 class="mb-0">{{ $totalKendaraan }}</h3>
             </div>
-            <div class="stats-icon bg-warning-transparent">
-              <i class="ri-taxi-line fs-24 text-warning"></i>
+            <div class="stats-icon">
+              <i class="ri-taxi-line fs-40 text-warning"></i>
             </div>
           </div>
         </div>
@@ -126,15 +116,15 @@
     </div>
 
     <div class="col-6 col-md-6 col-lg-3">
-      <div class="card custom-card stats-card">
+      <div class="card bg-white h-100 border-0 d-flex shadow-sm stats-card">
         <div class="card-body">
-          <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center h-100 justify-content-between">
             <div>
-              <h6 class="card-title text-muted mb-2">Total Perusahaan</h6>
+              <h6 class="card-title text-muted mb-3">Total Perusahaan</h6>
               <h3 class="mb-0">{{ $totalPerusahaan }}</h3>
             </div>
-            <div class="stats-icon bg-primary-transparent">
-              <i class="ri-building-4-line fs-24 text-primary"></i>
+            <div class="stats-icon">
+              <i class="ri-building-4-line fs-40 text-primary"></i>
             </div>
           </div>
         </div>
@@ -145,11 +135,12 @@
   <!-- Map Section -->
   <div class="row g-2 mt-1">
     <div class="col-12">
-      <div class="card custom-card overflow-hidden">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-          <div class="card-title mb-0 fw-bold fs-14 text-uppercase ls-1">
-            <i class="ri-map-pin-2-fill me-2 text-primary"></i>Monitoring Lokasi Alat Terkini (Seluruh Perusahaan)
-          </div>
+      <div class="card bg-white overflow-hidden border-0 shadow-sm">
+        <div class="card-header border-bottom py-3 d-flex justify-content-between align-items-center ">
+          <h5 class="card-title fw-semibold mb-0 pt-1">
+            <i class="ri-map-pin-2-fill me-2 text-primary"></i>
+            Monitoring Lokasi Alat Terkini (Seluruh Perusahaan)
+          </h5>
           <span class="badge bg-primary-transparent text-primary px-3 rounded-pill">{{ count($lokasiAlat) }} Alat
             Terdeteksi</span>
         </div>
@@ -160,45 +151,51 @@
     </div>
   </div>
 
-  <div class="row g-2 mt-1">
+  <div class="row g-2">
     <!-- Active Sessions -->
     <div class="col-12">
-      <div class="card custom-card h-100">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+      <div class="card bg-white h-100 border-0 shadow-sm">
+        <div class="card-header border-bottom py-3 d-flex justify-content-between align-items-center">
           <div>
-            <h5 class="card-title mb-0">Sesi Perjalanan Aktif</h5>
-            <p class="text-muted mb-0 small">Perangkat yang sedang aktif melacak secara real-time</p>
+            <h5 class="card-title fw-semibold mb-0">Sesi Perjalanan Aktif</h5>
+            <p class="text-muted mb-0 small mt-1">Perangkat yang sedang aktif melacak secara real-time</p>
           </div>
-          <div class="card-footer border-top mt-auto">
-            <a href="{{ route('perjalanan.index') }}" class="btn btn-sm btn-outline-primary">
+          <div>
+            <a href="{{ route('perjalanan.index') }}" class="btn btn-sm btn-outline-primary btn-wave">
               Lihat Semua <i class="ri-arrow-right-line ms-1"></i>
             </a>
           </div>
-
         </div>
         <div class="card-body p-0">
           @if ($activeSessions->count() > 0)
             <div class="table-responsive mb-0">
-              <table class="table table-hover mb-0">
-                <thead class="bg-light">
+              <table class="table table-borderless mb-0 align-middle">
+                <thead class="border-bottom text-muted fs-12 text-uppercase">
                   <tr>
-                    <th class="ps-4">Alat ID</th>
-                    <th>Kendaraan</th>
-                    <th>Perusahaan</th>
-                    <th class="pe-4">Status</th>
+                    <th class="ps-4 py-3 fw-semibold">Alat ID</th>
+                    <th class="py-3 fw-semibold">Kendaraan</th>
+                    <th class="py-3 fw-semibold">Perusahaan</th>
+                    <th class="pe-4 py-3 fw-semibold text-end">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   @foreach ($activeSessions->take(5) as $session)
-                    <tr>
-                      <td class="ps-4">
-                        <span class="badge bg-primary">{{ $session->alat?->id ?? '-' }}</span>
+                    <tr class="border-bottom">
+                      <td class="ps-4 py-3">
+                        <div class="d-flex align-items-center">
+                          <div class="avatar avatar-sm bg-primary bg-opacity-10 text-primary rounded-circle me-2">
+                            <i class="ri-rfid-line fs-14"></i>
+                          </div>
+                          <span class="fw-semibold">{{ $session->alat?->id ?? '-' }}</span>
+                        </div>
                       </td>
-                      <td>{{ $session->kendaraan?->nama ?? '-' }}</td>
-                      <td>{{ $session->perusahaan?->nama ?? '-' }}</td>
-                      <td class="pe-4">
-                        <span class="badge bg-success">
-                          <i class="ri-checkbox-circle-line"></i> Aktif
+                      <td class="py-3">{{ $session->kendaraan?->nama ?? '-' }}</td>
+                      <td class="py-3 text-muted">{{ $session->perusahaan?->nama ?? '-' }}</td>
+                      <td class="pe-4 py-3 text-end">
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1 shadow-sm">
+                          <span class="spinner-grow spinner-grow-sm text-primary me-1 align-middle"
+                            style="width: 0.4rem; height: 0.4rem;" role="status"></span>
+                          Aktif
                         </span>
                       </td>
                     </tr>
@@ -207,9 +204,12 @@
               </table>
             </div>
           @else
-            <div class="alert alert-info mb-0 m-3">
-              <i class="ri-information-line me-2"></i>
-              Tidak ada perjalanan yang aktif saat ini
+            <div class="p-5 text-center">
+              <div class="avatar avatar-lg bg-primary bg-opacity-10 text-primary rounded-circle mb-3">
+                <i class="ri-route-line fs-40"></i>
+              </div>
+              <h6 class="mb-1">Tidak ada perjalanan yang aktif</h6>
+              <p class="text-muted small mb-0">Belum ada perangkat yang melacak untuk saat ini.</p>
             </div>
           @endif
         </div>
@@ -219,8 +219,10 @@
     <!-- Charts Section -->
     <div class="col-12">
       <div class="card custom-card">
-        <div class="card-header">
-          <h5 class="card-title fw-semibold mb-0">Statistik Perjalanan (7 Hari Terakhir)</h5>
+        <div class="card-header d-flex flex-column align-items-start px-3 border-bottom">
+          <h5 class="fw-semibold mb-0">Statistik Perjalanan (7 Hari Terakhir)</h5>
+          <p class="text-muted small mb-0 mt-1">Grafik pantauan jumlah sesi perjalanan yang terekam dalam seminggu
+            terakhir</p>
         </div>
         <div class="card-body p-0 chart-container-fixed" id="travel-chart-container">
           <div id="travel-chart"></div>
@@ -228,9 +230,11 @@
       </div>
     </div>
     <div class="col-12">
-      <div class="card custom-card h-100">
-        <div class="card-header">
+      <div class="card bg-white pt-3 h-100 border-0 shadow-sm">
+        <div class="card-header border-bottom">
           <h5 class="card-title fw-semibold mb-0">Distribusi Kendaraan per Perusahaan</h5>
+          <p class="text-muted small mb-0 mt-1">Total jumlah unit kendaraan yang terdaftar pada setiap mitra perusahaan
+          </p>
         </div>
         <div class="card-body p-0 chart-container-fixed d-flex align-items-start justify-content-center pt-3">
           <div id="company-chart" class="w-100"></div>
@@ -238,9 +242,11 @@
       </div>
     </div>
     <div class="col-xl-6 col-lg-6 col-md-6 col-12">
-      <div class="card custom-card h-100">
-        <div class="card-header">
+      <div class="card bg-white pt-3 h-100 border-0 shadow-sm">
+        <div class="card-header border-bottom">
           <h5 class="card-title fw-semibold mb-0">Status Baterai Semua Alat</h5>
+          <p class="text-muted small mb-0 mt-1">Pantauan persentase sisa daya baterai dari seluruh perangkat GPS aktif
+          </p>
         </div>
         <div class="card-body p-0 chart-container-fixed d-flex align-items-start justify-content-center pt-3">
           <div id="battery-chart" class="w-100"></div>
@@ -248,9 +254,11 @@
       </div>
     </div>
     <div class="col-xl-6 col-lg-6 col-md-6 col-12">
-      <div class="card custom-card h-100">
-        <div class="card-header">
+      <div class="card bg-white pt-3 h-100 border-0 shadow-sm">
+        <div class="card-header border-bottom">
           <h5 class="card-title fw-semibold mb-0">Penggunaan Semua Alat</h5>
+          <p class="text-muted small mb-0 mt-1">Rasio status penggunaan perangkat GPS (Digunakan, Tersedia, atau
+            Bermasalah)</p>
         </div>
         <div class="card-body p-0 chart-container-fixed d-flex align-items-start justify-content-center pt-3">
           <div id="tool-usage-chart" class="w-100"></div>
@@ -260,29 +268,29 @@
 
     <!-- Activity Logs -->
     <div class="col-12">
-      <div class="card custom-card h-100">
-        <div class="card-header py-3 d-flex justify-content-between align-items-center">
-          <h5 class="card-title mb-0">Log Aktivitas Terbaru</h5>
-          <a href="{{ route('logs.index') }}" class="btn btn-sm btn-primary-transparent">
+      <div class="card bg-white h-100 border-0 shadow-sm">
+        <div class="card-header border-bottom py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title fw-semibold mb-0">Log Aktivitas Terbaru</h5>
+          <a href="{{ route('logs.index') }}" class="btn btn-sm btn-outline-primary btn-wave">
             Lihat Semua <i class="ri-arrow-right-line ms-1"></i>
           </a>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead class="bg-light">
+            <table class="table table-borderless mb-0 align-middle">
+              <thead class="border-bottom text-muted fs-12 text-uppercase">
                 <tr>
-                  <th class="ps-4">User</th>
-                  <th>Aksi</th>
-                  <th>Waktu</th>
+                  <th class="ps-4 fw-semibold py-3">User</th>
+                  <th class="fw-semibold py-3">Aksi</th>
+                  <th class="fw-semibold py-3">Waktu</th>
                 </tr>
               </thead>
               <tbody>
                 @forelse($activityLogs as $log)
-                  <tr>
-                    <td class="ps-4">
+                  <tr class="border-bottom">
+                    <td class="ps-4 py-3">
                       <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-2 bg-primary-transparent">
+                        <div class="avatar avatar-sm me-2 bg-primary bg-opacity-10 text-primary">
                           {{ substr($log->user?->name ?? '?', 0, 1) }}
                         </div>
                         <div>
@@ -290,11 +298,11 @@
                         </div>
                       </div>
                     </td>
-                    <td>
-                      <span class="badge bg-light text-dark border">{{ $log->action }}</span>
-                      <small class="d-block text-muted">{{ Str::limit($log->description, 30) }}</small>
+                    <td class="py-3">
+                      <span class="badge bg-white border text-dark shadow-sm">{{ $log->action }}</span>
+                      <small class="d-block text-muted mt-1">{{ Str::limit($log->description, 30) }}</small>
                     </td>
-                    <td>
+                    <td class="py-3">
                       <small class="text-muted">{{ $log->created_at->diffForHumans() }}</small>
                     </td>
                   </tr>
@@ -312,32 +320,34 @@
 
     <!-- Error Tracking (Incomplete) -->
     <div class="col-12">
-      <div class="card custom-card h-100">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <div class="card-title mb-0">Tracking Tidak Lengkap</div>
-          <a href="{{ route('tracking-tidak-lengkap.index') }}" class="btn btn-sm btn-primary-transparent">
+      <div class="card bg-white h-100 border-0 shadow-sm">
+        <div class="card-header border-bottom py-3 d-flex justify-content-between align-items-center">
+          <h5 class="card-title fw-semibold mb-0">
+            Tracking Tidak Lengkap
+          </h5>
+          <a href="{{ route('tracking-tidak-lengkap.index') }}" class="btn btn-sm btn-outline-primary btn-wave">
             Lihat Semua <i class="ri-arrow-right-line ms-1"></i>
           </a>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">
-            <table class="table table-hover mb-0">
-              <thead class="bg-light">
+            <table class="table table-borderless mb-0 align-middle">
+              <thead class="border-bottom text-muted fs-12 text-uppercase">
                 <tr>
-                  <th class="ps-4">Alat/Kendaraan</th>
-                  <th>Perusahaan</th>
-                  <th>Waktu</th>
+                  <th class="ps-4 fw-semibold py-3">Alat/Kendaraan</th>
+                  <th class="fw-semibold py-3">Perusahaan</th>
+                  <th class="fw-semibold py-3">Waktu</th>
                 </tr>
               </thead>
               <tbody>
                 @forelse($errorTrackings as $error)
-                  <tr>
-                    <td class="ps-4">
+                  <tr class="border-bottom">
+                    <td class="ps-4 py-3">
                       <p class="mb-0 fw-medium">{{ $error->kendaraan?->nama ?? 'N/A' }}</p>
                       <small class="text-muted">{{ $error->alat?->id ?? 'Unknown' }}</small>
                     </td>
-                    <td>{{ $error->perusahaan?->nama ?? '-' }}</td>
-                    <td>
+                    <td class="py-3 text-muted">{{ $error->perusahaan?->nama ?? '-' }}</td>
+                    <td class="py-3">
                       <small class="text-muted">{{ $error->created_at->diffForHumans() }}</small>
                     </td>
                   </tr>

@@ -512,15 +512,24 @@
     };
 
     function createCustomIcon(type) {
-      let iconClass = type === 'start' ? 'ri-map-pin-4-line' : 'ri-map-pin-user-fill';
-      let iconColor = type === 'start' ? '#0F2854' : '#0F2854';
-      let pulseHtml = type === 'end' ? '<div class="pin-pulse"></div>' : '';
-      return L.divIcon({
-        html: `<div class="pin-wrapper">${pulseHtml}<i class="${iconClass}" style="color: ${iconColor};"></i></div>`,
-        className: 'custom-pin-icon',
-        iconSize: [50, 50],
-        iconAnchor: [25, 45]
-      });
+      if (type === 'start') {
+        return L.divIcon({
+          html: '<div class="pin-wrapper"><i class="ri-map-pin-fill" style="color: #0F2854; font-size: 32px;"></i></div>',
+          className: 'custom-pin-icon',
+          iconSize: [32, 32],
+          iconAnchor: [16, 32]
+        });
+      } else {
+        return L.divIcon({
+          html: `<div style="position: relative; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                   <div style="position: absolute; width:100%; height:100%; background:rgba(15,40,84,0.3); border-radius:50%; animation: pulse-animation 2s infinite; z-index: 1;"></div>
+                   <div style="width: 14px; height: 14px; background-color: #0F2854; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 0 2px #0F2854; z-index: 2;"></div>
+                 </div>`,
+          className: 'custom-pin-icon',
+          iconSize: [24, 24],
+          iconAnchor: [12, 12]
+        });
+      }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
@@ -583,13 +592,13 @@
           container.innerHTML = `
             <div style="font-size: 13px; font-weight: 600; color: #1f2937; margin-bottom: 8px; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px;">Legenda</div>
             <div class="d-flex align-items-center mb-2">
-              <i class="ri-map-pin-4-line" style="color: #0F2854; font-size: 20px; width: 24px; text-align: center; margin-right: 6px;"></i>
+              <i class="ri-map-pin-fill" style="color: #0F2854; font-size: 20px; width: 24px; text-align: center; margin-right: 6px;"></i>
               <span style="font-size: 12px; color: #4b5563;">Titik Awal</span>
             </div>
             <div class="d-flex align-items-center mb-2">
               <div style="position: relative; width: 24px; height: 24px; text-align: center; margin-right: 6px; display: flex; align-items: center; justify-content: center;">
-                <div style="position: absolute; width:100%; height:100%; background:rgba(15,40,84,0.3); border-radius:50%; animation: pulse-animation 2s infinite; transform: scaleX(1) scaleY(0.5); bottom: 1px; z-index: 1;"></div>
-                <i class="ri-map-pin-user-fill" style="color: #0F2854; font-size: 20px; position: relative; z-index: 2;"></i>
+                <div style="position: absolute; width:100%; height:100%; background:rgba(15,40,84,0.3); border-radius:50%; animation: pulse-animation 2s infinite; z-index: 1;"></div>
+                <div style="width: 12px; height: 12px; background-color: #0F2854; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 1.5px #0F2854; z-index: 2;"></div>
               </div>
               <span style="font-size: 12px; color: #4b5563;">Lokasi Terkini</span>
             </div>

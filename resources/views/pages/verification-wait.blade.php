@@ -2,6 +2,23 @@
 
 @php
   $bodyClass = 'authentication-background';
+  $user = auth()->user();
+  $perusahaan = $user && $user->hasRole('perusahaan') ? \App\Models\Perusahaan::find($user->id_perusahaan) : null;
+
+  // Cek status validasi admin legacy
+  $isSubmitted = $perusahaan && $perusahaan->berkas === 'submitted_multi_flow';
+  $isRejected = $perusahaan && $perusahaan->berkas === 'rejected';
+
+  $docs = [
+      'akta' => ['label' => 'Akta Pendirian', 'required' => true],
+      'npwp_badan' => ['label' => 'NPWP Badan Usaha', 'required' => true],
+      'nib' => ['label' => 'NIB (OSS)', 'required' => true],
+      'domisili' => ['label' => 'Keterangan Domisili', 'required' => true],
+      'ktp_pj' => ['label' => 'KTP Penanggung Jawab', 'required' => true],
+      'npwp_pj' => ['label' => 'NPWP Penanggung Jawab', 'required' => true],
+      'izin_usaha' => ['label' => 'Izin Usaha / Opsional', 'required' => false],
+      'siup' => ['label' => 'SIUP / TDP', 'required' => false],
+  ];
 @endphp
 
 @section('content')
@@ -11,7 +28,7 @@
 
   <div class="container-fluid px-4 px-md-5">
     <div class="row justify-content-center align-items-center authentication authentication-basic min-vh-100 py-4">
-      <div class="col-12">
+      <div class="col-12 {{ $isSubmitted ? 'col-xxl-4 col-xl-5 col-lg-6 col-md-8' : '' }}">
         <div class="card custom-card border-0 my-4">
           <div class="card-body p-5">
             <div class="mb-4">
@@ -19,39 +36,43 @@
                 <img src="{{ asset('images/long-logo.webp') }}" alt="logo" class="desktop-dark mt-3 mt-md-0">
               </a>
             </div>
-            @php
-              $user = auth()->user();
-              $perusahaan = $user->hasRole('perusahaan') ? \App\Models\Perusahaan::find($user->id_perusahaan) : null;
 
-              // Cek status validasi admin legacy
-              $isSubmitted = $perusahaan && $perusahaan->berkas === 'submitted_multi_flow';
-
-              $docs = [
-                  'akta' => ['label' => 'Akta Pendirian', 'required' => true],
-                  'npwp_badan' => ['label' => 'NPWP Badan Usaha', 'required' => true],
-                  'nib' => ['label' => 'NIB (OSS)', 'required' => true],
-                  'domisili' => ['label' => 'Keterangan Domisili', 'required' => true],
-                  'ktp_pj' => ['label' => 'KTP Penanggung Jawab', 'required' => true],
-                  'npwp_pj' => ['label' => 'NPWP Penanggung Jawab', 'required' => true],
-                  'izin_usaha' => ['label' => 'Izin Usaha / Opsional', 'required' => false],
-                  'siup' => ['label' => 'SIUP / TDP', 'required' => false],
-              ];
-            @endphp
 
             <div>
-              <h4 class="mb-1 fw-semibold">
-                <span>{{ $isSubmitted ? 'Menunggu Verifikasi Admin' : 'Lengkapi Dokumen' }}</span>
-              </h4>
-              <p class="mb-4 text-muted fw-normal">
-                @if ($isSubmitted)
-                  Email Anda sudah terverifikasi, namun akun Anda masih menunggu validasi dari administrator.
-                @else
-                  Email Anda sudah terverifikasi, silakan lengkapi dokumen perusahaan di bawah ini untuk melanjutkan.
-                @endif
-              </p>
+              @if ($isSubmitted)
+                <div class="text-center mb-4">
+                  <div class="avatar avatar-xxl bg-primary-transparent rounded-circle mb-3">
+                    <i class="ri-checkbox-circle-fill fs-45 text-primary"></i>
+                  </div>
+                  <h4 class="mb-2 fw-semibold">Proses Peninjauan</h4>
+                  <p class="text-muted fw-normal fs-14">
+                    Terima kasih telah mengunggah berkas permohonan. Saat ini akun Anda sedang dalam proses peninjauan
+                    oleh administrator. Anda akan dapat mengakses dashboard sepenuhnya setelah permohonan Anda divalidasi.
+                  </p>
+                </div>
+              @else
+                <h4 class="mb-1 fw-semibold">
+                  <span>{{ $isRejected ? 'Pendaftaran Ditolak' : 'Lengkapi Dokumen' }}</span>
+                </h4>
+                <p class="mb-4 text-muted fw-normal">
+                  @if ($isRejected)
+                    Mohon maaf, permohonan validasi perusahaan Anda ditolak. Silakan periksa alasan penolakan di bawah ini
+                    dan perbaiki dokumen Anda.
+                  @else
+                    Email Anda sudah terverifikasi, silakan lengkapi dokumen perusahaan di bawah ini untuk melanjutkan.
+                  @endif
+                </p>
+              @endif
             </div>
 
             @include('components.alert')
+
+            @if ($isRejected && $perusahaan->alasan_tolak)
+              <div class="alert alert-danger mb-4 border-0 shadow-sm">
+                <i class="ri-error-warning-line me-2 fs-5 align-middle"></i><strong>Alasan Ditolak:</strong>
+                {{ $perusahaan->alasan_tolak }}
+              </div>
+            @endif
 
             @if ($perusahaan && !$isSubmitted)
               <div class="alert alert-primary mb-4 border-0 shadow-sm">
@@ -127,7 +148,8 @@
                               @endif
                             </p>
                             @if ($hasFile)
-                              <a href="{{ Storage::url($fullPath) }}" target="_blank" class="custom-file-trash"
+                              <a href="{{ Storage::disk('public')->url($fullPath) }}" target="_blank"
+                                class="custom-file-trash"
                                 style="display:flex; align-items:center; text-decoration:none; cursor: pointer;"
                                 title="Lihat Berkas">
                                 <i class="ri-eye-line d-flex justify-content-center align-items-center"
@@ -758,17 +780,6 @@
 
           @section('scripts')
           @endsection
-
-          <p class="mb-4">
-            @if (isset($isSubmitted) && $isSubmitted)
-              Terima kasih telah mengunggah berkas. Silakan tunggu sampai administrator memvalidasi pendaftaran
-              Silakan tunggu sampai administrator memvalidasi pendaftaran
-              perusahaan Anda. Anda akan dapat mengakses dashboard setelah akun Anda aktif.
-            @elseif(!$perusahaan || !isset($isSubmitted) || !$isSubmitted)
-              Silakan tunggu sampai administrator memvalidasi pendaftaran Anda. Anda akan dapat mengakses dashboard
-              setelah akun Anda aktif.
-            @endif
-          </p>
 
           <div class="text-center mt-4">
             <form method="POST" action="{{ route('logout') }}">

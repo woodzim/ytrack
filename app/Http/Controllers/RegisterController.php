@@ -186,9 +186,10 @@ class RegisterController extends Controller
             }
             
             // Flag submission as complete (untuk memicu status cek di sisi admin/UI)
-            if (empty($perusahaan->berkas)) {
-                $perusahaan->update(['berkas' => 'submitted_multi_flow']);
-            }
+            $perusahaan->update([
+                'berkas' => 'submitted_multi_flow',
+                'alasan_tolak' => null, // Bersihkan alasan tolak jika sebelumnya ditolak
+            ]);
             
             return back()->with('success', 'Semua berkas wajib telah dikirim. Permohonan Anda sekarang dalam antrean validasi Administrator.');
         }
