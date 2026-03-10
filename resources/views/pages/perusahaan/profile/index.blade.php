@@ -9,7 +9,7 @@
   </div>
 
   <div class="row">
-    <div class="col-xl-8">
+    <div class="col-lg-8 order-2 order-lg-1">
       <div class="card custom-card overflow-hidden shadow-sm">
         <div class="card-header p-0 mt-2">
           <div class="card-title fs-5">
@@ -118,9 +118,9 @@
       </div>
     </div>
 
-    <div class="col-xl-4">
+    <div class="col-lg-4 order-1 order-lg-2 mb-4 mb-lg-0">
       <div class="card custom-card shadow-sm border-0 overflow-hidden">
-        <div class="card-body p-0 border border-black">
+        <div class=" p-0 border border-black">
           <div class="p-4 text-center bg-primary text-fixed-white position-relative overflow-hidden"
             style="min-height: 160px;">
             <div class="position-absolute top-0 start-0 w-100 h-100 op-1"
