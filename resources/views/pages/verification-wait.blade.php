@@ -600,7 +600,7 @@
                         // Dynamically update UI without reloads or modals
                         const footerName = dzElement.querySelector('.custom-file-name');
                         if (footerName && response.path) {
-                          const fixedPath = '/' + response.path.replace('public/', 'storage/');
+                          const fixedPath = '/storage/' + response.path;
 
                           // Extract original filename without timestamp
                           const fullFilename = response.path.split('/').pop();
