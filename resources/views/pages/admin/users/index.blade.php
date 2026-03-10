@@ -117,66 +117,8 @@
 @endsection
 
 @section('modals')
-  <!-- Reset Password Modal -->
-  <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="resetPasswordLabel">
-            <i class="ri-lock-password-line me-2"></i>Atur Ulang Password
-          </h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <form id="resetPasswordForm" method="POST">
-          @csrf
-          @method('PUT')
-          <div class="modal-body">
-            <div class="alert alert-info mb-3" role="alert">
-              <i class="ri-information-line me-2"></i>
-              <span id="userNameDisplay"></span>
-            </div>
-
-            <div class="mb-3">
-              <label for="password" class="form-label">Password Baru</label>
-              <div class="input-group">
-                <input type="password" class="form-control" id="password" name="password"
-                  placeholder="Minimal 8 karakter" required>
-                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                  <i class="ri-eye-line"></i>
-                </button>
-              </div>
-              <small class="text-muted d-block mt-1">Minimal 8 karakter</small>
-              @error('password')
-                <div class="text-danger small mt-1">{{ $message }}</div>
-              @enderror
-            </div>
-
-            <div class="mb-3">
-              <label for="password_confirmation" class="form-label">Konfirmasi Password</label>
-              <div class="input-group">
-                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation"
-                  placeholder="Konfirmasi password baru" required>
-                <button class="btn btn-outline-secondary" type="button" id="togglePasswordConfirm">
-                  <i class="ri-eye-line"></i>
-                </button>
-              </div>
-              @error('password_confirmation')
-                <div class="text-danger small mt-1">{{ $message }}</div>
-              @enderror
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-            <button type="submit" class="btn btn-primary">Simpan Password</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
   <!-- Validate User Modal -->
-  <div class="modal fade" id="validateUserModal" tabindex="-1" aria-labelledby="validateUserLabel"
-    aria-hidden="true">
+  <div class="modal fade" id="validateUserModal" tabindex="-1" aria-labelledby="validateUserLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -359,67 +301,6 @@
         window.history.pushState({}, '', url);
         fetchTable(url);
       });
-
-      // Reset password modal setup
-      const resetPasswordModal = document.getElementById('resetPasswordModal');
-      const resetPasswordForm = document.getElementById('resetPasswordForm');
-      const userNameDisplay = document.getElementById('userNameDisplay');
-      const passwordInput = document.getElementById('password');
-      const passwordConfirmInput = document.getElementById('password_confirmation');
-      const togglePasswordBtn = document.getElementById('togglePassword');
-      const togglePasswordConfirmBtn = document.getElementById('togglePasswordConfirm');
-
-      if (resetPasswordModal) {
-        resetPasswordModal.addEventListener('show.bs.modal', function(event) {
-          const button = event.relatedTarget;
-          const userId = button.getAttribute('data-user-id');
-          const userName = button.getAttribute('data-user-name');
-
-          userNameDisplay.textContent = `Atur ulang password untuk: ${userName}`;
-          resetPasswordForm.action = `{{ route('users.index') }}/${userId}/password`;
-
-          passwordInput.value = '';
-          passwordConfirmInput.value = '';
-          passwordInput.type = 'password';
-          passwordConfirmInput.type = 'password';
-          togglePasswordBtn.innerHTML = '<i class="ri-eye-line"></i>';
-          togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-line"></i>';
-        });
-      }
-
-      if (togglePasswordBtn) {
-        togglePasswordBtn.addEventListener('click', function() {
-          if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            togglePasswordBtn.innerHTML = '<i class="ri-eye-off-line"></i>';
-          } else {
-            passwordInput.type = 'password';
-            togglePasswordBtn.innerHTML = '<i class="ri-eye-line"></i>';
-          }
-        });
-      }
-
-      if (togglePasswordConfirmBtn) {
-        togglePasswordConfirmBtn.addEventListener('click', function() {
-          if (passwordConfirmInput.type === 'password') {
-            passwordConfirmInput.type = 'text';
-            togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-off-line"></i>';
-          } else {
-            passwordConfirmInput.type = 'password';
-            togglePasswordConfirmBtn.innerHTML = '<i class="ri-eye-line"></i>';
-          }
-        });
-      }
-
-      if (resetPasswordForm) {
-        resetPasswordForm.addEventListener('submit', function(e) {
-          if (passwordInput.value !== passwordConfirmInput.value) {
-            e.preventDefault();
-            alert('Password tidak sesuai dengan konfirmasi password');
-            return;
-          }
-        });
-      }
 
       // Validate User Modal setup
       const validateUserModal = document.getElementById('validateUserModal');

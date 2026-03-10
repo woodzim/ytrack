@@ -165,13 +165,6 @@
                           </button>
                         </li>
                       @endif
-                      <li>
-                        <button type="button" class="dropdown-item text-primary" data-bs-toggle="modal"
-                          data-bs-target="#resetPasswordModal" data-user-id="{{ $user->id }}"
-                          data-user-name="{{ $user->name }}">
-                          <i class="ri-lock-password-line me-2 align-middle"></i>Reset Password
-                        </button>
-                      </li>
                     </ul>
                   </div>
                 @else

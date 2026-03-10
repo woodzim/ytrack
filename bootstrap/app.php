@@ -33,5 +33,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (\Spatie\Permission\Exceptions\UnauthorizedException $e, \Illuminate\Http\Request $request) {
+            // Jika user mengakses /dashboard tapi tidak punya hak aksesnya (karena khusus admin), alihkan ke dashboard perusahaannya.
+            if ($request->is('dashboard') && auth()->check() && auth()->user()->hasRole('perusahaan')) {
+                return redirect()->route('perusahaan.dashboard.index');
+            }
+            
+            // Jika bukan kasus di atas, kembalikan response bawaan (403 default)
+            return response()->view('errors.403', ['exception' => $e], 403);
+        });
     })->create();
