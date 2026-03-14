@@ -824,8 +824,19 @@
               map.panTo(latLng); // Normal auto pan
             }
 
-            document.getElementById('history-table-body').insertAdjacentHTML('afterbegin', getRowHtml(mappedItem,
-              0));
+            const newHtml = getRowHtml(mappedItem, 0);
+            
+            const tbody = document.getElementById('history-table-body');
+            if (tbody) {
+              const emptyRow = document.getElementById('empty-row');
+              if (emptyRow) emptyRow.remove();
+              tbody.insertAdjacentHTML('afterbegin', newHtml.desktop);
+            }
+
+            const mobileContainer = document.getElementById('history-cards-container');
+            if (mobileContainer) {
+              mobileContainer.insertAdjacentHTML('afterbegin', newHtml.mobile);
+            }
           });
       }
 
