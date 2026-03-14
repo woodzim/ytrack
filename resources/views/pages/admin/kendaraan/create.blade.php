@@ -70,10 +70,10 @@
               @enderror
             </div>
 
-            {{-- 4. Input Nomor Plat --}}
+            {{-- 4. Input Nomor Polisi --}}
             <div class="form-group-wrapper mb-3">
               <label for="plat" class="form-label fw-medium">
-                Nomor Plat <span class="text-danger">*</span>
+                Nomor Polisi <span class="text-danger">*</span>
               </label>
               <input type="text" class="form-control @error('plat') is-invalid @enderror" id="plat" name="plat"
                 placeholder="Contoh: B 1234 XYZ" value="{{ old('plat') }}" required style="text-transform: uppercase;">
