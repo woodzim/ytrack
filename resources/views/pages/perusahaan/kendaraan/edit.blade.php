@@ -51,10 +51,10 @@
                     </div>
 
                     <div class="col-md-4">
-                      <label for="plat" class="form-label fw-medium">Nomor Plat <span
+                      <label for="plat" class="form-label fw-medium">Nomor Polisi <span
                           class="text-danger">*</span></label>
                       <input type="text" class="form-control @error('plat') is-invalid @enderror" id="plat"
-                        name="plat" placeholder="Nomor Plat" value="{{ old('plat', $kendaraan->plat) }}" required
+                        name="plat" placeholder="Nomor Polisi" value="{{ old('plat', $kendaraan->plat) }}" required
                         style="text-transform: uppercase;">
                       @error('plat')
                         <div class="invalid-feedback">{{ $message }}</div>

@@ -81,8 +81,8 @@ class KendaraanController extends Controller
             'captions.*'         => 'nullable|string|max:255',
         ],[
             'nama.required'      => 'Nama kendaraan harus diisi',
-            'plat.required'      => 'Nomor plat harus diisi',
-            'plat.unique'        => 'Nomor plat ini sudah terdaftar',
+            'plat.required'      => 'Nomor polisi harus diisi',
+            'plat.unique'        => 'Nomor polisi ini sudah terdaftar',
             'images.*.image'     => 'File harus berupa gambar',
             'images.*.max'       => 'Ukuran gambar maksimal 2MB',
         ]);
@@ -155,8 +155,8 @@ class KendaraanController extends Controller
             'delete_images.*'    => 'nullable|exists:kendaraan_images,id',
         ],[
             'nama.required'      => 'Nama kendaraan harus diisi',
-            'plat.required'      => 'Nomor plat harus diisi',
-            'plat.unique'        => 'Nomor plat ini sudah terdaftar',
+            'plat.required'      => 'Nomor polisi harus diisi',
+            'plat.unique'        => 'Nomor polisi ini sudah terdaftar',
         ]);
 
         return DB::transaction(function () use ($request, $kendaraan, $validated) {

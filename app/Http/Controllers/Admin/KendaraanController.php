@@ -79,8 +79,8 @@ class KendaraanController extends Controller
             'id_perusahaan.required'      => 'Perusahaan harus dipilih',
             'id_jenis_kendaraan.required' => 'Jenis kendaraan harus dipilih',
             'nama.required'               => 'Nama kendaraan harus diisi',
-            'plat.required'               => 'Nomor plat harus diisi',
-            'plat.unique'                 => 'Nomor plat ini sudah terdaftar',
+            'plat.required'               => 'Nomor polisi harus diisi',
+            'plat.unique'                 => 'Nomor polisi ini sudah terdaftar',
         ]);
 
         // UBAH DISINI: Tampung hasil create ke variabel $kendaraan
@@ -119,7 +119,7 @@ class KendaraanController extends Controller
         ], [
             'id_perusahaan.required'      => 'Perusahaan harus dipilih',
             'id_jenis_kendaraan.required' => 'Jenis kendaraan harus dipilih',
-            'plat.unique'                 => 'Nomor plat ini sudah digunakan kendaraan lain',
+            'plat.unique'                 => 'Nomor polisi ini sudah digunakan kendaraan lain',
         ]);
 
         // Simpan nama lama untuk log
