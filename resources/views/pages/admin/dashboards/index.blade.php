@@ -360,7 +360,7 @@
       <div class="card custom-card">
         <div class="card-header d-flex flex-column align-items-start px-3 border-bottom">
           <h5 class="fw-semibold mb-0">Statistik Perjalanan (7 Hari Terakhir)</h5>
-          <p class="text-muted small mb-0 mt-1">Grafik pantauan jumlah sesi perjalanan yang terekam dalam seminggu
+          <p class="text-muted small mb-0 mt-1">Grafik pantauan jumlah titik perjalanan yang terekam dalam seminggu
             terakhir</p>
         </div>
         <div class="card-body p-0 chart-container-fixed" id="travel-chart-container">
@@ -697,7 +697,7 @@
 
       var travelOptions = {
         series: [{
-          name: 'Jumlah Perjalanan',
+          name: 'Jumlah Titik Perjalanan',
           data: travelData.map(item => item.count)
         }],
         chart: {
