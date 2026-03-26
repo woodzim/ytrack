@@ -46,6 +46,145 @@
     .leaflet-bottom {
       z-index: 400 !important;
     }
+
+    .company-legend-wrap {
+      max-height: 250px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0.5rem 1rem 1rem;
+      border-top: 1px solid #f1f5f9;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f8fafc;
+      position: relative;
+    }
+
+    .company-legend-wrap::-webkit-scrollbar {
+      width: 7px;
+    }
+
+    .company-legend-wrap::-webkit-scrollbar-track {
+      background: #f8fafc;
+      border-radius: 999px;
+    }
+
+    .company-legend-wrap::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+
+    .company-legend-wrap::after {
+      content: '';
+      position: sticky;
+      display: block;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 16px;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .company-legend-header {
+      padding: 0.75rem 1rem 0.65rem;
+      border-top: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .company-legend-title {
+      margin: 0;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 0.01em;
+    }
+
+    .company-legend-subtitle {
+      margin: 0;
+      font-size: 0.73rem;
+      color: #64748b;
+      line-height: 1.25;
+    }
+
+    .company-legend-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.55rem 1rem;
+    }
+
+    .company-legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      min-height: 36px;
+      border: 1px solid #eef2f7;
+      border-radius: 10px;
+      padding: 0.35rem 0.55rem;
+      background: #ffffff;
+    }
+
+    .company-legend-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .company-legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex: 0 0 10px;
+      box-shadow: 0 0 0 2px rgba(9, 99, 126, 0.08);
+    }
+
+    .company-legend-name {
+      font-size: 0.8rem;
+      color: #334155;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .company-legend-value {
+      font-size: 0.75rem;
+      color: #64748b;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 0.12rem 0.5rem;
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 767.98px) {
+      .company-legend-wrap {
+        max-height: 190px;
+      }
+
+      .company-legend-list {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+      }
+
+      .company-legend-name {
+        font-size: 0.8rem;
+      }
+
+      .company-legend-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
   </style>
 @endsection
 
@@ -237,7 +376,17 @@
           </p>
         </div>
         <div class="card-body p-0 chart-container-fixed d-flex align-items-start justify-content-center pt-3">
-          <div id="company-chart" class="w-100"></div>
+          <div class="w-100">
+            <div id="company-chart" class="w-100"></div>
+            <div class="company-legend-header">
+              <div>
+                <p class="company-legend-subtitle">Seluruh perusahaan yang terdaftar di <i>chart</i>:</p>
+              </div>
+            </div>
+            <div class="company-legend-wrap" id="company-legend-wrap">
+              <ul class="company-legend-list" id="company-legend"></ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -644,16 +793,23 @@
       travelChart.render();
 
       // Company Distribution Chart
+      const companySeries = @json($perusahaanChart->pluck('kendaraan_count')->values());
+      const companyLabels = @json($perusahaanChart->pluck('nama')->values());
+      const companyColors = [
+        '#09637E', '#088395', '#7AB2B2', '#28a745', '#ffc107', '#0ea5e9', '#14b8a6', '#f97316', '#eab308', '#3b82f6',
+        '#ef4444', '#22c55e', '#f43f5e', '#a855f7', '#06b6d4', '#84cc16', '#f59e0b', '#10b981', '#8b5cf6', '#64748b'
+      ];
+
       var companyOptions = {
-        series: @json($perusahaanChart->pluck('kendaraan_count')),
+        series: companySeries,
         chart: {
           height: 380,
           width: '100%',
           type: 'donut',
           parentHeightOffset: 0
         },
-        labels: @json($perusahaanChart->pluck('nama')),
-        colors: ['#09637E', '#088395', '#7AB2B2', '#28a745', '#ffc107'],
+        labels: companyLabels,
+        colors: companyColors,
         legend: {
           show: false,
           position: 'bottom',
@@ -695,6 +851,27 @@
       };
       var companyChart = new ApexCharts(document.querySelector("#company-chart"), companyOptions);
       companyChart.render();
+
+      // Custom scrollable legend for many companies
+      const companyLegend = document.getElementById('company-legend');
+      if (companyLegend) {
+        const totalCompanyVehicles = companySeries.reduce((sum, value) => sum + (parseInt(value, 10) || 0), 0);
+
+        companyLegend.innerHTML = companyLabels.map((name, index) => {
+          const count = companySeries[index] ?? 0;
+          const color = companyColors[index % companyColors.length];
+          const safeName = String(name || '-');
+          const percent = totalCompanyVehicles > 0 ? ((count / totalCompanyVehicles) * 100).toFixed(1) : '0.0';
+
+          return `<li class="company-legend-item" title="${safeName}: ${count} kendaraan (${percent}%)">
+                    <div class="company-legend-left">
+                      <span class="company-legend-dot" style="background:${color}"></span>
+                      <span class="company-legend-name">${safeName}</span>
+                    </div>
+                    <span class="company-legend-value">${count} unit • ${percent}%</span>
+                  </li>`;
+        }).join('');
+      }
 
       // Battery Status Chart
       var batteryOptions = {

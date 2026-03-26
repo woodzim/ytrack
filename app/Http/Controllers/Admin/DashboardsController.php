@@ -49,7 +49,12 @@ class DashboardsController extends Controller
         }
 
         // 2. Distribusi Kendaraan per Perusahaan
-        $perusahaanChart = Perusahaan::withCount('kendaraan')->limit(5)->get();
+        // Ambil semua perusahaan yang memiliki kendaraan agar total chart akurat.
+        $perusahaanChart = Perusahaan::withCount('kendaraan')
+            ->having('kendaraan_count', '>', 0)
+            ->orderByDesc('kendaraan_count')
+            ->orderBy('nama')
+            ->get();
 
         // Get all tools and their latest location across all companies
         $lokasiAlat = Alat::with(['riwayatPerjalanan' => function ($query) {

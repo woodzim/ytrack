@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'ilovepdf' => [
+        'public_key' => env('ILOVEPDF_PUBLIC_KEY'),
+    ]
+
 ];

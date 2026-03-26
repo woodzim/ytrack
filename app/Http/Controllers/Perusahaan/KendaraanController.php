@@ -8,6 +8,7 @@ use App\Models\KendaraanImage;
 use App\Models\JenisKendaraan;
 use App\Models\SesiAlat;
 use App\Models\ActivityLog;
+use App\Services\ImageCompressionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Storage;
 
 class KendaraanController extends Controller
 {
+    public function __construct(protected ImageCompressionService $compressionService) {}
+
     /**
      * Menampilkan daftar kendaraan milik perusahaan yang sedang login.
      */
@@ -99,7 +102,8 @@ class KendaraanController extends Controller
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $key => $image) {
                     $path = $image->store('kendaraan/' . $kendaraan->id, 'public');
-                    
+                    $this->compressionService->compressImage($image, $path);
+
                     KendaraanImage::create([
                         'kendaraan_id' => $kendaraan->id,
                         'image_path'   => $path,
@@ -184,7 +188,8 @@ class KendaraanController extends Controller
                 foreach ($request->file('images') as $key => $image) {
                     if ($image->isValid()) {
                         $path = $image->store('kendaraan/' . $kendaraan->id, 'public');
-                        
+                        $this->compressionService->compressImage($image, $path);
+
                         KendaraanImage::create([
                             'kendaraan_id' => $kendaraan->id,
                             'image_path'   => $path,
@@ -290,8 +295,10 @@ class KendaraanController extends Controller
             }
 
             // Store new image
-            $path = $request->file('new_image')->store('kendaraan/' . $kendaraan->id, 'public');
-            
+            $newFile = $request->file('new_image');
+            $path = $newFile->store('kendaraan/' . $kendaraan->id, 'public');
+            $this->compressionService->compressImage($newFile, $path);
+
             // Update database record
             $image->update([
                 'image_path' => $path,
