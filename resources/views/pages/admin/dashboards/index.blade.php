@@ -394,7 +394,7 @@
       <div class="card bg-white pt-3 h-100 border-0 shadow-sm">
         <div class="card-header border-bottom">
           <h5 class="card-title fw-semibold mb-0">Status Baterai Semua Alat</h5>
-          <p class="text-muted small mb-0 mt-1">Pantauan persentase sisa daya baterai dari seluruh perangkat GPS aktif
+          <p class="text-muted small mb-0 mt-1">Pantauan persentase sisa daya baterai dari seluruh perangkat GPS
           </p>
         </div>
         <div class="card-body p-0 chart-container-fixed d-flex align-items-start justify-content-center pt-3">
@@ -406,8 +406,7 @@
       <div class="card bg-white pt-3 h-100 border-0 shadow-sm">
         <div class="card-header border-bottom">
           <h5 class="card-title fw-semibold mb-0">Penggunaan Semua Alat</h5>
-          <p class="text-muted small mb-0 mt-1">Rasio status penggunaan perangkat GPS (Digunakan, Tersedia, atau
-            Bermasalah)</p>
+          <p class="text-muted small mb-0 mt-1">Rasio status penggunaan perangkat GPS, antara yang sedang digunakan (aktif) dan yang sedang tidak digunakan (nonaktif)</p>
         </div>
         <div class="card-body p-0 chart-container-fixed d-flex align-items-start justify-content-center pt-3">
           <div id="tool-usage-chart" class="w-100"></div>
