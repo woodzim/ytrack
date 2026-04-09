@@ -13,7 +13,8 @@
 
     /* Reset margin untuk elemen pertama agar sejajar sempurna */
     .col-lg-9> :first-child,
-    .aside-stats-container> :first-child {
+    .aside-stats-container> :first-child,
+    .aside-stats-shell> :first-child {
       margin-top: 0 !important;
     }
 
@@ -84,6 +85,387 @@
       color: #09637E;
     }
 
+    .monitoring-card {
+      overflow: hidden;
+    }
+
+    .monitoring-card-header {
+      background: linear-gradient(180deg, rgba(9, 99, 126, 0.05), rgba(9, 99, 126, 0.015));
+      border-bottom: 1px solid #e9eef5;
+      padding: 1rem 1.25rem;
+    }
+
+    .monitoring-card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.2rem;
+    }
+
+    .monitoring-card-subtitle {
+      margin: 0;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .monitoring-map-wrap {
+      padding: 1rem;
+      background: linear-gradient(180deg, rgba(248, 250, 252, 0.9), rgba(255, 255, 255, 1));
+      border-bottom: 1px solid #edf2f7;
+    }
+
+    .monitoring-list-intro {
+      padding: 0.95rem 1.25rem 0.85rem;
+      border-bottom: 1px solid #edf2f7;
+      background: #fff;
+    }
+
+    .monitoring-list-title {
+      margin: 0;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .monitoring-list-subtitle {
+      margin: 0.18rem 0 0;
+      font-size: 0.76rem;
+      color: #64748b;
+    }
+
+    .device-table-card {
+      overflow: hidden;
+    }
+
+    .device-table-card .card-header {
+      background: linear-gradient(180deg, rgba(9, 99, 126, 0.04), rgba(9, 99, 126, 0.01));
+      border-bottom: 1px solid #e9eef5;
+      padding: 1rem 1.25rem;
+    }
+
+    .device-table-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.2rem;
+    }
+
+    .device-table-subtitle {
+      margin: 0;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .device-count-badge {
+      border: 1px solid rgba(9, 99, 126, 0.08);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      font-weight: 600;
+    }
+
+    .device-table-wrap {
+      background: #fff;
+    }
+
+    .device-table {
+      margin-bottom: 0;
+    }
+
+    .device-table thead th {
+      background: #f8fafc;
+      color: #64748b;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding-top: 0.85rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid #e9eef5;
+      white-space: nowrap;
+    }
+
+    .device-table tbody td {
+      padding-top: 0.95rem;
+      padding-bottom: 0.95rem;
+      border-top: 1px solid #edf2f7;
+      vertical-align: middle;
+      background: #fff;
+    }
+
+    .device-table tbody tr {
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .device-table tbody tr:hover {
+      background: #f8fbfd;
+    }
+
+    .device-table tbody tr:hover td {
+      background: #f8fbfd;
+    }
+
+    .device-row.table-danger td {
+      background: #fff6f6;
+    }
+
+    .device-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #1e293b;
+      line-height: 1.3;
+      margin-bottom: 0.2rem;
+    }
+
+    .device-serial {
+      display: inline-block;
+      font-size: 0.72rem;
+      color: #64748b;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 0.15rem 0.5rem;
+      font-family: inherit;
+    }
+
+    .device-vehicle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .device-battery-col,
+    .device-action-col {
+      white-space: nowrap;
+    }
+
+    .device-battery-col {
+      text-align: center;
+    }
+
+    .device-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border-radius: 999px;
+      padding: 0.38rem 0.7rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .device-status-pill--active {
+      color: #15803d;
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .device-status-pill--inactive {
+      color: #b91c1c;
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    .device-update {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .device-action-btn {
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid rgba(9, 99, 126, 0.12);
+      background: #f8fafc;
+      color: #09637E;
+      transition: all 0.2s ease;
+    }
+
+    .device-action-btn:hover {
+      background: #09637E;
+      color: #fff;
+      border-color: #09637E;
+      transform: translateY(-1px);
+    }
+
+    .mobile-device-list {
+      background: #f8fafc;
+      padding: 0.75rem;
+      gap: 0.75rem;
+    }
+
+    .mobile-device-card {
+      border: 1px solid #e6edf5;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 0.125rem 0.25rem rgba(15, 23, 42, 0.04);
+      padding: 1rem;
+    }
+
+    .mobile-device-card.bg-danger-transparent {
+      background: #fff7f7 !important;
+      border-color: #fecaca;
+    }
+
+    .mobile-device-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .mobile-device-heading {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .mobile-device-status {
+      flex: 0 0 auto;
+    }
+
+    .mobile-device-card .device-name {
+      margin-bottom: 0.35rem;
+      padding-right: 0.25rem;
+    }
+
+    .mobile-device-card .device-status-pill {
+      font-size: 0.68rem;
+      padding: 0.35rem 0.62rem;
+    }
+
+    .mobile-device-meta {
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .mobile-device-meta-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      color: #475569;
+      font-size: 0.8rem;
+    }
+
+    .mobile-device-meta-icon {
+      width: 28px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #09637E;
+      flex: 0 0 28px;
+    }
+
+    .mobile-device-meta-copy {
+      min-width: 0;
+      display: grid;
+      gap: 0.12rem;
+    }
+
+    .mobile-device-meta-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    .mobile-device-meta-value {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .mobile-device-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.9rem;
+      padding-top: 0.95rem;
+      margin-top: 1rem;
+      border-top: 1px solid #eef2f7;
+    }
+
+    .mobile-device-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.7rem;
+      width: 100%;
+    }
+
+    .mobile-device-battery {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .mobile-device-battery-copy {
+      display: grid;
+      gap: 0.12rem;
+    }
+
+    .mobile-device-battery-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+
+    .mobile-device-battery-value {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .aside-stats-container {
+      position: relative;
+    }
+
+    .aside-stats-shell {
+      position: sticky;
+      top: 5.5rem;
+      z-index: 10;
+    }
+
+    .aside-stats-scroll {
+      max-height: calc(100vh - 6.5rem);
+      overflow-y: auto;
+      padding: 1rem;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f8fafc;
+    }
+
+    .aside-stats-scroll::-webkit-scrollbar {
+      width: 7px;
+    }
+
+    .aside-stats-scroll::-webkit-scrollbar-track {
+      background: #f8fafc;
+      border-radius: 999px;
+    }
+
+    .aside-stats-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px;
+    }
+
+    .aside-stats-scroll .stats-card-enhanced:last-of-type {
+      margin-bottom: 0;
+    }
+
     /* Pengaturan khusus Aktivitas Chart agar tidak overflow */
     .activity-chart-container {
       padding-left: 0.5rem !important;
@@ -99,6 +481,39 @@
     @media (max-width: 991.98px) {
       .aside-stats-container {
         margin-top: 2rem !important;
+      }
+
+      .aside-stats-shell {
+        position: static;
+      }
+
+      .aside-stats-scroll {
+        max-height: none;
+        overflow: visible;
+        padding: 0;
+      }
+
+      .device-table-card .card-header {
+        padding: 0.9rem 1rem;
+      }
+
+      .monitoring-card-header,
+      .monitoring-list-intro,
+      .monitoring-map-wrap {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+
+      .mobile-device-list {
+        padding: 0.65rem;
+      }
+
+      .mobile-device-top {
+        gap: 0.6rem;
+      }
+
+      .mobile-device-card {
+        padding: 0.95rem;
       }
 
       #map-dashboard {
@@ -141,34 +556,37 @@
   <div class="row gx-4 dashboard-main-row">
     <!-- Main Content (Left) -->
     <div class="col-lg-9">
-      <!-- Map Section -->
-      <div class="card mb-4 custom-card-enhanced overflow-hidden">
-        <div class="card-body p-0">
-          <div id="map-dashboard"></div>
-        </div>
-      </div>
-
-      <!-- Data Alat Table -->
-      <div class="card mb-4 custom-card-enhanced" id="daftar-alat-table">
-        <div class="card-header py-2">
+      <!-- Monitoring Section -->
+      <div class="card mb-4 custom-card-enhanced monitoring-card device-table-card" id="daftar-alat-table">
+        <div class="card-header monitoring-card-header">
           <div class="d-flex justify-content-between align-items-center w-100 flex-column flex-md-row gap-2">
-            <h5 class="card-title mb-0">Daftar Alat & Status Terbaru</h5>
+            <div>
+              <h5 class="card-title monitoring-card-title">Monitoring Posisi Terakhir Setiap Perjalanan</h5>
+              <p class="monitoring-card-subtitle">Pantau posisi terakhir setiap perjalanan alat Anda secara <i>real-time</i>.</p>
+            </div>
             <span
-              class="badge bg-primary-transparent text-primary px-3 rounded-pill align-self-start align-self-md-center">
-              {{ count($lokasiAlat) }} Alat Terdeteksi
+              class="badge bg-primary-transparent text-primary px-3 py-2 rounded-pill align-self-start align-self-md-center device-count-badge">
+              {{ count($lokasiAlat) }} perjalanan
             </span>
           </div>
         </div>
         <div class="card-body p-0">
+          <div class="monitoring-map-wrap">
+            <div id="map-dashboard"></div>
+          </div>
+
+          <div class="monitoring-list-intro">
+            <p class="monitoring-list-subtitle">Klik baris atau kartu alat untuk memfokuskan peta ke unit yang dipilih.</p>
+          </div>
 
           {{-- Desktop View: Table --}}
-          <div class="table-responsive d-none d-md-block">
-            <table class="table table-hover table-sm align-middle mb-0" style="font-size: 0.85rem;">
-              <thead class="bg-light text-uppercase fs-10 fw-bold text-muted">
+          <div class="table-responsive d-none d-md-block device-table-wrap">
+            <table class="table table-hover table-sm align-middle device-table" style="font-size: 0.85rem;">
+              <thead>
                 <tr>
                   <th class="ps-3 py-2 border-0">Nama Alat / No. Seri</th>
                   <th class="py-2 border-0">Kendaraan</th>
-                  <th class="py-2 border-0">Baterai</th>
+                  <th class="py-2 border-0 text-center">Baterai</th>
                   <th class="py-2 border-0">Status</th>
                   <th class="py-2 border-0">Pembaruan</th>
                   <th class="text-center py-2 border-0">Aksi</th>
@@ -176,42 +594,41 @@
               </thead>
               <tbody>
                 @forelse($lokasiAlat as $alat)
-                  <tr class="{{ $alat['is_low_bat'] ? 'table-danger' : '' }}" id="row-alat-{{ $alat['id_sesi'] }}"
+                  <tr class="device-row {{ $alat['is_low_bat'] ? 'table-danger' : '' }}" id="row-alat-{{ $alat['id_sesi'] }}"
                     @if ($alat['id_sesi']) onclick="focusMarker('{{ $alat['id_sesi'] }}')" @endif>
                     <td class="ps-3 py-2">
-                      <div class="fw-bold text-dark name-cell mb-0">
+                      <div class="device-name name-cell">
                         @if ($alat['is_low_bat'])
                           <i class="ri-error-warning-fill text-danger me-1"></i>
                         @endif
                         {{ $alat['nama_alat'] }}
                       </div>
-                      <code class="text-muted" style="font-size: 0.7rem;">{{ $alat['serial_number'] }}</code>
+                      <span class="device-serial">{{ $alat['serial_number'] }}</span>
                     </td>
                     <td class="py-2">
-                      <div class="d-flex align-items-center fw-medium text-dark">
-                        <i class="ri-truck-line me-1 text-primary fs-14"></i>
+                      <div class="device-vehicle">
+                        <i class="ri-truck-line text-primary fs-14"></i>
                         {{ $alat['kendaraan'] }}
                       </div>
                     </td>
-                    <td class="battery-cell py-2">
+                    <td class="battery-cell py-2 device-battery-col">
                       <x-battery-circle :level="$alat['battery']" size="30px" stroke="3" />
                     </td>
                     <td class="py-2">
                       <span
-                        class="badge rounded-pill {{ $alat['status'] == 'Aktif' ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} py-1 px-2"
-                        style="font-size: 0.7rem;">
+                        class="device-status-pill {{ $alat['status'] == 'Aktif' ? 'device-status-pill--active' : 'device-status-pill--inactive' }}">
                         <i class="ri-checkbox-blank-circle-fill fs-9 me-1"></i> {{ $alat['status'] }}
                       </span>
                     </td>
                     <td class="update-cell py-2">
-                      <span class="text-muted" style="font-size: 0.75rem;"><i
+                      <span class="device-update"><i
                           class="ri-time-line me-1"></i>{{ $alat['last_update'] }}</span>
                     </td>
-                    <td class="text-center py-2">
+                    <td class="text-center py-2 device-action-col">
                       @if ($alat['id_sesi'])
                         <a href="{{ route('perusahaan.perjalanan.show', $alat['id_sesi']) }}"
-                          class="btn btn-sm btn-icon btn-primary-transparent rounded-circle"
-                          style="width: 28px; height: 28px; line-height: 28px;">
+                          class="device-action-btn"
+                          aria-label="Lihat detail alat {{ $alat['nama_alat'] }}">
                           <i class="ri-map-2-line fs-14"></i>
                         </a>
                       @else
@@ -233,47 +650,64 @@
 
           {{-- Mobile View: Cards --}}
           <div class="d-block d-md-none">
-            <div class="list-group list-group-flush rounded-bottom">
+            <div class="list-group list-group-flush rounded-bottom mobile-device-list">
               @forelse($lokasiAlat as $alat)
-                <div class="list-group-item p-3 {{ $alat['is_low_bat'] ? 'bg-danger-transparent' : '' }}"
+                <div class="list-group-item mobile-device-card {{ $alat['is_low_bat'] ? 'bg-danger-transparent' : '' }}"
                   @if ($alat['id_sesi']) onclick="focusMarker('{{ $alat['id_sesi'] }}')" style="cursor: pointer;" @endif>
-                  <div class="d-flex justify-content-between align-items-start mb-2">
-                    <div>
-                      <div class="fw-bold text-dark mb-1">
+                  <div class="mobile-device-top">
+                    <div class="mobile-device-heading">
+                      <div class="device-name mb-1">
                         @if ($alat['is_low_bat'])
                           <i class="ri-error-warning-fill text-danger me-1"></i>
                         @endif
                         {{ $alat['nama_alat'] }}
                       </div>
-                      <code class="text-muted d-block" style="font-size: 0.75rem;">{{ $alat['serial_number'] }}</code>
+                      <span class="device-serial">{{ $alat['serial_number'] }}</span>
                     </div>
-                    <div>
+                    <div class="mobile-device-status">
                       <span
-                        class="badge rounded-pill {{ $alat['status'] == 'Aktif' ? 'bg-success-transparent text-success' : 'bg-danger-transparent text-danger' }} py-1 px-2"
-                        style="font-size: 0.7rem;">
+                        class="device-status-pill {{ $alat['status'] == 'Aktif' ? 'device-status-pill--active' : 'device-status-pill--inactive' }}">
                         <i class="ri-checkbox-blank-circle-fill fs-9 me-1"></i> {{ $alat['status'] }}
                       </span>
                     </div>
                   </div>
 
-                  <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div class="d-flex flex-column gap-2">
-                      <div class="d-flex align-items-center text-dark" style="font-size: 0.85rem;">
-                        <i class="ri-truck-line me-2 text-primary"></i>
-                        <span class="fw-medium">{{ $alat['kendaraan'] }}</span>
-                      </div>
-                      <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
-                        <i class="ri-time-line me-2"></i>
-                        {{ $alat['last_update'] }}
+                  <div class="mobile-device-meta">
+                    <div class="mobile-device-meta-item">
+                      <span class="mobile-device-meta-icon">
+                        <i class="ri-truck-line"></i>
+                      </span>
+                      <div class="mobile-device-meta-copy">
+                        <span class="mobile-device-meta-label">Kendaraan</span>
+                        <span class="mobile-device-meta-value">{{ $alat['kendaraan'] }}</span>
                       </div>
                     </div>
+                    <div class="mobile-device-meta-item text-muted">
+                      <span class="mobile-device-meta-icon">
+                        <i class="ri-time-line"></i>
+                      </span>
+                      <div class="mobile-device-meta-copy">
+                        <span class="mobile-device-meta-label">Pembaruan</span>
+                        <span class="mobile-device-meta-value">{{ $alat['last_update'] }}</span>
+                      </div>
+                    </div>
+                  </div>
 
-                    <div class="d-flex align-items-center gap-3">
-                      <x-battery-circle :level="$alat['battery']" size="36px" stroke="3" />
+                  <div class="mobile-device-footer">
+                    <div class="mobile-device-actions">
+                      <div class="mobile-device-battery">
+                        <div class="device-battery-col">
+                          <x-battery-circle :level="$alat['battery']" size="38px" stroke="3" />
+                        </div>
+                        <div class="mobile-device-battery-copy">
+                          <span class="mobile-device-battery-label">Baterai</span>
+                          <span class="mobile-device-battery-value">{{ $alat['battery'] }}%</span>
+                        </div>
+                      </div>
                       @if ($alat['id_sesi'])
                         <a href="{{ route('perusahaan.perjalanan.show', $alat['id_sesi']) }}"
-                          class="btn btn-sm btn-icon btn-primary rounded-circle shadow-sm"
-                          style="width: 32px; height: 32px; line-height: 32px;">
+                          class="device-action-btn"
+                          aria-label="Lihat detail alat {{ $alat['nama_alat'] }}">
                           <i class="ri-map-2-line fs-14"></i>
                         </a>
                       @endif
@@ -385,90 +819,83 @@
 
     <!-- Right Sidebar Stats (Aside) -->
     <div class="col-lg-3 aside-stats-container">
-      @if ($lowBatCount > 0)
-        <!-- BATERAI LEMAH -->
-        <div class="card stats-card-enhanced border-0 border-start border-danger border-4" id="card-low-bat"
-          style="cursor: pointer;"
-          onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
-          <div class="card-body p-4">
-            <div class="d-flex align-items-center">
-              <div class="icon-box bg-danger-transparent text-danger">
-                <i class="ri-battery-low-line fs-24"></i>
+      <div class="card custom-card-enhanced aside-stats-shell overflow-hidden">
+        <div class="card-body aside-stats-scroll">
+          @if ($lowBatCount > 0)
+            <!-- BATERAI LEMAH -->
+            <div class="card stats-card-enhanced border-start border-danger border-4" id="card-low-bat"
+              style="cursor: pointer;"
+              onclick="document.getElementById('daftar-alat-table').scrollIntoView({behavior: 'smooth'})">
+              <div class="card-body p-4">
+                <div class="d-flex align-items-center">
+                  <div class="icon-box bg-danger-transparent text-danger">
+                    <i class="ri-battery-low-line fs-24"></i>
+                  </div>
+                  <div class="ms-3">
+                    <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Baterai Lemah</h6>
+                    <h3 class="fw-black mb-0 text-danger" id="count-low-bat">
+                      {{ $lowBatCount }}</h3>
+                  </div>
+                </div>
               </div>
-              <div class="ms-3">
-                <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Baterai Lemah</h6>
-                <h3 class="fw-black mb-0 text-danger" id="count-low-bat">
-                  {{ $lowBatCount }}</h3>
+            </div>
+          @endif
+
+          <div class="card stats-card-enhanced border-0">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center">
+                <div class="icon-box bg-success-transparent text-success">
+                  <i class="ri-map-pin-line fs-24"></i>
+                </div>
+                <div class="ms-3">
+                  <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Sedang Bergerak</h6>
+                  <h3 class="fw-black mb-0 text-success" id="count-moving-vehicles">{{ $kendaraanDalamPerjalanan }}</h3>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      @endif
 
-      <div class="card stats-card-enhanced border-0">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center">
-            <div class="icon-box bg-success-transparent text-success">
-              <i class="ri-map-pin-line fs-24"></i>
-            </div>
-            <div class="ms-3">
-              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Sedang Bergerak</h6>
-              <h3 class="fw-black mb-0 text-success" id="count-moving-vehicles">{{ $kendaraanDalamPerjalanan }}</h3>
+          <div class="card stats-card-enhanced border-0">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center">
+                <div class="icon-box bg-primary-transparent text-primary">
+                  <i class="ri-route-line fs-24"></i>
+                </div>
+                <div class="ms-3">
+                  <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Perjalanan</h6>
+                  <h3 class="fw-black mb-0 text-dark">{{ $totalSesiAlat }}</h3>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="card stats-card-enhanced border-0">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center">
-            <div class="icon-box bg-primary-transparent text-primary">
-              <i class="ri-route-line fs-24"></i>
-            </div>
-            <div class="ms-3">
-              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Perjalanan</h6>
-              <h3 class="fw-black mb-0 text-dark">{{ $totalSesiAlat }}</h3>
+          <div class="card stats-card-enhanced border-0">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center">
+                <div class="icon-box bg-warning-transparent text-warning">
+                  <i class="ri-cpu-line fs-24"></i>
+                </div>
+                <div class="ms-3">
+                  <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Alat</h6>
+                  <h3 class="fw-black mb-0 text-dark">{{ $totalAlat }}</h3>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="card stats-card-enhanced border-0">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center">
-            <div class="icon-box bg-warning-transparent text-warning">
-              <i class="ri-cpu-line fs-24"></i>
-            </div>
-            <div class="ms-3">
-              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Alat</h6>
-              <h3 class="fw-black mb-0 text-dark">{{ $totalAlat }}</h3>
+          <div class="card stats-card-enhanced border-0">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-center">
+                <div class="icon-box bg-info-transparent text-info">
+                  <i class="ri-car-fill fs-24"></i>
+                </div>
+                <div class="ms-3">
+                  <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Kendaraan</h6>
+                  <h3 class="fw-black mb-0 text-dark">{{ $totalKendaraan }}</h3>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="card stats-card-enhanced border-0">
-        <div class="card-body p-4">
-          <div class="d-flex align-items-center">
-            <div class="icon-box bg-info-transparent text-info">
-              <i class="ri-car-fill fs-24"></i>
-            </div>
-            <div class="ms-3">
-              <h6 class="text-muted mb-1 fs-11 text-uppercase fw-bold ls-1">Total Kendaraan</h6>
-              <h3 class="fw-black mb-0 text-dark">{{ $totalKendaraan }}</h3>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card border-0 shadow-sm mt-4 custom-card-enhanced bg-light">
-        <div class="card-body p-4 text-center">
-          <div class="mb-3">
-            <i class="ri-information-fill text-primary fs-32"></i>
-          </div>
-          <h6 class="page-title fw-medium fs-20 mb-0">Tips Pemantauan</h6>
-          <p class="text-muted small mb-0 fst-italic">Klik baris pada tabel "Daftar Alat & Status Terbaru" untuk
-            memfokuskan peta ke lokasi unit tersebut secara otomatis.</p>
         </div>
       </div>
     </div>

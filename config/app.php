@@ -123,5 +123,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
-    "admin_email" => env("ADMIN_EMAIL", "dutametagraha@gmail.com")
+    "admin_email" => env("ADMIN_EMAIL", "dutametagraha@gmail.com"),
+
+    "image_compression_enabled" => env("IMAGE_COMPRESSION_ENABLED", false),
+    "pdf_compression_enabled" => env("PDF_COMPRESSION_ENABLED", false),
 ];

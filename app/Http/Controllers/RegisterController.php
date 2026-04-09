@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Perusahaan;
 use App\Mail\NewCompanyRegistration;
 use App\Mail\AdminNewRegistration;
+use App\Services\PdfCompressionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -15,6 +16,8 @@ use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
+    public function __construct(protected PdfCompressionService $compressionService) {}
+
     /**
      * Display the registration form for perusahaan.
      */
@@ -119,7 +122,8 @@ class RegisterController extends Controller
                 $file = $request->file('berkas');
                 $fileName = time() . '_' . $type . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('perusahaan/berkas/' . $perusahaan->id, $fileName, 'public');
-                
+                $this->compressionService->compressPdf($file, $filePath);
+
                 // Hapus file lama di disk jika ada
                 if ($perusahaan->{$column}) {
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($perusahaan->{$column});
