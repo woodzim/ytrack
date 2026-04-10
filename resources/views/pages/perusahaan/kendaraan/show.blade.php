@@ -37,6 +37,15 @@
 
           <div class="detail-row">
             <div class="detail-label">
+              <strong>Nomor Polisi</strong>
+            </div>
+            <div class="detail-value">
+              <strong>{{ $kendaraan->plat }}</strong>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">
               <strong>Status</strong>
             </div>
             <div class="detail-value">
@@ -44,6 +53,22 @@
                 <span class="badge bg-success">Sedang dalam perjalanan</span>
               @else
                 <span class="badge bg-danger">Tidak sedang dalam perjalanan</span>
+              @endif
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-label">
+              <strong>STNK</strong>
+            </div>
+            <div class="detail-value">
+              @if ($kendaraan->stnk)
+                <a href="{{ asset('storage/' . $kendaraan->stnk) }}" target="_blank"
+                  class="btn btn-sm btn-outline-primary">
+                  <i class="ri-file-text-line me-1"></i>Lihat STNK
+                </a>
+              @else
+                <span class="text-muted fst-italic">Belum diunggah</span>
               @endif
             </div>
           </div>
@@ -88,6 +113,54 @@
     </div>
 
     <div class="col-12 col-lg-4">
+      <!-- Foto Kendaraan -->
+      <div class="card card-detail">
+        <div class="card-header">
+          <h5 class="card-title mb-0"><i class="ri-camera-line me-2"></i>Foto Kendaraan</h5>
+        </div>
+        <div class="card-body">
+          @php
+            $fotoFields = [
+                'foto_depan' => 'Tampak Depan',
+                'foto_samping_kanan' => 'Tampak Samping Kanan',
+                'foto_samping_kiri' => 'Tampak Samping Kiri',
+                'foto_belakang' => 'Tampak Belakang',
+            ];
+            $hasFoto = false;
+            foreach ($fotoFields as $f => $l) {
+                if ($kendaraan->{$f}) {
+                    $hasFoto = true;
+                    break;
+                }
+            }
+          @endphp
+
+          @if ($hasFoto)
+            <div class="row g-2">
+              @foreach ($fotoFields as $fieldName => $label)
+                @if ($kendaraan->{$fieldName})
+                  <div class="col-6">
+                    <div class="position-relative">
+                      <a href="{{ asset('storage/' . $kendaraan->{$fieldName}) }}" class="glightbox"
+                        data-gallery="kendaraan-gallery" data-title="{{ $label }}">
+                        <img src="{{ asset('storage/' . $kendaraan->{$fieldName}) }}"
+                          alt="{{ $label }}" class="img-fluid rounded"
+                          style="height: 100px; width: 100%; object-fit: cover;">
+                      </a>
+                      <span class="badge bg-dark bg-opacity-75 position-absolute bottom-0 start-0 m-1 fs-10">
+                        {{ $label }}
+                      </span>
+                    </div>
+                  </div>
+                @endif
+              @endforeach
+            </div>
+          @else
+            <p class="text-muted small mb-0 fst-italic">Belum ada foto kendaraan.</p>
+          @endif
+        </div>
+      </div>
+
       <!-- Statistics Section -->
       <div class="card card-detail">
         <div class="card-header">
@@ -97,7 +170,7 @@
           <div class="row">
             <div class="col-6">
               <div class="stat-item">
-                <div class="stat-label text-muted">Perjalanan</div>
+                <div class="stat-label text-muted">Sesi Alat</div>
                 <div class="stat-value">
                   <strong class="fs-5">{{ $kendaraan->sesiAlat?->count() ?? '0' }}</strong>
                 </div>
