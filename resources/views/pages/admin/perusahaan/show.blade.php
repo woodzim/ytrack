@@ -41,11 +41,11 @@
             <span class="detail-label">Dibuat Pada</span>
             <span class="detail-value">
               {{-- Bagian Tanggal --}}
-              <span class="local-date-only">{{ $perusahaan->created_at->toIso8601String() }}</span>
+              <span class="local-date-only">{{ $perusahaan->created_at?->toIso8601String() ?? '-' }}</span>
 
               {{-- Bagian Jam --}}
               <div class="detail-value-meta">
-                Pukul <span class="local-time-only">{{ $perusahaan->created_at->toIso8601String() }}</span>
+                Pukul <span class="local-time-only">{{ $perusahaan->created_at?->toIso8601String() ?? '-' }}</span>
               </div>
             </span>
           </div>
@@ -54,11 +54,11 @@
             <span class="detail-label">Diperbarui Pada</span>
             <span class="detail-value">
               {{-- Bagian Tanggal --}}
-              <span class="local-date-only">{{ $perusahaan->updated_at->toIso8601String() }}</span>
+              <span class="local-date-only">{{ $perusahaan->updated_at?->toIso8601String() ?? '-' }}</span>
 
               {{-- Bagian Jam --}}
               <div class="detail-value-meta">
-                Pukul <span class="local-time-only">{{ $perusahaan->updated_at->toIso8601String() }}</span>
+                Pukul <span class="local-time-only">{{ $perusahaan->updated_at?->toIso8601String() ?? '-' }}</span>
               </div>
             </span>
           </div>

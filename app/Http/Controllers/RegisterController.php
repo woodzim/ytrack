@@ -102,7 +102,7 @@ class RegisterController extends Controller
     {
         $request->validate([
             'berkas' => 'required|file|mimes:pdf|max:4096', // Max 4MB
-            'type' => 'required|string|in:akta,npwp_badan,nib,domisili,ktp_pj,npwp_pj,izin_usaha,siup',
+            'type' => 'required|string|in:npwp_badan,nib,ktp_pj',
         ], [
             'berkas.required' => 'File berkas wajib diunggah',
             'berkas.mimes' => 'Format file harus berupa PDF',
@@ -182,7 +182,7 @@ class RegisterController extends Controller
             $perusahaan = Perusahaan::find($user->id_perusahaan);
             
             // Validasi bidang wajib minimum
-            $mandatory = ['berkas_akta', 'berkas_npwp_badan', 'berkas_nib', 'berkas_domisili', 'berkas_ktp_pj', 'berkas_npwp_pj'];
+            $mandatory = ['berkas_npwp_badan', 'berkas_nib', 'berkas_ktp_pj'];
             foreach ($mandatory as $field) {
                 if (empty($perusahaan->{$field})) {
                     return back()->with('error', 'Semua dokumen dengan status WAJIB harus diunggah terlebih dahulu sebelum mengirim permohonan validasi.');

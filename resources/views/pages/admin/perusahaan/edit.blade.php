@@ -52,11 +52,11 @@
             <p class="text-muted mb-2">
               <strong>Dibuat:</strong><br>
               {{-- Kirim format ISO String agar bisa dibaca JS --}}
-              <span class="local-time">{{ $perusahaan->created_at->toIso8601String() }}</span>
+              <span class="local-time">{{ $perusahaan->created_at?->toIso8601String() ?? '-' }}</span>
             </p>
             <p class="text-muted mb-0">
               <strong>Diperbarui:</strong><br>
-              <span class="local-time">{{ $perusahaan->updated_at->toIso8601String() }}</span>
+              <span class="local-time">{{ $perusahaan->updated_at?->toIso8601String() ?? '-' }}</span>
             </p>
           </div>
         </div>

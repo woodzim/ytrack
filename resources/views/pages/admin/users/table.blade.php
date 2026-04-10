@@ -52,14 +52,9 @@
                 @if ($user->hasRole('perusahaan') && $user->perusahaan)
                   @php
                     $docs = [
-                        'akta' => 'Akta Pendirian',
                         'npwp_badan' => 'NPWP Badan Usaha',
                         'nib' => 'NIB (OSS)',
-                        'domisili' => 'Ket. Domisili',
-                        'ktp_pj' => 'KTP PJ',
-                        'npwp_pj' => 'NPWP PJ',
-                        'izin_usaha' => 'Izin Usaha',
-                        'siup' => 'SIUP / TDP',
+                        'ktp_pj' => 'KTP Penanggung Jawab',
                     ];
 
                     $hasMultiFiles = false;

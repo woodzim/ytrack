@@ -16,6 +16,11 @@ use Illuminate\Support\Facades\Storage;
 
 class KendaraanController extends Controller
 {
+    /**
+     * Daftar kolom foto kendaraan per-angle.
+     */
+    private const FOTO_FIELDS = ['foto_depan', 'foto_samping_kanan', 'foto_samping_kiri', 'foto_belakang'];
+
     public function __construct(protected ImageCompressionService $compressionService) {}
 
     /**
@@ -80,14 +85,26 @@ class KendaraanController extends Controller
             'id_jenis_kendaraan' => 'required|exists:jenis_kendaraan,id',
             'nama'               => 'required|string|max:255',
             'plat'               => 'required|string|max:20|unique:kendaraan,plat',
-            'images.*'           => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'captions.*'         => 'nullable|string|max:255',
+            'stnk'               => 'required|file|mimes:pdf,jpeg,png,jpg,webp|max:4096',
+            'foto_depan'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'foto_samping_kanan' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'foto_samping_kiri'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'foto_belakang'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ],[
-            'nama.required'      => 'Nama kendaraan harus diisi',
-            'plat.required'      => 'Nomor polisi harus diisi',
-            'plat.unique'        => 'Nomor polisi ini sudah terdaftar',
-            'images.*.image'     => 'File harus berupa gambar',
-            'images.*.max'       => 'Ukuran gambar maksimal 2MB',
+            'nama.required'              => 'Nama kendaraan harus diisi',
+            'plat.required'              => 'Nomor polisi harus diisi',
+            'plat.unique'                => 'Nomor polisi ini sudah terdaftar',
+            'stnk.required'              => 'STNK kendaraan wajib diunggah',
+            'stnk.mimes'                 => 'Format STNK harus berupa PDF, JPEG, PNG, JPG, atau WEBP',
+            'stnk.max'                   => 'Ukuran STNK maksimal 4MB',
+            'foto_depan.image'           => 'File harus berupa gambar',
+            'foto_depan.max'             => 'Ukuran gambar maksimal 2MB',
+            'foto_samping_kanan.image'   => 'File harus berupa gambar',
+            'foto_samping_kanan.max'     => 'Ukuran gambar maksimal 2MB',
+            'foto_samping_kiri.image'    => 'File harus berupa gambar',
+            'foto_samping_kiri.max'      => 'Ukuran gambar maksimal 2MB',
+            'foto_belakang.image'        => 'File harus berupa gambar',
+            'foto_belakang.max'          => 'Ukuran gambar maksimal 2MB',
         ]);
 
         return DB::transaction(function () use ($request, $validated) {
@@ -98,26 +115,34 @@ class KendaraanController extends Controller
                 'plat'               => $validated['plat'],
             ]);
 
-            // Handle multiple images
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $key => $image) {
-                    $path = $image->store('kendaraan/' . $kendaraan->id, 'public');
-                    $this->compressionService->compressImage($image, $path);
+            $storagePath = 'kendaraan/' . $kendaraan->id;
 
-                    KendaraanImage::create([
-                        'kendaraan_id' => $kendaraan->id,
-                        'image_path'   => $path,
-                        'caption'      => $request->captions[$key] ?? null,
-                    ]);
+            // Handle STNK upload
+            if ($request->hasFile('stnk')) {
+                $stnkPath = $request->file('stnk')->store($storagePath, 'public');
+                $kendaraan->update(['stnk' => $stnkPath]);
+            }
+
+            // Handle per-angle photo uploads
+            foreach (self::FOTO_FIELDS as $field) {
+                if ($request->hasFile($field)) {
+                    $file = $request->file($field);
+                    $path = $file->store($storagePath, 'public');
+                    if ($this->compressionService->isCompressibleImage($file)) {
+                        $this->compressionService->compressImage($file, $path);
+                    }
+                    $kendaraan->update([$field => $path]);
                 }
             }
+
+            $fotoCount = collect(self::FOTO_FIELDS)->filter(fn($f) => $request->hasFile($f))->count();
 
             ActivityLog::create([
                 'user_id' => Auth::id(),
                 'action' => 'CREATE',
                 'subject_type' => Kendaraan::class,
                 'subject_id' => $kendaraan->id,
-                'description' => "Perusahaan menambahkan kendaraan: {$kendaraan->nama} ({$kendaraan->plat}) dengan " . (count($request->file('images') ?? []) ) . " foto",
+                'description' => "Perusahaan menambahkan kendaraan: {$kendaraan->nama} ({$kendaraan->plat}) dengan {$fotoCount} foto",
                 'ip_address' => $request->ip(),
             ]);
 
@@ -154,17 +179,32 @@ class KendaraanController extends Controller
             'id_jenis_kendaraan' => 'required|exists:jenis_kendaraan,id',
             'nama'               => 'required|string|max:255',
             'plat'               => 'required|string|max:20|unique:kendaraan,plat,' . $kendaraan->id,
-            'images.*'           => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'captions.*'         => 'nullable|string|max:255',
-            'delete_images.*'    => 'nullable|exists:kendaraan_images,id',
+            'stnk'               => 'nullable|file|mimes:pdf,jpeg,png,jpg,webp|max:4096',
+            'foto_depan'         => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'foto_samping_kanan' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'foto_samping_kiri'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'foto_belakang'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'hapus_foto'         => 'nullable|array',
+            'hapus_foto.*'       => 'in:foto_depan,foto_samping_kanan,foto_samping_kiri,foto_belakang,stnk',
         ],[
-            'nama.required'      => 'Nama kendaraan harus diisi',
-            'plat.required'      => 'Nomor polisi harus diisi',
-            'plat.unique'        => 'Nomor polisi ini sudah terdaftar',
+            'nama.required'              => 'Nama kendaraan harus diisi',
+            'plat.required'              => 'Nomor polisi harus diisi',
+            'plat.unique'                => 'Nomor polisi ini sudah terdaftar',
+            'stnk.mimes'                 => 'Format STNK harus berupa PDF, JPEG, PNG, JPG, atau WEBP',
+            'stnk.max'                   => 'Ukuran STNK maksimal 4MB',
+            'foto_depan.image'           => 'File harus berupa gambar',
+            'foto_depan.max'             => 'Ukuran gambar maksimal 2MB',
+            'foto_samping_kanan.image'   => 'File harus berupa gambar',
+            'foto_samping_kanan.max'     => 'Ukuran gambar maksimal 2MB',
+            'foto_samping_kiri.image'    => 'File harus berupa gambar',
+            'foto_samping_kiri.max'      => 'Ukuran gambar maksimal 2MB',
+            'foto_belakang.image'        => 'File harus berupa gambar',
+            'foto_belakang.max'          => 'Ukuran gambar maksimal 2MB',
         ]);
 
         return DB::transaction(function () use ($request, $kendaraan, $validated) {
             $oldInfo = "{$kendaraan->nama} ({$kendaraan->plat})";
+            $storagePath = 'kendaraan/' . $kendaraan->id;
 
             $kendaraan->update([
                 'id_jenis_kendaraan' => $validated['id_jenis_kendaraan'],
@@ -172,30 +212,38 @@ class KendaraanController extends Controller
                 'plat'               => $validated['plat'],
             ]);
 
-            // Handle image deletions
-            if ($request->filled('delete_images')) {
-                foreach ($request->delete_images as $imageId) {
-                    $img = KendaraanImage::find($imageId);
-                    if ($img) {
-                        Storage::disk('public')->delete($img->image_path);
-                        $img->delete();
+            // Handle photo deletions
+            if ($request->filled('hapus_foto')) {
+                foreach ($request->hapus_foto as $field) {
+                    if ($kendaraan->{$field}) {
+                        Storage::disk('public')->delete($kendaraan->{$field});
+                        $kendaraan->update([$field => null]);
                     }
                 }
             }
 
-            // Handle new images
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $key => $image) {
-                    if ($image->isValid()) {
-                        $path = $image->store('kendaraan/' . $kendaraan->id, 'public');
-                        $this->compressionService->compressImage($image, $path);
+            // Handle STNK upload/replacement
+            if ($request->hasFile('stnk')) {
+                if ($kendaraan->stnk) {
+                    Storage::disk('public')->delete($kendaraan->stnk);
+                }
+                $stnkPath = $request->file('stnk')->store($storagePath, 'public');
+                $kendaraan->update(['stnk' => $stnkPath]);
+            }
 
-                        KendaraanImage::create([
-                            'kendaraan_id' => $kendaraan->id,
-                            'image_path'   => $path,
-                            'caption'      => $request->captions[$key] ?? null,
-                        ]);
+            // Handle per-angle photo uploads/replacements
+            foreach (self::FOTO_FIELDS as $field) {
+                if ($request->hasFile($field)) {
+                    // Delete old file
+                    if ($kendaraan->{$field}) {
+                        Storage::disk('public')->delete($kendaraan->{$field});
                     }
+                    $file = $request->file($field);
+                    $path = $file->store($storagePath, 'public');
+                    if ($this->compressionService->isCompressibleImage($file)) {
+                        $this->compressionService->compressImage($file, $path);
+                    }
+                    $kendaraan->update([$field => $path]);
                 }
             }
 
@@ -238,9 +286,21 @@ class KendaraanController extends Controller
                 $info = $kendaraan->nama . ' (' . $kendaraan->plat . ')';
                 $deletedId = $kendaraan->id;
 
-                // Delete images from storage
+                // Delete images from storage (legacy kendaraan_images)
                 foreach ($kendaraan->images as $img) {
                     Storage::disk('public')->delete($img->image_path);
+                }
+
+                // Delete per-angle photos
+                foreach (self::FOTO_FIELDS as $field) {
+                    if ($kendaraan->{$field}) {
+                        Storage::disk('public')->delete($kendaraan->{$field});
+                    }
+                }
+
+                // Delete STNK
+                if ($kendaraan->stnk) {
+                    Storage::disk('public')->delete($kendaraan->stnk);
                 }
                 
                 // Folder cleanup
@@ -268,7 +328,7 @@ class KendaraanController extends Controller
     }
 
     /**
-     * Update foto kendaraan tertentu.
+     * Update foto kendaraan tertentu (legacy).
      */
     public function updateImage(Request $request, $id, $imageId)
     {
@@ -318,7 +378,7 @@ class KendaraanController extends Controller
     }
 
     /**
-     * Hapus foto kendaraan tertentu.
+     * Hapus foto kendaraan tertentu (legacy).
      */
     public function destroyImage($id, $imageId)
     {

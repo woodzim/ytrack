@@ -19,6 +19,11 @@ class Kendaraan extends Model
         'id_jenis_kendaraan',
         'nama',
         'plat',
+        'foto_depan',
+        'foto_samping_kanan',
+        'foto_samping_kiri',
+        'foto_belakang',
+        'stnk',
     ];
 
     public function setPlatAttribute($value)

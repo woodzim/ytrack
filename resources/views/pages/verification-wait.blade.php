@@ -10,14 +10,9 @@
   $isRejected = $perusahaan && $perusahaan->berkas === 'rejected';
 
   $docs = [
-      'akta' => ['label' => 'Akta Pendirian', 'required' => true],
       'npwp_badan' => ['label' => 'NPWP Badan Usaha', 'required' => true],
       'nib' => ['label' => 'NIB (OSS)', 'required' => true],
-      'domisili' => ['label' => 'Keterangan Domisili', 'required' => true],
       'ktp_pj' => ['label' => 'KTP Penanggung Jawab', 'required' => true],
-      'npwp_pj' => ['label' => 'NPWP Penanggung Jawab', 'required' => true],
-      'izin_usaha' => ['label' => 'Izin Usaha / Opsional', 'required' => false],
-      'siup' => ['label' => 'SIUP / TDP', 'required' => false],
   ];
 @endphp
 
