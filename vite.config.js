@@ -187,6 +187,7 @@ export default defineConfig({
                 await fsExtra.copy(srcPath, destPath, {
                   overwrite: true,
                   recursive: true,
+                  dereference: true,
                 });
     
                 // Remove the 'dist' directory from the destination
@@ -200,6 +201,7 @@ export default defineConfig({
                   await fsExtra.copy(packageSrcPath, packageDestPath, {
                     overwrite: true,
                     recursive: true,
+                    dereference: true,
                   });
                 }
               }
